@@ -239,6 +239,19 @@ node generate-pdf.mjs \
 ```
 14. Reporta: ruta PDF, nº páginas, % cobertura keywords
 
+### Paso 4.1 — Eliminación Condicional: Core Competencies si PDF > 1 Página
+
+Si el PDF generado en el paso 14 tiene **más de 1 página**, eliminar la sección completa "Core Competencies" de la HTML y regenerar el PDF. Esta decisión es **por CV únicamente** — no afecta el template global.
+
+**Lógica:**
+1. Generar PDF inicial desde HTML personalizado (paso 14)
+2. Contar páginas del PDF (`pageCount`)
+3. Si `pageCount > 1`: eliminar el `<div class="section">` que contiene `<div class="section-title">{{SECTION_COMPETENCIES}}</div>`
+4. Re-generar PDF desde HTML modificado
+5. Usar la versión final (con o sin competencies según el resultado)
+
+**Por qué:** Las competencies (6-8 keyword tags) ocupan ~120-150px de alto. Removerlas automáticamente optimiza altura cuando el resume toca o excede 2 páginas, permitiendo ajuste con zoom minimal (95-98%) sin cortar contenido.
+
 **Reglas ATS:**
 - Single-column (sin sidebars)
 - Headers estándar: "Professional Summary", "Work Experience", "Education", "Skills", "Certifications", "Projects"
@@ -254,7 +267,7 @@ node generate-pdf.mjs \
 - Section headers: Space Grotesk 13px uppercase, color cyan `hsl(187,74%,32%)`
 - Body: DM Sans 11px, line-height 1.5
 - Company names: purple `hsl(270,70%,45%)`
-- Márgenes: 0.6in
+- Márgenes: 0.1in (all sides: top, bottom, left, right)
 - Background: blanco
 
 **Estrategia keyword injection (ético):**
