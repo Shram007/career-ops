@@ -1,96 +1,96 @@
-# Modo: pdf — Generación de PDF ATS-Optimizado
+# Mode: pdf — ATS-Optimized PDF Generation
 
-## Pipeline completo
+## Full Pipeline
 
-1. Lee `cv.md` como fuentes de verdad
-2. Pide al usuario el JD si no está en contexto (texto o URL)
-3. Extrae 15-20 keywords del JD
-4. Detecta idioma del JD → idioma del CV (EN default)
-5. Detecta ubicación empresa → formato papel:
+1. Reads `cv.md` as source of truth
+2. Asks user for JD if not in context (text or URL)
+3. Extracts 15-20 keywords from JD
+4. Detects JD language → CV language (EN default)
+5. Detects company location → paper format:
    - US/Canada → `letter`
-   - Resto del mundo → `a4`
-6. Detecta arquetipo del rol → adapta framing
-7. Reescribe Professional Summary inyectando keywords del JD + exit narrative bridge ("Built and sold a business. Now applying systems thinking to [domain del JD].")
-8. Selecciona top 3-4 proyectos más relevantes para la oferta
-9. Reordena bullets de experiencia por relevancia al JD
-10. Construye competency grid desde requisitos del JD (6-8 keyword phrases)
-11. Inyecta keywords naturalmente en logros existentes (NUNCA inventa)
-12. Genera HTML completo desde template + contenido personalizado
-13. Lee `name` de `config/profile.yml` → normaliza a kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
-14. Escribe HTML a `/tmp/cv-{candidate}-{company}.html`
-15. Ejecuta: `node generate-pdf.mjs /tmp/cv-{candidate}-{company}.html output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4}`
-15. Reporta: ruta del PDF, nº páginas, % cobertura de keywords
+   - Rest of world → `a4`
+6. Detects role archetype → adapts framing
+7. Rewrites Professional Summary injecting JD keywords + exit narrative bridge ("Built and sold a business. Now applying systems thinking to [JD domain].")
+8. Selects top 3-4 most relevant projects for the offer
+9. Reorders experience bullets by JD relevance
+10. Builds competency grid from JD requirements (6-8 keyword phrases)
+11. Injects keywords naturally into existing achievements (NEVER invents)
+12. Generates full HTML from template + personalized content
+13. Reads `name` from `config/profile.yml` → normalizes to kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
+14. Writes HTML to `/tmp/cv-{candidate}-{company}.html`
+15. Executes: `node generate-pdf.mjs /tmp/cv-{candidate}-{company}.html output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4}`
+15. Reports: PDF path, number of pages, % keyword coverage
 
-## Reglas ATS (parseo limpio)
+## ATS Rules (Clean Parsing)
 
-- Layout single-column (sin sidebars, sin columnas paralelas)
-- Headers estándar: "Professional Summary", "Work Experience", "Education", "Skills", "Certifications", "Projects"
-- Sin texto en imágenes/SVGs
-- Sin info crítica en headers/footers del PDF (ATS los ignora)
-- UTF-8, texto seleccionable (no rasterizado)
-- Sin tablas anidadas
-- Keywords del JD distribuidas: Summary (top 5), primer bullet de cada rol, Skills section
+- Single-column layout (no sidebars, no parallel columns)
+- Standard headers: "Professional Summary", "Work Experience", "Education", "Skills", "Certifications", "Projects"
+- No text in images/SVGs
+- No critical info in PDF headers/footers (ATS ignores them)
+- UTF-8, selectable text (not rasterized)
+- No nested tables
+- JD keywords distributed: Summary (top 5), first bullet of each role, Skills section
 
-## Diseño del PDF
+## PDF Design
 
 - **Fonts**: Space Grotesk (headings, 600-700) + DM Sans (body, 400-500)
-- **Fonts self-hosted**: `fonts/`
-- **Header**: nombre en Space Grotesk 24px bold + línea gradiente `linear-gradient(to right, hsl(187,74%,32%), hsl(270,70%,45%))` 2px + fila de contacto
-- **Section headers**: Space Grotesk 13px, uppercase, letter-spacing 0.05em, color cyan primary
+- **Self-hosted fonts**: `fonts/`
+- **Header**: name in Space Grotesk 24px bold + gradient line `linear-gradient(to right, hsl(187,74%,32%), hsl(270,70%,45%))` 2px + contact row
+- **Section headers**: Space Grotesk 13px, uppercase, letter-spacing 0.05em, cyan primary color
 - **Body**: DM Sans 11px, line-height 1.5
-- **Company names**: color accent purple `hsl(270,70%,45%)`
-- **Márgenes**: 0.1in (all sides: top, bottom, left, right)
-- **Background**: blanco puro
+- **Company names**: purple accent color `hsl(270,70%,45%)`
+- **Margins**: 0.1in (all sides: top, bottom, left, right)
+- **Background**: pure white
 
-## Orden de secciones (optimizado "6-second recruiter scan")
+## Section Order (optimized "6-second recruiter scan")
 
-1. Header (nombre grande, gradiente, contacto, link portfolio)
-2. Professional Summary (3-4 líneas, keyword-dense)
-3. Core Competencies (6-8 keyword phrases en flex-grid)
-4. Work Experience (cronológico inverso)
-5. Projects (top 3-4 más relevantes)
+1. Header (large name, gradient, contact, portfolio link)
+2. Professional Summary (3-4 lines, keyword-dense)
+3. Core Competencies (6-8 keyword phrases in flex-grid)
+4. Work Experience (reverse chronological)
+5. Projects (top 3-4 most relevant)
 6. Education & Certifications
-7. Skills (idiomas + técnicos)
+7. Skills (languages + technical)
 
-## Estrategia de keyword injection (ético, basado en verdad)
+## Keyword Injection Strategy (Ethical, Truth-based)
 
-Ejemplos de reformulación legítima:
-- JD dice "RAG pipelines" y CV dice "LLM workflows with retrieval" → cambiar a "RAG pipeline design and LLM orchestration workflows"
-- JD dice "MLOps" y CV dice "observability, evals, error handling" → cambiar a "MLOps and observability: evals, error handling, cost monitoring"
-- JD dice "stakeholder management" y CV dice "collaborated with team" → cambiar a "stakeholder management across engineering, operations, and business"
+Examples of legitimate rewording:
+- JD says "RAG pipelines" and CV says "LLM workflows with retrieval" → change to "RAG pipeline design and LLM orchestration workflows"
+- JD says "MLOps" and CV says "observability, evals, error handling" → change to "MLOps and observability: evals, error handling, cost monitoring"
+- JD says "stakeholder management" and CV says "collaborated with team" → change to "stakeholder management across engineering, operations, and business"
 
-**NUNCA añadir skills que el candidato no tiene. Solo reformular experiencia real con el vocabulario exacto del JD.**
+**NEVER add skills the candidate doesn't have. Only rephrase real experience with the exact vocabulary from the JD.**
 
-## Template HTML
+## HTML Template
 
-Usar el template en `cv-template.html`. Reemplazar los placeholders `{{...}}` con contenido personalizado:
+Use the template in `cv-template.html`. Replace `{{...}}` placeholders with personalized content:
 
-| Placeholder | Contenido |
-|-------------|-----------|
-| `{{LANG}}` | `en` o `es` |
-| `{{PAGE_WIDTH}}` | `8.5in` (letter) o `210mm` (A4) |
+| Placeholder | Content |
+|-------------|---------|
+| `{{LANG}}` | `en` or `es` |
+| `{{PAGE_WIDTH}}` | `8.5in` (letter) or `210mm` (A4) |
 | `{{NAME}}` | (from profile.yml) |
 | `{{PHONE}}` | (from profile.yml — include with its separator only when `profile.yml` has a non-empty `phone` value; omit both `<span>` and `<span class="separator">` otherwise) |
 | `{{EMAIL}}` | (from profile.yml) |
 | `{{LINKEDIN_URL}}` | [from profile.yml] |
 | `{{LINKEDIN_DISPLAY}}` | [from profile.yml] |
-| `{{PORTFOLIO_URL}}` | [from profile.yml] (o /es según idioma) |
-| `{{PORTFOLIO_DISPLAY}}` | [from profile.yml] (o /es según idioma) |
+| `{{PORTFOLIO_URL}}` | [from profile.yml] (or /es per language) |
+| `{{PORTFOLIO_DISPLAY}}` | [from profile.yml] (or /es per language) |
 | `{{LOCATION}}` | [from profile.yml] |
 | `{{SECTION_SUMMARY}}` | Professional Summary / Resumen Profesional |
-| `{{SUMMARY_TEXT}}` | Summary personalizado con keywords |
+| `{{SUMMARY_TEXT}}` | Personalized summary with keywords |
 | `{{SECTION_COMPETENCIES}}` | Core Competencies / Competencias Core |
 | `{{COMPETENCIES}}` | `<span class="competency-tag">keyword</span>` × 6-8 |
 | `{{SECTION_EXPERIENCE}}` | Work Experience / Experiencia Laboral |
-| `{{EXPERIENCE}}` | HTML de cada trabajo con bullets reordenados |
+| `{{EXPERIENCE}}` | HTML of each job with reordered bullets |
 | `{{SECTION_PROJECTS}}` | Projects / Proyectos |
-| `{{PROJECTS}}` | HTML de top 3-4 proyectos |
+| `{{PROJECTS}}` | HTML of top 3-4 projects |
 | `{{SECTION_EDUCATION}}` | Education / Formación |
-| `{{EDUCATION}}` | HTML de educación |
+| `{{EDUCATION}}` | HTML of education |
 | `{{SECTION_CERTIFICATIONS}}` | Certifications / Certificaciones |
-| `{{CERTIFICATIONS}}` | HTML de certificaciones |
+| `{{CERTIFICATIONS}}` | HTML of certifications |
 | `{{SECTION_SKILLS}}` | Skills / Competencias |
-| `{{SKILLS}}` | HTML de skills |
+| `{{SKILLS}}` | HTML of skills |
 
 ## Canva CV Generation (optional)
 
@@ -174,19 +174,19 @@ d. Report: PDF path, file size, Canva design URL (for manual tweaking)
 - If `find_and_replace_text` finds no matches → try broader substring matching
 - Always provide the Canva design URL so the user can edit manually if auto-edit fails
 
-## Eliminación Condicional: Core Competencies si PDF > 1 Página
+## Conditional Removal: Core Competencies if PDF > 1 Page
 
-Si después de generar el PDF inicial la cuenta de páginas es **> 1 página**, eliminar la sección completa "Core Competencies" de la HTML y regenerar el PDF. Esta decisión es **por resume únicamente** — no afecta el template global.
+If after generating the initial PDF the page count is **> 1 page**, remove the entire "Core Competencies" section from the HTML and regenerate the PDF. This decision is **per resume only** — doesn't affect the global template.
 
-**Pasos:**
-1. Generar PDF inicial desde HTML personalizado
-2. Contar páginas del PDF generado
-3. Si pageCount > 1: eliminar el `<div class="section">` que contiene `<div class="section-title">{{SECTION_COMPETENCIES}}</div>`
-4. Re-generar PDF desde HTML modificado
-5. Usar la versión final (con o sin competencies según resultado)
+**Steps:**
+1. Generate initial PDF from personalized HTML
+2. Count pages in generated PDF
+3. If pageCount > 1: remove the `<div class="section">` containing `<div class="section-title">{{SECTION_COMPETENCIES}}</div>`
+4. Regenerate PDF from modified HTML
+5. Use final version (with or without competencies per result)
 
-**Razón:** Las competencies (6-8 keyword tags) ocupan ~120-150px de alto. Removerlas automáticamente optimiza la altura del contenido cuando el resume toca o excede 2 páginas, permitiendo ajustar con zoom minimal (95-98%) sin cortar contenido.
+**Why:** Competencies (6-8 keyword tags) take ~120-150px height. Removing them automatically optimizes height when resume touches or exceeds 2 pages, allowing minimal zoom adjustment (95-98%) without cutting content.
 
-## Post-generación
+## Post-generation
 
-Actualizar tracker si la oferta ya está registrada: cambiar PDF de ❌ a ✅.
+Update tracker if offer is already registered: change PDF from ❌ to ✅.
