@@ -61,6 +61,24 @@ Examples of legitimate rewording:
 
 **NEVER add skills the candidate doesn't have. Only rephrase real experience with the exact vocabulary from the JD.**
 
+## Formatting Rules for Tight 1-Page Layout
+
+### Bullet Points
+- **Maximum 1 line per bullet** — if a bullet exceeds to a new line by a couple of words, rewrite it to fit on a single line
+- Avoid orphan words (1-2 words breaking to a new line) — condense the bullet instead
+- Eliminate padding words: remove "in order to", "ability to", "responsible for" → use action verbs directly
+
+### Projects Section
+- **Total bullets per project:** max 3, min 2
+- Each project: 1 title line + 2-3 bullet points describing impact
+- Bullets must fit 1 line (apply orphan rule)
+
+### Skills Section
+- **Total skill groups:** max 3-4 groups
+- **Each group must fit 1 line** — no wrapping to second line
+- Format: "Category: skill1, skill2, skill3"
+- If a group exceeds 1 line, split into 2 groups or remove lower-priority skills
+
 ## HTML Template
 
 Use the template in `cv-template.html`. Replace `{{...}}` placeholders with personalized content:

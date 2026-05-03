@@ -275,6 +275,11 @@ If PDF generated in step 14 has **more than 1 page**, remove entire "Core Compet
 - NEVER add skills candidate doesn't have
 - Example: JD says "RAG pipelines" and CV says "LLM workflows with retrieval" → "RAG pipeline design and LLM orchestration workflows"
 
+**Formatting rules for tight 1-page layout:**
+- **Bullet points:** max 1 line per bullet — if exceeds by a couple words, rewrite to fit 1 line. Avoid orphan words breaking to new line.
+- **Projects section:** 2-3 bullets per project max. Each bullet must fit 1 line.
+- **Skills section:** max 3-4 skill groups, each must fit 1 line. Format: "Category: skill1, skill2, skill3". If group exceeds 1 line, split into 2 groups or remove lower-priority skills.
+
 **Template placeholders (in cv-template.html):**
 
 | Placeholder | Content |
