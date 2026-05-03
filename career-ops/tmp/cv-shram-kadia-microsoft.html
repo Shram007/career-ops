@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shram Kadia — CV</title>
+<style>
+  @page {
+    size: 8.5in auto;
+    margin: 0.1in;
+  }
+
+  @font-face {
+    font-family: 'Space Grotesk';
+    src: url('../fonts/space-grotesk-latin.woff2') format('woff2');
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  @font-face {
+    font-family: 'Space Grotesk';
+    src: url('../fonts/space-grotesk-latin-ext.woff2') format('woff2');
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+
+  @font-face {
+    font-family: 'DM Sans';
+    src: url('../fonts/dm-sans-latin.woff2') format('woff2');
+    font-weight: 100 1000;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  @font-face {
+    font-family: 'DM Sans';
+    src: url('../fonts/dm-sans-latin-ext.woff2') format('woff2');
+    font-weight: 100 1000;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    line-height: 1.35;
+    color: #1a1a2e;
+    background: #ffffff;
+    padding: 0;
+    margin: 0;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 0.02in 0;
+  }
+
+  /* === HEADER === */
+  .header {
+    margin-bottom: 8px;
+  }
+
+  .header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a2e;
+    letter-spacing: -0.02em;
+    margin-bottom: 3px;
+    line-height: 1.05;
+    text-align: center;
+  }
+
+  .header-gradient {
+    height: 1.5px;
+    background: linear-gradient(to right, hsl(187, 74%, 32%), hsl(270, 70%, 45%));
+    border-radius: 1px;
+    margin-bottom: 4px;
+  }
+
+  .contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9.5px;
+    line-height: 1.3;
+    color: #555;
+    justify-content: center;
+  }
+
+  .contact-row a {
+    color: #555;
+    text-decoration: none;
+  }
+
+  .contact-row .separator {
+    color: #ccc;
+  }
+
+  /* === SECTIONS === */
+  .section {
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: hsl(187, 74%, 32%);
+    border-bottom: 1px solid #e2e2e2;
+    padding-bottom: 1px;
+    margin-bottom: 4px;
+    line-height: 1.1;
+  }
+
+  /* === PROFESSIONAL SUMMARY === */
+  .summary-text {
+    font-size: 10px;
+    line-height: 1.4;
+    color: #2f2f2f;
+  }
+
+  a {
+    white-space: nowrap;
+  }
+
+  /* === COMPETENCIES === */
+  .competencies {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 5px;
+    overflow: hidden;
+  }
+
+  .competency-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 500;
+    color: hsl(187, 74%, 25%);
+    background: hsl(187, 60%, 94%);
+    border: 1px solid hsl(187, 55%, 78%);
+    border-radius: 3px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+
+  /* === WORK EXPERIENCE === */
+  .job {
+    margin-bottom: 6px;
+  }
+
+  .job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 1px;
+  }
+
+  .job-company {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: hsl(270, 70%, 45%);
+  }
+
+  .job-period {
+    font-size: 9.5px;
+    color: #777;
+    white-space: nowrap;
+  }
+
+  .job-role {
+    font-size: 10px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+  }
+
+  .job ul {
+    list-style-type: disc;
+    padding-left: 14px;
+    margin-top: 1px;
+  }
+
+  .job li::marker {
+    color: #666;
+  }
+
+  .job li {
+    font-size: 9.5px;
+    line-height: 1.35;
+    color: #333;
+    margin-bottom: 1px;
+    overflow: visible;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .job li .bullet-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-height: calc(2 * 1.35em);
+  }
+
+  .job li strong {
+    font-weight: 600;
+  }
+
+  /* === PROJECTS === */
+  .project {
+    margin-bottom: 4px;
+  }
+
+  .project-header {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin-bottom: 1px;
+  }
+
+  .project-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: hsl(270, 70%, 45%);
+    text-decoration: none;
+  }
+
+  .project-tech-inline {
+    font-size: 9px;
+    color: #888;
+    font-style: italic;
+  }
+
+  .project-desc {
+    font-size: 9.5px;
+    color: #444;
+    margin-top: 1px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-height: calc(2 * 1.35em);
+  }
+
+  .project ul {
+    list-style-type: disc;
+    padding-left: 14px;
+    margin-top: 1px;
+  }
+
+  .project li::marker {
+    color: #666;
+  }
+
+  .project li {
+    font-size: 9.5px;
+    line-height: 1.35;
+    color: #333;
+    margin-bottom: 1px;
+    overflow: visible;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .project li .bullet-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-height: calc(2 * 1.35em);
+  }
+
+  .project li strong {
+    font-weight: 600;
+  }
+
+  /* === EDUCATION === */
+  .edu-item {
+    margin-bottom: 3px;
+  }
+
+  .edu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .edu-title {
+    font-weight: 600;
+    font-size: 10px;
+    color: #333;
+  }
+
+  .edu-org {
+    color: hsl(270, 70%, 45%);
+    font-weight: 500;
+  }
+
+  .edu-year {
+    font-size: 9.5px;
+    color: #777;
+    white-space: nowrap;
+  }
+
+  .edu-desc {
+    font-size: 9.5px;
+    color: #666;
+    margin-top: 0;
+    line-height: 1.35;
+  }
+
+  /* === SKILLS === */
+  .skills-grid {
+    display: block;
+  }
+
+  .skill-item {
+    font-size: 9.5px;
+    color: #444;
+    line-height: 1.45;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0;
+  }
+
+  .skill-category {
+    font-weight: 700;
+    color: #1a1a2e;
+    font-size: 9.5px;
+  }
+
+  /* === PRINT === */
+  @media print {
+    body {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page {
+      padding: 0;
+    }
+  }
+
+  /* === PAGE BREAK CONTROL === */
+  .job,
+  .project,
+  .edu-item,
+  .cert-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Shram Kadia</h1>
+    <div class="header-gradient"></div>
+    <div class="contact-row">
+      <span>+1-919-332-6396</span>
+      <span class="separator">|</span>
+      <span>kadiashram@gmail.com</span>
+      <span class="separator">|</span>
+      <a href="https://linkedin.com/in/shram-kadia">LinkedIn</a>
+      <span class="separator">|</span>
+      <a href="https://github.com/shram007">GitHub</a>
+      <span class="separator">|</span>
+      <a href="https://shram-kadia.vercel.app/">Portfolio</a>
+      <span class="separator">|</span>
+      <span>San Jose, CA</span>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SUMMARY -->
+  <div class="section">
+    <div class="section-title">Professional Summary</div>
+    <div class="summary-text">Backend and AI engineer with production experience building LLM-integrated data pipelines, scalable backend services, and multi-agent orchestration systems on GCP and AWS. Shipped 4 AI systems from concept to production -- RAG pipelines, agentic backends, and real-time data infrastructure -- with telemetry, reliability, and engineering excellence as first-class requirements. Targeting data and AI service engineering.</div>
+  </div>
+
+  <!-- CORE COMPETENCIES -->
+  <div class="section">
+    <div class="section-title">Core Competencies</div>
+    <div class="competencies">
+      <span class="competency-tag">LLM Pipelines</span>
+      <span class="competency-tag">Data Engineering</span>
+      <span class="competency-tag">Service Engineering</span>
+      <span class="competency-tag">Agentic Systems</span>
+      <span class="competency-tag">Telemetry &amp; Observability</span>
+      <span class="competency-tag">Cloud GCP/AWS</span>
+      <span class="competency-tag">Test Automation</span>
+    </div>
+  </div>
+
+  <!-- WORK EXPERIENCE -->
+  <div class="section">
+    <div class="section-title">Work Experience</div>
+
+    <div class="job">
+      <div class="job-header">
+        <span class="job-company">OpenPRA Org</span>
+        <span class="job-period">Aug 2025 &ndash; Present</span>
+      </div>
+      <div class="job-role">Software Engineer</div>
+      <ul>
+        <li><span class="bullet-text">Owned end-to-end delivery of a probabilistic data pipeline for nuclear safety analysis -- concept to production in 8 weeks across Python, TypeScript, Node.js, and Docker with full CI/CD.</span></li>
+        <li><span class="bullet-text">Authored 25+ Jest unit tests and CI checks guaranteeing numerical stability and full coverage on safety-critical calculations -- engineering excellence enforced as a quality gate.</span></li>
+        <li><span class="bullet-text">Redesigned the XML data processing pipeline with lazy-parse techniques, cutting debugging cycles by 40% and accelerating risk-assessment turnaround through targeted iteration.</span></li>
+      </ul>
+    </div>
+
+    <div class="job">
+      <div class="job-header">
+        <span class="job-company">NC State University</span>
+        <span class="job-period">Jul 2024 &ndash; Mar 2025</span>
+      </div>
+      <div class="job-role">Backend Engineer &ndash; Research Assistant</div>
+      <ul>
+        <li><span class="bullet-text">Built a LangChain LLM + FAISS RAG data pipeline ingesting 200+ scientific PDFs on GCP -- eliminated 60% of manual extraction and saved the department 30 hours/week.</span></li>
+        <li><span class="bullet-text">Instrumented distributed tracing, structured logs, and drift monitoring into the GCP microservice; used telemetry and latency metrics to identify bottlenecks and drive a 30% throughput gain.</span></li>
+        <li><span class="bullet-text">Engineered production RAG stack with semantic chunking, HuggingFace transformers, Redis cache, and cosine-similarity quality gates -- 85% accuracy, sub-200ms latency under concurrent load.</span></li>
+      </ul>
+    </div>
+
+    <div class="job">
+      <div class="job-header">
+        <span class="job-company">Resilient Tech</span>
+        <span class="job-period">Jan 2023 &ndash; May 2023</span>
+      </div>
+      <div class="job-role">Software Engineer</div>
+      <ul>
+        <li><span class="bullet-text">Migrated critical ERP systems to RESTful Python APIs across 5 enterprise rollouts, cutting production downtime by 30% and sustaining 99% uptime through targeted security audits.</span></li>
+        <li><span class="bullet-text">Architected MariaDB and PostgreSQL data integrations across 5 ERPNext deployments, enabling client-specific module configurations and improving cross-system data reliability.</span></li>
+        <li><span class="bullet-text">Resolved 100+ production support tickets by tracing root causes through full-stack workflows, modularizing code and refactoring debugging processes, lifting CSAT by 12%.</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="section">
+    <div class="section-title">Projects</div>
+
+    <div class="project">
+      <div class="project-header">
+        <a href="https://github.com/Shram007/restaurant-voice-hub" class="project-title">Restaurant Voice Hub</a>
+        <span class="project-tech-inline">ElevenLabs AI &middot; FastAPI &middot; PostgreSQL &middot; MCP &middot; Vercel/Render</span>
+      </div>
+      <ul>
+        <li><span class="bullet-text">Architected production agentic orchestration layer with 5 callable LLM tools — fully autonomous voice ordering, zero human handoff, multi-tenant by restaurant_id.</span></li>
+        <li><span class="bullet-text">Engineered real-time PostgreSQL-to-AI-agent sync pipeline; menu updates from hours to seconds. Exposed all endpoints as MCP-callable tools via stdio JSON-RPC 2.0.</span></li>
+      </ul>
+    </div>
+
+    <div class="project">
+      <div class="project-header">
+        <a href="https://github.com/Shram007/Clinicflow" class="project-title">ClinicFlow</a>
+        <span class="project-tech-inline">Python &middot; FastAPI &middot; LLM &middot; STT/TTS &middot; Docker &middot; MCP server</span>
+      </div>
+      <ul>
+        <li><span class="bullet-text">Built STT → LLM agent → TTS pipeline converting doctor voice recordings into SOAP notes with audio readback in one click.</span></li>
+        <li><span class="bullet-text">Instrumented per-request latency, token usage, and error rate; added LLM-as-judge eval pipeline scoring clinical accuracy.</span></li>
+      </ul>
+    </div>
+
+    <div class="project">
+      <div class="project-header">
+        <a href="https://github.com/Shram007/Travel-Agent" class="project-title">Travel Agent ATLAS</a>
+        <span class="project-tech-inline">Python &middot; LangChain &middot; Multi-LLM proxy &middot; Exa neural search &middot; ReAct</span>
+      </div>
+      <ul>
+        <li><span class="bullet-text">Built runtime LLM switching across 4 models via unified OpenAI-compatible proxy with per-request cost and token tracking.</span></li>
+        <li><span class="bullet-text">Fired parallel Exa neural search queries before each LLM call, grounding all responses in live web data.</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="section">
+    <div class="section-title">Education</div>
+
+    <div class="edu-item">
+      <div class="edu-header">
+        <span class="edu-title"><span class="edu-org">North Carolina State University</span> &mdash; Master of Science, Computer Science</span>
+        <span class="edu-year">May 2025</span>
+      </div>
+      <div class="edu-desc">GPA: 3.63/4.0 &nbsp;&middot;&nbsp; Raleigh, NC</div>
+    </div>
+
+    <div class="edu-item">
+      <div class="edu-header">
+        <span class="edu-title"><span class="edu-org">Pandit Deendayal Energy University</span> &mdash; B.Tech, Computer Engineering</span>
+        <span class="edu-year">May 2023</span>
+      </div>
+      <div class="edu-desc">GPA: 9.62/10 &nbsp;&middot;&nbsp; Gandhinagar, India</div>
+    </div>
+
+  </div>
+
+  <!-- SKILLS -->
+  <div class="section">
+    <div class="section-title">Skills</div>
+    <div class="skills-grid">
+      <div class="skill-item"><span class="skill-category">Languages:</span> Python, TypeScript, Java, JavaScript, SQL &nbsp;&middot;&nbsp; FastAPI, Node.js, React, Spring Boot, Django</div>
+      <div class="skill-item"><span class="skill-category">AI/ML:</span> LangChain, HuggingFace, FAISS, LLM pipelines, RAG &nbsp;&middot;&nbsp; Claude Code, Cursor, Gemini, GitHub Copilot</div>
+      <div class="skill-item"><span class="skill-category">Cloud &amp; Data:</span> GCP, AWS, Docker, Kubernetes, CI/CD &nbsp;&middot;&nbsp; PostgreSQL, MySQL, Redis, MongoDB, Git, Linux</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

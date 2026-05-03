@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shram Kadia — CV</title>
+<style>
+  @font-face {
+    font-family: 'Space Grotesk';
+    src: url('./fonts/space-grotesk-latin.woff2') format('woff2');
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'DM Sans';
+    src: url('./fonts/dm-sans-latin.woff2') format('woff2');
+    font-weight: 100 1000;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10.5px;
+    line-height: 1.4;
+    color: #1a1a2e;
+    background: #ffffff;
+    padding: 0.35in;
+    margin: 0;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 8.5in;
+    margin: 0 auto;
+  }
+
+  .header {
+    margin-bottom: 8px;
+  }
+
+  .header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a2e;
+    letter-spacing: -0.02em;
+    margin-bottom: 3px;
+    line-height: 1;
+  }
+
+  .header-gradient {
+    height: 2px;
+    background: linear-gradient(to right, hsl(187, 74%, 32%), hsl(270, 70%, 45%));
+    margin-bottom: 5px;
+  }
+
+  .contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    font-size: 9px;
+    color: #666;
+  }
+
+  .contact-row a {
+    color: hsl(187, 74%, 32%);
+    text-decoration: none;
+  }
+
+  .section {
+    margin-bottom: 7px;
+  }
+
+  .section-header {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: hsl(187, 74%, 32%);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 3px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 2px;
+  }
+
+  .competency-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .competency-tag {
+    background-color: #f0f8fa;
+    color: hsl(187, 74%, 32%);
+    padding: 3px 6px;
+    border-radius: 2px;
+    font-size: 9px;
+    font-weight: 600;
+    border: 1px solid hsl(187, 74%, 60%);
+  }
+
+  .job {
+    margin-bottom: 6px;
+  }
+
+  .job-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1px;
+  }
+
+  .job-meta {
+    flex: 1;
+  }
+
+  .job-company {
+    font-weight: 700;
+    color: hsl(270, 70%, 45%);
+    font-size: 10.5px;
+  }
+
+  .job-title {
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 10.5px;
+  }
+
+  .job-date {
+    color: #999;
+    font-size: 9px;
+    text-align: right;
+  }
+
+  .job-bullets {
+    margin-left: 12px;
+    margin-top: 2px;
+    list-style: none;
+  }
+
+  .job-bullets li {
+    margin-bottom: 2px;
+    color: #333;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .project {
+    margin-bottom: 5px;
+  }
+
+  .project-name {
+    font-weight: 600;
+    color: hsl(270, 70%, 45%);
+    font-size: 10px;
+    margin-bottom: 1px;
+  }
+
+  .project-desc {
+    color: #333;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .education {
+    margin-bottom: 3px;
+    font-size: 10px;
+  }
+
+  .school {
+    font-weight: 600;
+    color: #1a1a2e;
+  }
+
+  .degree {
+    color: #666;
+    font-size: 9.5px;
+  }
+
+  .skills-list {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 9.5px;
+  }
+
+  .skill-category {
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .skill-category-label {
+    font-weight: 600;
+    color: hsl(187, 74%, 32%);
+    margin-bottom: 1px;
+    font-size: 9.5px;
+  }
+
+  .skill-category-items {
+    color: #555;
+    font-size: 9px;
+  }
+
+  @media print {
+    body { padding: 0.35in; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Shram Kadia</h1>
+    <div class="header-gradient"></div>
+    <div class="contact-row">
+      <span>San Jose, CA</span>
+      <span>+1-919-332-6396</span>
+      <span><a href="mailto:kadiashram@gmail.com">kadiashram@gmail.com</a></span>
+      <span><a href="https://linkedin.com/in/shram-kadia">LinkedIn</a></span>
+      <span><a href="https://shram-kadia.vercel.app/">Portfolio</a></span>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SUMMARY -->
+  <div class="section">
+    <div class="section-header">Summary</div>
+    <p style="color: #333; font-size: 10px; line-height: 1.35;">Backend engineer shipping scalable, observable production systems end-to-end. Built 4 production systems from concept to deployment in 2–8 weeks with full observability. Expertise in microservices architecture, performance optimization, and observability-first discipline. Ready for Uber scale.</p>
+  </div>
+
+  <!-- CORE COMPETENCIES -->
+  <div class="section">
+    <div class="section-header">Core Competencies</div>
+    <div class="competency-tags">
+      <span class="competency-tag">Microservices</span>
+      <span class="competency-tag">Scalable Systems</span>
+      <span class="competency-tag">Distributed Systems</span>
+      <span class="competency-tag">Observability</span>
+      <span class="competency-tag">Performance Optimization</span>
+      <span class="competency-tag">Code Quality</span>
+      <span class="competency-tag">CI/CD</span>
+      <span class="competency-tag">End-to-End Ownership</span>
+    </div>
+  </div>
+
+  <!-- WORK EXPERIENCE -->
+  <div class="section">
+    <div class="section-header">Experience</div>
+
+    <div class="job">
+      <div class="job-header">
+        <div class="job-meta">
+          <div class="job-company">OpenPRA Org</div>
+          <div class="job-title">Software Engineer</div>
+        </div>
+        <div class="job-date">Aug 2025 – Present</div>
+      </div>
+      <ul class="job-bullets">
+        <li>Shipped probabilistic fault-tree generator end-to-end in 8 weeks: Python/TypeScript microservices, Docker CI/CD, 25+ unit tests with 100% coverage on safety-critical calculations.</li>
+        <li>Optimized XML processing pipeline with lazy-parse, cutting debugging cycles 40% and accelerating delivery through instrumented test loops.</li>
+      </ul>
+    </div>
+
+    <div class="job">
+      <div class="job-header">
+        <div class="job-meta">
+          <div class="job-company">NC State University</div>
+          <div class="job-title">Backend Engineer – Research Assistant</div>
+        </div>
+        <div class="job-date">Jul 2024 – Mar 2025</div>
+      </div>
+      <ul class="job-bullets">
+        <li>Built production RAG microservice (FastAPI on GCP) with distributed tracing, structured logging, drift monitoring. Found 30% bottleneck via telemetry, optimized with Redis cache → sub-200ms latency, +30% throughput.</li>
+        <li>Designed semantic chunking with HuggingFace embeddings: 85% extraction accuracy under concurrent load. Saved dept 30 hrs/week by eliminating 60% manual work.</li>
+      </ul>
+    </div>
+
+    <div class="job">
+      <div class="job-header">
+        <div class="job-meta">
+          <div class="job-company">Resilient Tech</div>
+          <div class="job-title">Software Engineer</div>
+        </div>
+        <div class="job-date">Jan 2023 – May 2023</div>
+      </div>
+      <ul class="job-bullets">
+        <li>Migrated ERP backend to RESTful Python APIs across 5 enterprise deployments. Architected PostgreSQL/MariaDB integrations: 99% uptime, 30% downtime reduction.</li>
+        <li>Resolved 100+ production tickets via end-to-end debugging. Lifted CSAT 12% through code modularization and preventive refactoring.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="section">
+    <div class="section-header">Projects</div>
+
+    <div class="project">
+      <div class="project-name">Restaurant Voice Hub</div>
+      <div class="project-desc">Agentic backend with 5 callable tools, real-time PostgreSQL sync (CSV knowledge-injection), multi-tenant architecture. MCP server with end-to-end request tracing. Zero redeployment for inventory updates.</div>
+    </div>
+
+    <div class="project">
+      <div class="project-name">ClinicFlow</div>
+      <div class="project-desc">Speech-to-structured-data pipeline (STT → LLM → TTS). Fault-tolerant JSON output with error codes. JSON-RPC 2.0 MCP server with 5 protocol tests. Docker + CI/CD for independent deployability.</div>
+    </div>
+  </div>
+
+  <!-- EDUCATION & SKILLS -->
+  <div class="section">
+    <div class="section-header">Education</div>
+    <div class="education">
+      <span class="school">NC State University</span> — M.S. Computer Science, GPA 3.63/4
+    </div>
+    <div class="education">
+      <span class="school">Pandit Deendayal Energy University</span> — B.Tech Computer Engineering, GPA 9.62/10
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">Technical Skills</div>
+    <div class="skills-list">
+      <div class="skill-category">
+        <div class="skill-category-label">Languages</div>
+        <div class="skill-category-items">Python, TypeScript, JavaScript, Java, SQL, C++</div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-category-label">Backend</div>
+        <div class="skill-category-items">FastAPI, Flask, Django, Node.js, Spring Boot, REST APIs</div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-category-label">Infrastructure</div>
+        <div class="skill-category-items">PostgreSQL, Redis, Docker, Kubernetes, AWS, GCP, CI/CD</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude plugin *)",
+      "Bash(node generate-pdf.mjs tmp/cv-shram-kadia-microsoft.html output/cv-shram-kadia-microsoft-2026-04-30.pdf --format=letter)",
+      "Bash(node scan.mjs --dry-run --days 30)",
+      "Bash(node scan.mjs --dry-run)"
+    ]
+  }
+}

@@ -1,0 +1,799 @@
+{
+  "nodes": [
+    {
+      "id": "ru_shared_shared_context",
+      "label": "Russian Shared Context (modes/ru/_shared.md)",
+      "file_type": "document",
+      "source_file": "modes/ru/_shared.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ru_shared_archetypes_universal",
+      "label": "Universal AI Role Archetypes (Russian)",
+      "file_type": "document",
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 38-48",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ru_shared_archetypes_russian_market",
+      "label": "Russian Market Archetypes",
+      "file_type": "document",
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 49-62",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ru_shared_scoring_system",
+      "label": "Russian Offer Scoring System (A-F blocks)",
+      "file_type": "document",
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 87-107",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ru_shared_russian_market_specifics",
+      "label": "Russian Market Specifics (compensation, employment law)",
+      "file_type": "document",
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 110-143",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ru_shared_employment_types",
+      "label": "Russian Employment Types (TK RF, GPKh, Samozanyatost, IP)",
+      "file_type": "document",
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 121-127",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ru_shared_ats_writing_rules",
+      "label": "ATS Writing Rules and Anti-Cliches (Russian)",
+      "file_type": "document",
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 194-218",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ru_shared_global_rules",
+      "label": "Global Rules NEVER/ALWAYS (Russian modes)",
+      "file_type": "document",
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 146-191",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cv_template_html_template",
+      "label": "CV HTML Template (cv-template.html)",
+      "file_type": "code",
+      "source_file": "templates/cv-template.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cv_template_html_fonts",
+      "label": "CV Template Fonts (Space Grotesk + DM Sans)",
+      "file_type": "code",
+      "source_file": "templates/cv-template.html",
+      "source_location": "lines 13-47",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cv_template_html_placeholders",
+      "label": "CV Template Placeholders ({{NAME}}, {{SUMMARY_TEXT}}, etc.)",
+      "file_type": "document",
+      "source_file": "templates/cv-template.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cv_template_html_layout",
+      "label": "CV Template ATS-Safe Single-Column Layout",
+      "file_type": "code",
+      "source_file": "templates/cv-template.html",
+      "source_location": "lines 60-180",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "portals_example_yml_config",
+      "label": "Portal Scanner Example Configuration (portals.example.yml)",
+      "file_type": "document",
+      "source_file": "templates/portals.example.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "portals_example_title_filter",
+      "label": "Portal Title Filter (positive/negative/seniority_boost keywords)",
+      "file_type": "document",
+      "source_file": "templates/portals.example.yml",
+      "source_location": "lines 23-100",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "portals_example_scan_strategy",
+      "label": "3-Level Scan Strategy (Playwright / Greenhouse API / WebSearch)",
+      "file_type": "document",
+      "source_file": "templates/portals.example.yml",
+      "source_location": "lines 1-12",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "templates_readme",
+      "label": "Templates README",
+      "file_type": "document",
+      "source_file": "templates/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "states_yml_canonical_states",
+      "label": "Canonical Application States (states.yml)",
+      "file_type": "document",
+      "source_file": "templates/states.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "states_yml_state_evaluated",
+      "label": "State: Evaluated",
+      "file_type": "document",
+      "source_file": "templates/states.yml",
+      "source_location": "lines 9-14",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "states_yml_state_applied",
+      "label": "State: Applied",
+      "file_type": "document",
+      "source_file": "templates/states.yml",
+      "source_location": "lines 16-21",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "states_yml_state_interview",
+      "label": "State: Interview",
+      "file_type": "document",
+      "source_file": "templates/states.yml",
+      "source_location": "lines 28-33",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "states_yml_state_offer",
+      "label": "State: Offer",
+      "file_type": "document",
+      "source_file": "templates/states.yml",
+      "source_location": "lines 35-39",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "states_yml_state_rejected",
+      "label": "State: Rejected",
+      "file_type": "document",
+      "source_file": "templates/states.yml",
+      "source_location": "lines 41-45",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "states_yml_state_discarded",
+      "label": "State: Discarded",
+      "file_type": "document",
+      "source_file": "templates/states.yml",
+      "source_location": "lines 47-52",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "states_yml_state_skip",
+      "label": "State: SKIP",
+      "file_type": "document",
+      "source_file": "templates/states.yml",
+      "source_location": "lines 54-58",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tmp_cv_microsoft_html",
+      "label": "Generated CV HTML — Shram Kadia (Microsoft)",
+      "file_type": "code",
+      "source_file": "tmp/cv-shram-kadia-microsoft.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Shram Kadia",
+      "contributor": null
+    },
+    {
+      "id": "tmp_cv_new_html",
+      "label": "Generated CV HTML — Shram Kadia (new/generic)",
+      "file_type": "code",
+      "source_file": "tmp/cv-shram-kadia-new.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Shram Kadia",
+      "contributor": null
+    },
+    {
+      "id": "docs_hero_banner",
+      "label": "Hero Banner Image (You got the job. And it didn't cost you a thing.)",
+      "file_type": "image",
+      "source_file": "docs/hero-banner.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_og_image",
+      "label": "Open Graph Image (og-image.jpg) — same design as hero banner",
+      "file_type": "image",
+      "source_file": "docs/og-image.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_roadmap_phases",
+      "label": "Roadmap Phases Diagram (NOW / NEXT / LATER)",
+      "file_type": "image",
+      "source_file": "docs/roadmap-phases.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_vision_banner",
+      "label": "Vision Banner Image (Free for everyone — diverse people walking through open door)",
+      "file_type": "image",
+      "source_file": "docs/vision-banner.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_demo_gif",
+      "label": "Demo GIF (animated product walkthrough)",
+      "file_type": "image",
+      "source_file": "docs/demo.gif",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "roadmap_phase_now",
+      "label": "Roadmap Phase: NOW — Community and Foundation",
+      "file_type": "image",
+      "source_file": "docs/roadmap-phases.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "roadmap_phase_next",
+      "label": "Roadmap Phase: NEXT — Free Local AI",
+      "file_type": "image",
+      "source_file": "docs/roadmap-phases.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "roadmap_phase_later",
+      "label": "Roadmap Phase: LATER — Desktop App for Everyone",
+      "file_type": "image",
+      "source_file": "docs/roadmap-phases.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "ru_shared_shared_context",
+      "target": "ru_shared_archetypes_universal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 38-48",
+      "weight": 1.0
+    },
+    {
+      "source": "ru_shared_shared_context",
+      "target": "ru_shared_archetypes_russian_market",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 49-62",
+      "weight": 1.0
+    },
+    {
+      "source": "ru_shared_shared_context",
+      "target": "ru_shared_scoring_system",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 87-107",
+      "weight": 1.0
+    },
+    {
+      "source": "ru_shared_shared_context",
+      "target": "ru_shared_russian_market_specifics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 110-143",
+      "weight": 1.0
+    },
+    {
+      "source": "ru_shared_russian_market_specifics",
+      "target": "ru_shared_employment_types",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 121-127",
+      "weight": 1.0
+    },
+    {
+      "source": "ru_shared_shared_context",
+      "target": "ru_shared_global_rules",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 146-191",
+      "weight": 1.0
+    },
+    {
+      "source": "ru_shared_shared_context",
+      "target": "ru_shared_ats_writing_rules",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 194-218",
+      "weight": 1.0
+    },
+    {
+      "source": "ru_shared_global_rules",
+      "target": "cv_template_html_template",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "line 185 (Read cv-template.html)",
+      "weight": 1.0
+    },
+    {
+      "source": "cv_template_html_template",
+      "target": "cv_template_html_fonts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/cv-template.html",
+      "source_location": "lines 13-47",
+      "weight": 1.0
+    },
+    {
+      "source": "cv_template_html_template",
+      "target": "cv_template_html_placeholders",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/cv-template.html",
+      "source_location": "lines 1-10",
+      "weight": 1.0
+    },
+    {
+      "source": "cv_template_html_template",
+      "target": "cv_template_html_layout",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/cv-template.html",
+      "source_location": "lines 60-180",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_readme",
+      "target": "cv_template_html_template",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/README.md",
+      "source_location": "lines 8-14",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_readme",
+      "target": "portals_example_yml_config",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/README.md",
+      "source_location": "lines 11-12",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_readme",
+      "target": "states_yml_canonical_states",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/README.md",
+      "source_location": "lines 12-13",
+      "weight": 1.0
+    },
+    {
+      "source": "portals_example_yml_config",
+      "target": "portals_example_title_filter",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/portals.example.yml",
+      "source_location": "lines 23-100",
+      "weight": 1.0
+    },
+    {
+      "source": "portals_example_yml_config",
+      "target": "portals_example_scan_strategy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/portals.example.yml",
+      "source_location": "lines 1-12",
+      "weight": 1.0
+    },
+    {
+      "source": "states_yml_canonical_states",
+      "target": "states_yml_state_evaluated",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/states.yml",
+      "source_location": "lines 9-14",
+      "weight": 1.0
+    },
+    {
+      "source": "states_yml_canonical_states",
+      "target": "states_yml_state_applied",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/states.yml",
+      "source_location": "lines 16-21",
+      "weight": 1.0
+    },
+    {
+      "source": "states_yml_canonical_states",
+      "target": "states_yml_state_interview",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/states.yml",
+      "source_location": "lines 28-33",
+      "weight": 1.0
+    },
+    {
+      "source": "states_yml_canonical_states",
+      "target": "states_yml_state_offer",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/states.yml",
+      "source_location": "lines 35-39",
+      "weight": 1.0
+    },
+    {
+      "source": "states_yml_canonical_states",
+      "target": "states_yml_state_rejected",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/states.yml",
+      "source_location": "lines 41-45",
+      "weight": 1.0
+    },
+    {
+      "source": "states_yml_canonical_states",
+      "target": "states_yml_state_discarded",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/states.yml",
+      "source_location": "lines 47-52",
+      "weight": 1.0
+    },
+    {
+      "source": "states_yml_canonical_states",
+      "target": "states_yml_state_skip",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/states.yml",
+      "source_location": "lines 54-58",
+      "weight": 1.0
+    },
+    {
+      "source": "tmp_cv_microsoft_html",
+      "target": "cv_template_html_template",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tmp/cv-shram-kadia-microsoft.html",
+      "source_location": "lines 1-60 (same Space Grotesk + DM Sans font structure, company-specific output)",
+      "weight": 1.0
+    },
+    {
+      "source": "tmp_cv_new_html",
+      "target": "cv_template_html_template",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tmp/cv-shram-kadia-new.html",
+      "source_location": "lines 1-60 (same Space Grotesk + DM Sans font structure)",
+      "weight": 1.0
+    },
+    {
+      "source": "tmp_cv_microsoft_html",
+      "target": "cv_template_html_fonts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tmp/cv-shram-kadia-microsoft.html",
+      "source_location": "lines 13-47",
+      "weight": 1.0
+    },
+    {
+      "source": "tmp_cv_new_html",
+      "target": "cv_template_html_fonts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tmp/cv-shram-kadia-new.html",
+      "source_location": "lines 8-42",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_hero_banner",
+      "target": "docs_og_image",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/hero-banner.jpg",
+      "source_location": null,
+      "weight": 0.95
+    },
+    {
+      "source": "docs_roadmap_phases",
+      "target": "roadmap_phase_now",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/roadmap-phases.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_roadmap_phases",
+      "target": "roadmap_phase_next",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/roadmap-phases.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_roadmap_phases",
+      "target": "roadmap_phase_later",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/roadmap-phases.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_vision_banner",
+      "target": "roadmap_phase_later",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/vision-banner.jpg",
+      "source_location": null,
+      "weight": 0.75
+    },
+    {
+      "source": "ru_shared_scoring_system",
+      "target": "ru_shared_archetypes_universal",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "modes/ru/_shared.md",
+      "source_location": "lines 74-84 (adaptive framing table maps archetypes to scoring emphasis)",
+      "weight": 0.8
+    },
+    {
+      "source": "ru_shared_shared_context",
+      "target": "ru_shared_archetypes_universal",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "modes/ru/_shared.md",
+      "source_location": null,
+      "weight": 0.85
+    },
+    {
+      "source": "portals_example_scan_strategy",
+      "target": "portals_example_title_filter",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "templates/portals.example.yml",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "cv_template_html_layout",
+      "target": "ru_shared_ats_writing_rules",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "templates/cv-template.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "tmp_cv_microsoft_html",
+      "target": "tmp_cv_new_html",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "tmp/cv-shram-kadia-microsoft.html",
+      "source_location": null,
+      "weight": 0.9
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "cv_generation_pipeline",
+      "label": "CV Generation Pipeline — Template + Generated HTML + User Identity",
+      "nodes": [
+        "cv_template_html_template",
+        "tmp_cv_microsoft_html",
+        "tmp_cv_new_html"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "templates/cv-template.html"
+    },
+    {
+      "id": "pipeline_state_machine",
+      "label": "Application Pipeline State Machine — canonical states governing tracker lifecycle",
+      "nodes": [
+        "states_yml_canonical_states",
+        "states_yml_state_evaluated",
+        "states_yml_state_applied",
+        "states_yml_state_interview",
+        "states_yml_state_offer",
+        "states_yml_state_rejected",
+        "states_yml_state_discarded",
+        "states_yml_state_skip"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/states.yml"
+    },
+    {
+      "id": "docs_marketing_assets",
+      "label": "Documentation Marketing Assets — hero, og-image, vision, roadmap",
+      "nodes": [
+        "docs_hero_banner",
+        "docs_og_image",
+        "docs_vision_banner",
+        "docs_roadmap_phases"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/hero-banner.jpg"
+    }
+  ],
+  "input_tokens": 4800,
+  "output_tokens": 1800
+}
