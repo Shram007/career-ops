@@ -285,6 +285,8 @@ If PDF generated in step 14 has **more than 1 page**, remove entire "Core Compet
 | `{{EMAIL}}` | (from profile.yml) |
 | `{{LINKEDIN_URL}}` | (from profile.yml) |
 | `{{LINKEDIN_DISPLAY}}` | (from profile.yml) |
+| `{{GITHUB_URL}}` | (from profile.yml) |
+| `{{GITHUB_DISPLAY}}` | (from profile.yml) |
 | `{{PORTFOLIO_URL}}` | (from profile.yml) |
 | `{{PORTFOLIO_DISPLAY}}` | (from profile.yml) |
 | `{{LOCATION}}` | (from profile.yml) |

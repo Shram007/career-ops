@@ -74,8 +74,10 @@ Use the template in `cv-template.html`. Replace `{{...}}` placeholders with pers
 | `{{EMAIL}}` | (from profile.yml) |
 | `{{LINKEDIN_URL}}` | [from profile.yml] |
 | `{{LINKEDIN_DISPLAY}}` | [from profile.yml] |
-| `{{PORTFOLIO_URL}}` | [from profile.yml] (or /es per language) |
-| `{{PORTFOLIO_DISPLAY}}` | [from profile.yml] (or /es per language) |
+| `{{GITHUB_URL}}` | [from profile.yml] |
+| `{{GITHUB_DISPLAY}}` | [from profile.yml] |
+| `{{PORTFOLIO_URL}}` | [from profile.yml] |
+| `{{PORTFOLIO_DISPLAY}}` | [from profile.yml] |
 | `{{LOCATION}}` | [from profile.yml] |
 | `{{SECTION_SUMMARY}}` | Professional Summary / Resumen Profesional |
 | `{{SUMMARY_TEXT}}` | Personalized summary with keywords |
