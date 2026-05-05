@@ -223,10 +223,15 @@ Where `{company-slug}` is company name in lowercase, no spaces, with hyphens.
 3. Detect JD language → CV language (EN default)
 4. Detect company location → paper format: US/Canada → `letter`, rest → `a4`
 5. Detect archetype → adapt framing
-6. Rewrite Professional Summary injecting keywords
+6. Rewrite Professional Summary:
+   - **Start with WHO YOU ARE**, not technologies: "Backend engineer building [archetype domain]..." or "Full-stack builder shipping [type of systems]..."
+   - **NEVER include**: visa status, sponsorship details, full tech stacks, employment classifications
+   - **DO include**: your core craft, what you ship, outcomes you drive (speed, scale, reliability, cost)
+   - **Pattern**: "[Role/Craft]. [What systems you build]. [How you work / your superpower]. [2-3 concrete proof points with numbers]."
+   - Inject top 5 JD keywords naturally (don't force; only if truthful)
 7. Select top 3-4 most relevant projects
 8. Reorder experience bullets by JD relevance
-9. Build competency grid (6-8 keyword phrases)
+9. Build competency grid (4-5 keyword phrases max, must fit in 1 line)
 10. Inject keywords into existing achievements (**NEVER invents**)
 11. Generate full HTML from template (read `templates/cv-template.html`)
 12. Write HTML to `/tmp/cv-candidate-{company-slug}.html`
@@ -293,23 +298,23 @@ If PDF generated in step 14 has **more than 1 page**, remove entire "Core Compet
 | `{{LINKEDIN_DISPLAY}}` | (from profile.yml) |
 | `{{GITHUB_URL}}` | (from profile.yml) |
 | `{{GITHUB_DISPLAY}}` | (from profile.yml) |
-| `{{PORTFOLIO_URL}}` | (from profile.yml) |
-| `{{PORTFOLIO_DISPLAY}}` | (from profile.yml) |
+| `{{PORTFOLIO_URL}}` | (from profile.yml — MUST populate if portfolio_url exists; if empty, leave as-is so template skips it gracefully) |
+| `{{PORTFOLIO_DISPLAY}}` | (from profile.yml, typically domain name e.g. "Portfolio" or "shram-kadia.vercel.app") |
 | `{{LOCATION}}` | (from profile.yml) |
 | `{{SECTION_SUMMARY}}` | Professional Summary / Resumen Profesional |
 | `{{SUMMARY_TEXT}}` | Personalized summary with keywords |
 | `{{SECTION_COMPETENCIES}}` | Core Competencies / Competencias Core |
-| `{{COMPETENCIES}}` | `<span class="competency-tag">keyword</span>` × 6-8 |
+| `{{COMPETENCIES}}` | 4-5 items max: `<span class="competency-tag">keyword1</span> <span class="competency-tag">keyword2</span>...` (MUST fit on 1 line, no wrapping) |
 | `{{SECTION_EXPERIENCE}}` | Work Experience / Experiencia Laboral |
-| `{{EXPERIENCE}}` | HTML of each job with reordered bullets |
+| `{{EXPERIENCE}}` | HTML of each job with reordered bullets (use `<ul>` with `<li>` for each bullet) |
 | `{{SECTION_PROJECTS}}` | Projects / Proyectos |
-| `{{PROJECTS}}` | HTML of top 3-4 projects |
+| `{{PROJECTS}}` | HTML of top 3-4 projects: `<div class="project"><div class="project-title">title</div><ul><li>impact bullet</li><li>impact bullet</li></ul><div class="project-tech">Stack: ...</div></div>` (each project MUST have `<ul>` with 2-3 `<li>` bullets, each fitting 1 line max) |
 | `{{SECTION_EDUCATION}}` | Education / Formación |
 | `{{EDUCATION}}` | HTML of education |
 | `{{SECTION_CERTIFICATIONS}}` | Certifications / Certificaciones |
 | `{{CERTIFICATIONS}}` | HTML of certifications |
 | `{{SECTION_SKILLS}}` | Skills / Competencias |
-| `{{SKILLS}}` | HTML of skills |
+| `{{SKILLS}}` | Max 3-4 skill groups, each fitting 1 line: `<div><span class="skill-category">Category:</span> skill1, skill2, skill3</div>` repeated. **CRITICAL:** measure text length per group; if category + skills > ~85 chars (typical 1-line width at 10.5px font), split to new group. No group wraps to 2 lines. |
 
 ### Step 5 — Tracker Line
 

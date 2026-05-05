@@ -10,7 +10,13 @@
    - US/Canada → `letter`
    - Rest of world → `a4`
 6. Detects role archetype → adapts framing
-7. Rewrites Professional Summary injecting JD keywords + exit narrative bridge ("Built and sold a business. Now applying systems thinking to [JD domain].")
+7. Rewrites Professional Summary:
+   - **Start with WHO YOU ARE**, not technologies: "Backend engineer building [archetype domain]..." or "Full-stack builder shipping [type of systems]..."
+   - **NEVER include**: visa status, sponsorship details, full tech stacks, employment classifications
+   - **DO include**: your core craft, what you ship, outcomes you drive (speed, scale, reliability, cost)
+   - **Pattern**: "[Role/Craft]. [What systems you build]. [How you work / your superpower]. [2-3 concrete proof points with numbers]."
+   - Example: "Backend engineer building discovery systems at scale. Design for relevance and latency. Own full lifecycle architecture→deployment, shipping concept to production in 2-8 weeks. 30% throughput gain via data-driven debugging, hours→seconds data sync, 100% test coverage."
+   - Inject top 5 JD keywords naturally into this narrative (DON'T force them; only if they fit your truthful story)
 8. Selects top 3-4 most relevant projects for the offer
 9. Reorders experience bullets by JD relevance
 10. Builds competency grid from JD requirements (6-8 keyword phrases)
@@ -98,27 +104,27 @@ Use the template in `cv-template.html`. Replace `{{...}}` placeholders with pers
 | `{{NAME}}` | (from profile.yml) |
 | `{{PHONE}}` | (from profile.yml — include with its separator only when `profile.yml` has a non-empty `phone` value; omit both `<span>` and `<span class="separator">` otherwise) |
 | `{{EMAIL}}` | (from profile.yml) |
-| `{{LINKEDIN_URL}}` | [from profile.yml] |
-| `{{LINKEDIN_DISPLAY}}` | [from profile.yml] |
-| `{{GITHUB_URL}}` | [from profile.yml] |
-| `{{GITHUB_DISPLAY}}` | [from profile.yml] |
-| `{{PORTFOLIO_URL}}` | [from profile.yml] |
-| `{{PORTFOLIO_DISPLAY}}` | [from profile.yml] |
-| `{{LOCATION}}` | [from profile.yml] |
+| `{{LINKEDIN_URL}}` | (from profile.yml) |
+| `{{LINKEDIN_DISPLAY}}` | (from profile.yml) |
+| `{{GITHUB_URL}}` | (from profile.yml) |
+| `{{GITHUB_DISPLAY}}` | (from profile.yml) |
+| `{{PORTFOLIO_URL}}` | (from profile.yml — MUST populate if portfolio_url exists; if empty, leave as-is so template skips it gracefully) |
+| `{{PORTFOLIO_DISPLAY}}` | (from profile.yml, typically domain name e.g. "Portfolio" or "shram-kadia.vercel.app") |
+| `{{LOCATION}}` | (from profile.yml) |
 | `{{SECTION_SUMMARY}}` | Professional Summary / Resumen Profesional |
 | `{{SUMMARY_TEXT}}` | Personalized summary with keywords |
 | `{{SECTION_COMPETENCIES}}` | Core Competencies / Competencias Core |
-| `{{COMPETENCIES}}` | `<span class="competency-tag">keyword</span>` × 6-8 |
+| `{{COMPETENCIES}}` | 4-5 items max: `<span class="competency-tag">keyword1</span> <span class="competency-tag">keyword2</span>...` (MUST fit on 1 line, no wrapping) |
 | `{{SECTION_EXPERIENCE}}` | Work Experience / Experiencia Laboral |
 | `{{EXPERIENCE}}` | HTML of each job with reordered bullets |
 | `{{SECTION_PROJECTS}}` | Projects / Proyectos |
-| `{{PROJECTS}}` | HTML of top 3-4 projects |
+| `{{PROJECTS}}` | HTML of top 3-4 projects with bullets: `<div class="project"><div class="project-title">title</div><ul><li>impact bullet</li><li>impact bullet</li></ul><div class="project-tech">Stack: ...</div></div>` (each project MUST have `<ul>` with 2-3 `<li>` bullets, each 1 line max) |
 | `{{SECTION_EDUCATION}}` | Education / Formación |
 | `{{EDUCATION}}` | HTML of education |
 | `{{SECTION_CERTIFICATIONS}}` | Certifications / Certificaciones |
 | `{{CERTIFICATIONS}}` | HTML of certifications |
 | `{{SECTION_SKILLS}}` | Skills / Competencias |
-| `{{SKILLS}}` | HTML of skills |
+| `{{SKILLS}}` | Max 3-4 skill groups, each fitting 1 line: `<div><span class="skill-category">Category:</span> skill1, skill2, skill3</div>` repeated. **CRITICAL:** measure text length per group; if category + skills > ~85 chars, split to new group. No group wraps to 2 lines. |
 
 ## Canva CV Generation (optional)
 
