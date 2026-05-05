@@ -277,8 +277,9 @@ If PDF generated in step 14 has **more than 1 page**, remove entire "Core Compet
 
 **Formatting rules for tight 1-page layout:**
 - **Bullet points:** max 1 line per bullet — if exceeds by a couple words, rewrite to fit 1 line. Avoid orphan words breaking to new line.
+- **Core Competencies:** exactly 4-5 keyword phrases maximum (down from 6-8). Must fit EXACTLY 1 LINE. Select only critical JD-matched terms; delegate other skills to Skills section. Why: reduces section height by ~40%, gives body content room, prevents autoscale from aggressive zoom.
 - **Projects section:** 2-3 bullets per project max. Each bullet must fit 1 line.
-- **Skills section:** max 3-4 skill groups, each must fit 1 line. Format: "Category: skill1, skill2, skill3". If group exceeds 1 line, split into 2 groups or remove lower-priority skills.
+- **Skills section:** max 3-4 skill groups, each must fit EXACTLY 1 LINE. Format: "Category: skill1, skill2, skill3". If group exceeds 1 line, split into 2 groups or remove lower-priority skills. Why: keeps resume height tight; combined with compact competencies, body content fits at 100% scale.
 
 **Template placeholders (in cv-template.html):**
 

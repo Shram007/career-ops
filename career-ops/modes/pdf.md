@@ -46,11 +46,11 @@
 
 1. Header (large name, gradient, contact, portfolio link)
 2. Professional Summary (3-4 lines, keyword-dense)
-3. Core Competencies (6-8 keyword phrases in flex-grid)
+3. Core Competencies (4-5 keyword phrases in EXACTLY 1 LINE)
 4. Work Experience (reverse chronological)
 5. Projects (top 3-4 most relevant)
 6. Education & Certifications
-7. Skills (languages + technical)
+7. Skills (3-4 groups, each fitting EXACTLY 1 LINE)
 
 ## Keyword Injection Strategy (Ethical, Truth-based)
 
@@ -73,11 +73,19 @@ Examples of legitimate rewording:
 - Each project: 1 title line + 2-3 bullet points describing impact
 - Bullets must fit 1 line (apply orphan rule)
 
+### Core Competencies Section
+- **Total competencies:** exactly 4-5 keyword phrases maximum (down from 6-8)
+- **Must fit EXACTLY 1 LINE** — no wrapping to second line
+- Format: `<span class="competency-tag">keyword1</span> <span class="competency-tag">keyword2</span> ...`
+- Select only the most critical JD-matched terms; delegate other skills to Skills section
+- **Why:** Reduces section height by ~40%, gives body content breathing room, prevents autoscale algorithm from needing aggressive zoom
+
 ### Skills Section
 - **Total skill groups:** max 3-4 groups
-- **Each group must fit 1 line** — no wrapping to second line
+- **Each group must fit EXACTLY 1 LINE** — no wrapping to second line
 - Format: "Category: skill1, skill2, skill3"
 - If a group exceeds 1 line, split into 2 groups or remove lower-priority skills
+- **Why:** Keeps resume height tight; combined with compact competencies, body content has room to breathe at 100% scale
 
 ## HTML Template
 

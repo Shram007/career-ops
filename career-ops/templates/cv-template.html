@@ -52,6 +52,10 @@
     print-color-adjust: exact;
   }
 
+  @page {
+    margin: 0.05in;
+  }
+
   body {
     font-family: 'DM Sans', sans-serif;
     font-size: 11px;
@@ -66,12 +70,13 @@
     width: 100%;
     max-width: {{PAGE_WIDTH}};
     margin: 0 auto;
-    padding: 2px 0;
+    padding: 0;
   }
 
   /* === HEADER === */
   .header {
-    margin-bottom: 14px;
+    margin-bottom: 8px;
+    padding-top: 2px;
   }
 
   .header h1 {
@@ -113,7 +118,7 @@
 
   /* === SECTIONS === */
   .section {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .section-title {
@@ -124,8 +129,8 @@
     letter-spacing: 0.06em;
     color: hsl(187, 74%, 32%);
     border-bottom: 1.5px solid #e2e2e2;
-    padding-bottom: 4px;
-    margin-bottom: 7px;
+    padding-bottom: 3px;
+    margin-bottom: 5px;
     line-height: 1.2;
   }
 
@@ -161,7 +166,7 @@
 
   /* === WORK EXPERIENCE === */
   .job {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .job-header {
@@ -218,7 +223,7 @@
 
   /* === PROJECTS === */
   .project {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .project-title {
@@ -249,6 +254,21 @@
     font-size: 9.5px;
     color: #888;
     margin-top: 3px;
+  }
+
+  .project ul {
+    padding-left: 20px;
+    margin: 4px 0 0 0;
+    list-style: disc;
+  }
+
+  .project li {
+    font-size: 10.5px;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 3px;
+    margin-left: 0;
+    display: list-item;
   }
 
   /* === EDUCATION === */
