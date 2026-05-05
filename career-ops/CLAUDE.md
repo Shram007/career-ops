@@ -265,6 +265,7 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 - `cv.md` in project root is the canonical CV
 - `article-digest.md` has detailed proof points (optional)
 - **NEVER hardcode metrics** -- read them from these files at evaluation time
+- **Work experience in generated PDFs MUST be reverse chronological (most recent first).** Sort by end date descending, never by JD relevance. This is ATS standard and matches recruiter expectations. Reordering bullets *within* a job by relevance is fine; reordering jobs themselves is not.
 
 ---
 

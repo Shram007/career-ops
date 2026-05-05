@@ -229,8 +229,8 @@ Where `{company-slug}` is company name in lowercase, no spaces, with hyphens.
    - **DO include**: your core craft, what you ship, outcomes you drive (speed, scale, reliability, cost)
    - **Pattern**: "[Role/Craft]. [What systems you build]. [How you work / your superpower]. [2-3 concrete proof points with numbers]."
    - Inject top 5 JD keywords naturally (don't force; only if truthful)
-7. Select top 3-4 most relevant projects
-8. Reorder experience bullets by JD relevance
+7. **Order Work Experience: reverse chronological (most recent first)** — Sort by date descending, never by JD relevance
+8. Reorder experience bullets within each role by JD relevance (optional; preserve job order)
 9. Build competency grid (4-5 keyword phrases max, must fit in 1 line)
 10. Inject keywords into existing achievements (**NEVER invents**)
 11. Generate full HTML from template (read `templates/cv-template.html`)

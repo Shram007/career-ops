@@ -17,8 +17,8 @@
    - **Pattern**: "[Role/Craft]. [What systems you build]. [How you work / your superpower]. [2-3 concrete proof points with numbers]."
    - Example: "Backend engineer building discovery systems at scale. Design for relevance and latency. Own full lifecycle architecture→deployment, shipping concept to production in 2-8 weeks. 30% throughput gain via data-driven debugging, hours→seconds data sync, 100% test coverage."
    - Inject top 5 JD keywords naturally into this narrative (DON'T force them; only if they fit your truthful story)
-8. Selects top 3-4 most relevant projects for the offer
-9. Reorders experience bullets by JD relevance
+8. **Orders Work Experience: reverse chronological (most recent first)** — Ignore JD relevance; dates drive order
+9. Reorders experience bullets within each role by JD relevance (optional; preserve role structure)
 10. Builds competency grid from JD requirements (6-8 keyword phrases)
 11. Injects keywords naturally into existing achievements (NEVER invents)
 12. Generates full HTML from template + personalized content
@@ -53,10 +53,12 @@
 1. Header (large name, gradient, contact, portfolio link)
 2. Professional Summary (3-4 lines, keyword-dense)
 3. Core Competencies (4-5 keyword phrases in EXACTLY 1 LINE)
-4. Work Experience (reverse chronological)
+4. **Work Experience (reverse chronological—most recent first, always)**
 5. Projects (top 3-4 most relevant)
 6. Education & Certifications
 7. Skills (3-4 groups, each fitting EXACTLY 1 LINE)
+
+**Work Experience order is NEVER influenced by JD relevance.** Sort by date descending (newest at top). This is ATS standard and matches recruiter expectations.
 
 ## Keyword Injection Strategy (Ethical, Truth-based)
 

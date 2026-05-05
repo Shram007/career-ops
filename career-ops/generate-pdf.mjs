@@ -146,7 +146,7 @@ async function generatePDF() {
     // Wait for fonts to load
     await page.evaluate(() => document.fonts.ready);
 
-    // Autoscale: aggressive 1-page fit with iterative scaling
+    // Autoscale: dynamic fill to eliminate bottom whitespace
     const scaleInfo = await page.evaluate(async () => {
       const body = document.body;
       const container = document.documentElement;
@@ -157,70 +157,90 @@ async function generatePDF() {
       const LETTER_HEIGHT_PX = 1056;
       const MARGIN_PX = Math.round(0.2 * 96); // 0.2in in pixels
       const USABLE_HEIGHT = LETTER_HEIGHT_PX - (2 * MARGIN_PX);
+      const MAX_SCALE = 1.05; // Cap at 1.05x to avoid text too large
+      const WHITESPACE_THRESHOLD = 30; // Significant whitespace = >30px
 
       const initialHeight = body.offsetHeight;
 
-      // If fits naturally, no scale
-      if (initialHeight <= USABLE_HEIGHT) {
+      // Check if content overflows
+      if (initialHeight > USABLE_HEIGHT) {
+        // Binary search: scale down to fit on 1 page
+        let scaleMin = 0.6;
+        let scaleMax = 1.0;
+        let bestScale = 1.0;
+        let iterations = 0;
+        const maxIterations = 10;
+
+        while (iterations < maxIterations && scaleMax - scaleMin > 0.01) {
+          iterations++;
+          const testScale = (scaleMin + scaleMax) / 2;
+
+          body.style.transform = `scale(${testScale})`;
+          body.style.transformOrigin = 'top left';
+          body.style.width = `${100 / testScale}%`;
+
+          const testHeight = body.offsetHeight / testScale;
+
+          if (testHeight <= USABLE_HEIGHT) {
+            bestScale = testScale;
+            scaleMin = testScale;
+          } else {
+            scaleMax = testScale;
+          }
+        }
+
+        bestScale = Math.max(0.6, bestScale * 0.99); // 1% safety margin
+        body.style.transform = `scale(${bestScale})`;
+        body.style.transformOrigin = 'top left';
+        body.style.width = `${100 / bestScale}%`;
+
+        const finalHeight = body.offsetHeight / bestScale;
         return {
-          scale: 1,
-          overflow: false,
+          scale: bestScale,
+          overflow: true,
+          scaled: true,
           originalHeight: initialHeight,
-          method: 'no scale needed',
+          finalHeight: finalHeight,
+          iterations: iterations,
+          method: 'binary search → fit 1 page',
+          usableHeight: USABLE_HEIGHT,
         };
       }
 
-      // Iterative binary search for minimum scale to fit 1 page
-      let scaleMin = 0.6;
-      let scaleMax = 1.0;
+      // Content fits naturally. Check for significant whitespace
+      const remainingSpace = USABLE_HEIGHT - initialHeight;
       let bestScale = 1.0;
-      let iterations = 0;
-      const maxIterations = 10;
 
-      while (iterations < maxIterations && scaleMax - scaleMin > 0.01) {
-        iterations++;
-        const testScale = (scaleMin + scaleMax) / 2;
-
-        // Apply test scale
-        body.style.transform = `scale(${testScale})`;
-        body.style.transformOrigin = 'top left';
-        body.style.width = `${100 / testScale}%`;
-
-        // Force layout reflow to get accurate height
-        const testHeight = body.offsetHeight / testScale;
-
-        if (testHeight <= USABLE_HEIGHT) {
-          // Fits! Try scaling up more
-          bestScale = testScale;
-          scaleMin = testScale;
-        } else {
-          // Doesn't fit, scale down
-          scaleMax = testScale;
-        }
+      if (remainingSpace > WHITESPACE_THRESHOLD) {
+        // Scale up to fill remaining whitespace
+        const scaleToFill = USABLE_HEIGHT / initialHeight;
+        bestScale = Math.min(scaleToFill * 0.98, MAX_SCALE); // 2% safety + 1.05x cap
       }
 
-      // Apply final best scale (add 2% safety margin)
-      bestScale = Math.max(0.6, bestScale * 0.98);
+      // Apply final scale
       body.style.transform = `scale(${bestScale})`;
       body.style.transformOrigin = 'top left';
       body.style.width = `${100 / bestScale}%`;
 
-      // Final measurement
-      const finalHeight = body.offsetHeight / bestScale;
+      // Calculate final rendered height: when scaling UP, height increases
+      const finalHeight = bestScale > 1 ? initialHeight * bestScale : initialHeight / bestScale;
+      const scaled = Math.abs(bestScale - 1.0) > 0.01;
 
       return {
         scale: bestScale,
-        overflow: initialHeight > USABLE_HEIGHT,
+        overflow: false,
+        scaled: scaled,
         originalHeight: initialHeight,
         finalHeight: finalHeight,
-        iterations: iterations,
-        method: 'binary search + 2% safety',
+        remainingSpace: remainingSpace,
+        method: 'dynamic fill → eliminate whitespace',
         usableHeight: USABLE_HEIGHT,
       };
     });
 
-    if (scaleInfo.overflow) {
-      console.log(`📏 Autoscale (1-page binary): ${(scaleInfo.scale * 100).toFixed(0)}% (${scaleInfo.originalHeight}px → ${Math.round(scaleInfo.finalHeight)}px, ${scaleInfo.iterations} iterations)`);
+    if (scaleInfo.scaled) {
+      const method = scaleInfo.overflow ? 'fit 1 page' : 'fill whitespace';
+      console.log(`📏 Autoscale (${method}): ${(scaleInfo.scale * 100).toFixed(0)}% (${scaleInfo.originalHeight}px → ${Math.round(scaleInfo.finalHeight)}px)`);
     } else {
       console.log(`✅ Single page fit: no scaling needed`);
     }
