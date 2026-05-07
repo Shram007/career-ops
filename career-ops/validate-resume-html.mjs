@@ -108,7 +108,8 @@ if (skillsSectionMatch) {
 // 3. PROJECTS SECTION VALIDATION
 // ─────────────────────────────────────────────────────────────
 
-const projectMatches = html.match(/<div class="project">[\s\S]*?<\/div>(?=\s*(?:<div class="project">|<div class="section">|$))/g) || [];
+// Match project divs: from opening <div class="project"> through closing </div> after </ul>
+const projectMatches = html.match(/<div class="project">[\s\S]*?<\/ul>\s*<\/div>/g) || [];
 
 projectMatches.forEach((projHtml, idx) => {
   // Handle both direct .project-title and nested .project-header wrapper
