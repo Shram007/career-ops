@@ -16,6 +16,8 @@ Agent(
 )
 ```
 
+**CRITICAL: ALL 3 LEVELS MUST EXECUTE.** Level 1 (Playwright) is mandatory. Do NOT skip any level or prioritize one over others. All levels are required.
+
 ## Configuration
 
 Read `portals.yml` which contains:
@@ -30,15 +32,23 @@ Read `portals.yml` which contains:
 
 ## Discovery Strategy (3 Levels)
 
-### Level 1 — Direct Playwright (PRIMARY)
+### Level 1 — Direct Playwright (PRIMARY — MANDATORY)
+
+**CRITICAL: Level 1 is MANDATORY. Must execute for all companies.** Do NOT skip even if time-consuming.
 
 **For each company in `tracked_companies`:** Navigate to its `careers_url` with Playwright (`browser_navigate` + `browser_snapshot`), read ALL visible job listings, and extract title + URL from each. This is the most reliable method because:
 - Sees the page in real-time (not cached Google results)
 - Works with SPAs (Ashby, Lever, Workday)
 - Detects new offers instantly
 - Doesn't depend on Google indexing
+- **Only source of truth for companies with custom careers sites**
 
 **Each company MUST have `careers_url` in portals.yml.** If it doesn't, find it once, save it, and use it in future scans.
+
+**Failure modes handled:**
+- If `careers_url` 404/timeout: use `scan_query` as fallback, but try Playwright first
+- If page is JS-heavy: Playwright waits for `networkidle` (content fully loaded)
+- If pagination: navigate all pages, extract all jobs
 
 ### Level 2 — ATS APIs / Feeds (COMPLEMENTARY)
 
@@ -64,12 +74,14 @@ For companies with public API or structured feed, use the JSON/XML response as a
 
 The `search_queries` with `site:` filters cover portals across the board (all Ashby, all Greenhouse, etc.). Useful for discovering NEW companies not yet in `tracked_companies`, but results may be outdated.
 
-**Execution priority:**
-1. Level 1: Playwright → all `tracked_companies` with `careers_url`
-2. Level 2: API → all `tracked_companies` with `api:`
-3. Level 3: WebSearch → all `search_queries` with `enabled: true`
+**Execution sequence (ALL THREE MUST RUN):**
+1. **Level 1 (MANDATORY)**: Playwright → all `tracked_companies` with `careers_url` → sequential or parallel batches
+2. **Level 2 (REQUIRED)**: API → all `tracked_companies` with `api:` → parallel to Level 1 or after Level 1
+3. **Level 3 (REQUIRED)**: WebSearch → all `search_queries` with `enabled: true` → parallel or after Levels 1+2
 
-Levels are additive — all execute, results are mixed and deduplicated.
+**Levels are NOT optional.** All three MUST execute. Results are mixed and deduplicated at step 6.
+
+**DO NOT SKIP LEVEL 1 UNDER ANY CIRCUMSTANCES.** If an agent says "Level 1 is heavy, skipping it" or "API results are sufficient, no need for Playwright", that is a violation of this spec. Force execution of all 3 levels.
 
 ## Workflow
 
@@ -77,17 +89,27 @@ Levels are additive — all execute, results are mixed and deduplicated.
 2. **Read history**: `data/scan-history.tsv` → URLs already seen
 3. **Read dedup sources**: `data/applications.md` + `data/pipeline.md`
 
-4. **Level 1 — Playwright scan** (parallel in batches of 3-5):
-   For each company in `tracked_companies` with `enabled: true` and `careers_url` defined:
+4. **STEP 4: Level 1 — Playwright scan (MANDATORY — EXECUTE FIRST)** (parallel in batches of 3-5):
+   
+   **This step MUST complete before proceeding to Level 2 or Level 3.**
+   
+   For EACH company in `tracked_companies` with `enabled: true` AND `careers_url` defined:
    a. `browser_navigate` to the `careers_url`
-   b. `browser_snapshot` to read all job listings
-   c. If the page has filters/departments, navigate relevant sections
-   d. For each job listing extract: `{title, url, company}`
-   e. If the page paginates results, navigate additional pages
-   f. Accumulate in candidate list
-   g. If `careers_url` fails (404, redirect), try `scan_query` as fallback and note for URL update
+   b. `browser_snapshot` to read ALL visible job listings (wait for networkidle)
+   c. If the page has filters/departments, navigate relevant sections (Engineering, AI/ML, etc.)
+   d. For each job listing extract: `{title, url, company, posted_date if available}`
+   e. If the page paginates results, navigate additional pages — extract from ALL pages
+   f. If pagination limit reached, note partial results and continue
+   g. Accumulate in candidate list
+   h. If `careers_url` fails (404, timeout, 403):
+      - Log the failure
+      - Attempt fallback: use `scan_query` from portals.yml if available
+      - Note URL issue for manual update
+   i. **Do NOT skip a company because Level 1 takes time.** Time cost is acceptable for comprehensive coverage.
+   j. **Report Level 1 results**: How many jobs extracted from each company, any failures
 
-5. **Level 2 — ATS APIs / feeds** (parallel):
+5. **STEP 5: Level 2 — ATS APIs / feeds (REQUIRED — execute after or parallel to Level 1)** (parallel):
+   
    For each company in `tracked_companies` with `api:` defined and `enabled: true`:
    a. WebFetch from the API/feed URL
    b. If `api_provider` is defined, use its parser; if not defined, infer by domain (`boards-api.greenhouse.io`, `jobs.ashbyhq.com`, `api.lever.co`, `*.bamboohr.com`, `*.teamtailor.com`, `*.myworkdayjobs.com`)
@@ -97,17 +119,18 @@ Levels are additive — all execute, results are mixed and deduplicated.
       - GraphQL query of `jobBoardWithTeams` + `jobPostings { id title locationName employmentType compensationTierSummary }`
    d. For **BambooHR**, the list only brings basic metadata. For each relevant item, read `id`, GET to `https://{company}.bamboohr.com/careers/{id}/detail`, and extract full JD from `result.jobOpening`. Use `jobOpeningShareUrl` as public URL if available; if not, use the detail URL.
    e. For **Workday**, send POST JSON with at least `{"appliedFacets":{},"limit":20,"offset":0,"searchText":""}` and paginate by `offset` until results exhausted
-   f. For each job extract and normalize: `{title, url, company}`
-   g. Accumulate in candidate list (dedup with Level 1)
+   f. For each job extract and normalize: `{title, url, company, posted_date}`
+   g. Accumulate in candidate list (dedup with Level 1 results)
 
-6. **Level 3 — WebSearch queries** (parallel if possible):
+6. **STEP 6: Level 3 — WebSearch queries (REQUIRED — execute after or parallel to Levels 1+2)**:
+   
    For each query in `search_queries` with `enabled: true`:
    a. Execute WebSearch with the defined `query`
    b. From each result extract: `{title, url, company}`
       - **title**: from result title (before " @ " or " | ")
       - **url**: result URL
       - **company**: after " @ " in title, or extract from domain/path
-   c. Accumulate in candidate list (dedup with Level 1+2)
+   c. Accumulate in candidate list (dedup with Level 1+2 results)
 
 6. **Filter by title** using `title_filter` from `portals.yml`:
    - At least 1 keyword from `positive` must appear in title (case-insensitive)
@@ -197,6 +220,26 @@ New added to pipeline.md: N
 ## Managing careers_url
 
 Each company in `tracked_companies` must have `careers_url` — the direct URL to its jobs page. This avoids looking it up each time.
+
+---
+
+## ENFORCEMENT: All 3 Levels Required
+
+**If you are an agent executing this mode:**
+
+1. **Do NOT skip Level 1.** Playwright careers page scraping is mandatory.
+2. **Do NOT prioritize Level 2 over Level 1.** APIs are complementary, not primary.
+3. **Do NOT skip Level 3.** WebSearch discovers new companies.
+4. **Do NOT claim "Level 1 is too heavy" or "APIs already covered everything."** All 3 levels are required.
+
+**Expected output from scan execution:**
+- Level 1 results: N jobs from M companies (Playwright)
+- Level 2 results: N jobs from M companies (APIs)
+- Level 3 results: N jobs from M companies (WebSearch)
+- Total: X new offers added to pipeline after filtering/dedup
+- Failed companies/queries: list with reason
+
+**If you execute a scan and only report Level 2 results, the scan is INCOMPLETE and should be re-run with all 3 levels.**
 
 **RULE: Always use the company's corporate URL; fall back to ATS endpoint only if no corporate page exists.**
 
