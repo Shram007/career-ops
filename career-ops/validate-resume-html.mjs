@@ -78,12 +78,12 @@ if (competencyCount > 0) {
 // 2. SKILLS SECTION VALIDATION
 // ─────────────────────────────────────────────────────────────
 
-// More robust: find Skills section, then all <div> children until next section
-const skillsSectionMatch = html.match(/<div class="section">\s*<div class="section-title">[^<]*Skill[^<]*<\/div>([\s\S]*?)(?=<div class="section">|$)/i);
+// More robust: find Skills section (handle class="section avoid-break" etc.), then all <div> children until next section
+const skillsSectionMatch = html.match(/<div class="section[^"]*">\s*<div class="section-title">[^<]*Skill[^<]*<\/div>([\s\S]*?)(?=<div class="section|$)/i);
 if (skillsSectionMatch) {
   const skillsContent = skillsSectionMatch[1];
-  // Extract direct child divs (skill groups), not nested ones
-  const skillGroupMatches = skillsContent.match(/<div><span class="skill-category">([^<]+)<\/span>([^<]*)<\/div>/g) || [];
+  // Extract direct child divs (skill groups), not nested ones — handle both <div> and <div class="skill-item">
+  const skillGroupMatches = skillsContent.match(/<div[^>]*><span class="skill-category">([^<]+)<\/span>([^<]*)<\/div>/g) || [];
   const skillGroups = skillGroupMatches.map(g => stripHtml(g).trim());
 
   if (skillGroups.length > 0) {
@@ -111,7 +111,11 @@ if (skillsSectionMatch) {
 const projectMatches = html.match(/<div class="project">[\s\S]*?<\/div>(?=\s*(?:<div class="project">|<div class="section">|$))/g) || [];
 
 projectMatches.forEach((projHtml, idx) => {
-  const titleMatch = projHtml.match(/<div class="project-title">([^<]+)<\/div>/);
+  // Handle both direct .project-title and nested .project-header wrapper
+  let titleMatch = projHtml.match(/<div class="project-title">([^<]+)<\/div>/);
+  if (!titleMatch) {
+    titleMatch = projHtml.match(/<div class="project-header">[\s\S]*?<div class="project-title">([^<]+)<\/div>/);
+  }
   const title = titleMatch ? titleMatch[1].trim() : 'NO TITLE';
 
   // Extract bullets from this project (proper format)
