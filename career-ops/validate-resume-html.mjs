@@ -172,10 +172,12 @@ if (projectMatches.length === 0) {
 // 4. WORK EXPERIENCE VALIDATION
 // ─────────────────────────────────────────────────────────────
 
-const jobMatches = html.match(/<div class="job">([\s\S]*?)<\/div>\s*(?=<div class="job">|<div class="section">|$)/g) || [];
+// Match job divs: from opening <div class="job"> through closing </div> after </ul>
+const jobMatches = html.match(/<div class="job">[\s\S]*?<\/ul>\s*<\/div>/g) || [];
 
 jobMatches.forEach((jobHtml, idx) => {
-  const bulletMatches = jobHtml.match(/<li>([^<]+)<\/li>/g) || [];
+  // Match <li>...content with nested tags...</li>
+  const bulletMatches = jobHtml.match(/<li>[\s\S]*?<\/li>/g) || [];
   bulletMatches.forEach((bulletHtml, bulletIdx) => {
     const text = bulletHtml.replace(/<[^>]*>/g, '').trim();
     if (text.length > 120) {
