@@ -45,37 +45,7 @@ function stripHtml(text) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 1. CORE COMPETENCIES VALIDATION
-// ─────────────────────────────────────────────────────────────
-
-// Match both <span> and <div> versions of competency tags
-const competencyMatches = html.match(/<(?:span|div) class="competency-tag">([^<]+)<\/(?:span|div)>/g) || [];
-const competencyTexts = html.match(/<(?:span|div) class="competency-tag">([^<]+)<\/(?:span|div)>/g)?.map(m => m.replace(/<[^>]*>/g, '')) || [];
-const competencyCount = competencyMatches.length;
-
-if (competencyCount > 0) {
-  if (competencyCount < 4 || competencyCount > 5) {
-    violations.push(`Core Competencies: ${competencyCount} tags found (expected 4-5)`);
-  }
-
-  // Measure actual width: each tag padding 4px+10px = 20px, font 10px = ~8px per char
-  // 8.5in = 816px, margins 2*19px = 38px, usable = 778px
-  // But competencies flex-wrap with gap: 8px, so estimate conservatively: 700px max
-  let totalWidth = 0;
-  competencyTexts.forEach(text => {
-    totalWidth += (text.length * 8) + 30; // 8px per char + padding/border
-  });
-  const maxWidth = 700; // usable width with safety margin
-
-  if (totalWidth > maxWidth) {
-    violations.push(`Core Competencies: estimated width ${totalWidth}px exceeds 1-line limit (${maxWidth}px). Will wrap to 2+ lines.`);
-  }
-} else {
-  warnings.push('Core Competencies: section not found (optional, may be removed for multi-page resumes)');
-}
-
-// ─────────────────────────────────────────────────────────────
-// 2. SKILLS SECTION VALIDATION
+// 1. SKILLS SECTION VALIDATION
 // ─────────────────────────────────────────────────────────────
 
 // More robust: find Skills section (handle class="section avoid-break" etc.), then all <div> children until next section
@@ -105,7 +75,7 @@ if (skillsSectionMatch) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 3. PROJECTS SECTION VALIDATION
+// 2. PROJECTS SECTION VALIDATION
 // ─────────────────────────────────────────────────────────────
 
 // Match project divs: from opening <div class="project"> through closing </div> after </ul>
@@ -168,7 +138,7 @@ if (projectMatches.length === 0) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 4. WORK EXPERIENCE VALIDATION
+// 3. WORK EXPERIENCE VALIDATION
 // ─────────────────────────────────────────────────────────────
 
 // Match job divs: from opening <div class="job"> through closing </div> after </ul>

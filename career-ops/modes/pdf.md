@@ -19,11 +19,9 @@
    - Inject top 5 JD keywords naturally into this narrative (DON'T force them; only if they fit your truthful story)
 8. **Orders Work Experience: reverse chronological (most recent first)** — Ignore JD relevance; dates drive order
 9. Reorders experience bullets within each role by JD relevance (optional; preserve role structure)
-10. **Builds competency grid: 4-5 keyword phrases max from JD requirements**. Must fit on exactly 1 line (no wrapping). Measure actual text width per competency tag: ~8px per char + padding = ~30px per tag + gap. Total max ~700px usable width.
-11. Injects keywords naturally into existing achievements (NEVER invents)
-12. Generates full HTML from template + personalized content
-13. **Post-generation: After PDF is created, if page count > 1, remove competencies section and regenerate.** Decision is per-resume, not global template.
-13. Reads `name` from `config/profile.yml` → normalizes to kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
+10. Injects keywords naturally into existing achievements (NEVER invents)
+11. Generates full HTML from template + personalized content
+12. Reads `name` from `config/profile.yml` → normalizes to kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
 14. Writes HTML to `/tmp/cv-{candidate}-{company}.html`
 15. Executes: `node generate-pdf.mjs /tmp/cv-{candidate}-{company}.html output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4}`
 15. Reports: PDF path, number of pages, % keyword coverage
@@ -53,8 +51,7 @@
 
 1. Header (large name, gradient, contact, portfolio link)
 2. Professional Summary (3-4 lines, keyword-dense)
-3. Core Competencies (4-5 keyword phrases in EXACTLY 1 LINE)
-4. **Work Experience (reverse chronological—most recent first, always)**
+3. **Work Experience (reverse chronological—most recent first, always)**
 5. Projects (top 3-4 most relevant)
 6. Education & Certifications
 7. Skills (3-4 groups, each fitting EXACTLY 1 LINE)
@@ -81,13 +78,6 @@ Examples of legitimate rewording:
 - **Total bullets per project:** max 3, min 2
 - Each project: 1 title line + 2-3 bullet points describing impact
 - Bullets must fit 1 line (apply orphan rule)
-
-### Core Competencies Section
-- **Total competencies:** exactly 4-5 keyword phrases maximum (down from 6-8)
-- **Must fit EXACTLY 1 LINE** — no wrapping to second line
-- Format: `<span class="competency-tag">keyword1</span> <span class="competency-tag">keyword2</span> ...`
-- Select only the most critical JD-matched terms; delegate other skills to Skills section
-- **Why:** Reduces section height by ~40%, gives body content breathing room, prevents autoscale algorithm from needing aggressive zoom
 
 ### Skills Section
 - **Total skill groups:** max 3-4 groups
@@ -116,8 +106,6 @@ Use the template in `cv-template.html`. Replace `{{...}}` placeholders with pers
 | `{{LOCATION}}` | (from profile.yml) |
 | `{{SECTION_SUMMARY}}` | Professional Summary / Resumen Profesional |
 | `{{SUMMARY_TEXT}}` | Personalized summary with keywords |
-| `{{SECTION_COMPETENCIES}}` | Core Competencies / Competencias Core |
-| `{{COMPETENCIES}}` | 4-5 items max: `<span class="competency-tag">keyword1</span> <span class="competency-tag">keyword2</span>...` (MUST fit on 1 line, no wrapping) |
 | `{{SECTION_EXPERIENCE}}` | Work Experience / Experiencia Laboral |
 | `{{EXPERIENCE}}` | HTML of each job with reordered bullets |
 | `{{SECTION_PROJECTS}}` | Projects / Proyectos |

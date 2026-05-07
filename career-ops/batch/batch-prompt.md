@@ -226,25 +226,7 @@ node validate-resume-html.mjs /tmp/cv-candidate-{company-slug}.html
 
 **Required HTML format (non-negotiable):**
 
-**1. Core Competencies: Exactly 4-5 tags, fits 1 line**
-```html
-<!-- WRONG (10 tags, wraps 2+ lines) -->
-<div class="competencies-grid">
-  <div class="competency-tag">Systems Architecture</div>
-  <div class="competency-tag">Python</div>
-  ... (10 total)
-</div>
-
-<!-- RIGHT (4-5 tags, fits 1 line) -->
-<div class="competencies-grid">
-  <div class="competency-tag">Systems Architecture</div>
-  <div class="competency-tag">Python</div>
-  <div class="competency-tag">Distributed Systems</div>
-  <div class="competency-tag">Reliability Engineering</div>
-</div>
-```
-
-**2. Projects: "Project Name | Stack: technology list", 2-3 bullets as `<ul><li>`**
+**1. Projects: "Project Name | Stack: technology list", 2-3 bullets as `<ul><li>`**
 ```html
 <!-- WRONG (no Stack separator, description div instead of bullets) -->
 <div class="project">
@@ -287,7 +269,6 @@ node validate-resume-html.mjs /tmp/cv-candidate-{company-slug}.html
 ```
 
 **If validation fails:** Do NOT proceed to PDF generation. Fix HTML and revalidate. Common fixes:
-- Remove 5-6 least relevant competencies to reach 4-5 total
 - Add "| Stack: ..." to all project titles
 - Replace `<div class="project-desc">` with `<ul><li>` (2-3 bullets per project)
 - Split skill groups that exceed 85 characters
@@ -307,18 +288,16 @@ node validate-resume-html.mjs /tmp/cv-candidate-{company-slug}.html
    - Inject top 5 JD keywords naturally (don't force; only if truthful)
 7. **Order Work Experience: reverse chronological (most recent first)** — Sort by date descending, never by JD relevance
 8. Reorder experience bullets within each role by JD relevance (optional; preserve job order)
-9. **Build competency grid: 4-5 keyword phrases max from JD requirements.** Must fit exactly 1 line (no wrapping). Measure actual text: ~8px per char + tag padding (~30px) + gap (8px). Total max ~700px usable width. If exceeds → remove least relevant items.
-10. Inject keywords into existing achievements (**NEVER invents**)
-11. Generate full HTML from template (read `templates/cv-template.html`)
-12. Write HTML to `/tmp/cv-candidate-{company-slug}.html`
-13. **Post-generation check:** After PDF creation, if page count > 1, remove competencies section and regenerate PDF. Per-resume decision only.
-14. **Validate HTML** (Step 3.5 — required before PDF generation):
+9. Inject keywords into existing achievements (**NEVER invents**)
+10. Generate full HTML from template (read `templates/cv-template.html`)
+11. Write HTML to `/tmp/cv-candidate-{company-slug}.html`
+12. **Validate HTML** (Step 3.5 — required before PDF generation):
 ```bash
 node validate-resume-html.mjs /tmp/cv-candidate-{company-slug}.html
 ```
 If validation fails, fix HTML and revalidate.
 
-14. **Generate PDF** (HTML must pass validation):
+13. **Generate PDF** (HTML must pass validation):
 ```bash
 node generate-pdf.mjs \
   /tmp/cv-candidate-{company-slug}.html \
@@ -327,20 +306,9 @@ node generate-pdf.mjs \
 ```
 PDF generation includes embedded validation — will fail if HTML doesn't comply.
 
-15. Report: PDF path, number of pages, % keyword coverage
+14. Report: PDF path, number of pages, % keyword coverage
 
-### Step 4.1 — Conditional Removal: Core Competencies if PDF > 1 Page
-
-If PDF generated in step 14 has **more than 1 page**, remove entire "Core Competencies" section from HTML and regenerate PDF. This decision is **per resume only** — doesn't affect global template.
-
-**Logic:**
-1. Generate initial PDF from personalized HTML (step 14)
-2. Count PDF pages (`pageCount`)
-3. If `pageCount > 1`: remove the `<div class="section">` containing `<div class="section-title">{{SECTION_COMPETENCIES}}</div>`
-4. Regenerate PDF from modified HTML
-5. Use final version (with or without competencies per result)
-
-**Why:** Competencies (6-8 keyword tags) take ~120-150px height. Removing them automatically optimizes height when resume touches or exceeds 2 pages, allowing minimal zoom adjustment (95-98%) without cutting content.
+### Step 4.1 — ATS Rules and Design
 
 **ATS Rules:**
 - Single-column (no sidebars)
@@ -367,9 +335,8 @@ If PDF generated in step 14 has **more than 1 page**, remove entire "Core Compet
 
 **Formatting rules for tight 1-page layout:**
 - **Bullet points:** max 1 line per bullet — if exceeds by a couple words, rewrite to fit 1 line. Avoid orphan words breaking to new line.
-- **Core Competencies:** exactly 4-5 keyword phrases maximum (down from 6-8). Must fit EXACTLY 1 LINE. Select only critical JD-matched terms; delegate other skills to Skills section. Why: reduces section height by ~40%, gives body content room, prevents autoscale from aggressive zoom.
 - **Projects section:** 2-3 bullets per project max. Each bullet must fit 1 line.
-- **Skills section:** max 3-4 skill groups, each must fit EXACTLY 1 LINE. Format: "Category: skill1, skill2, skill3". If group exceeds 1 line, split into 2 groups or remove lower-priority skills. Why: keeps resume height tight; combined with compact competencies, body content fits at 100% scale.
+- **Skills section:** max 3-4 skill groups, each must fit EXACTLY 1 LINE. Format: "Category: skill1, skill2, skill3". If group exceeds 1 line, split into 2 groups or remove lower-priority skills.
 
 **Template placeholders (in cv-template.html):**
 
@@ -388,8 +355,6 @@ If PDF generated in step 14 has **more than 1 page**, remove entire "Core Compet
 | `{{LOCATION}}` | (from profile.yml) |
 | `{{SECTION_SUMMARY}}` | Professional Summary / Resumen Profesional |
 | `{{SUMMARY_TEXT}}` | Personalized summary with keywords |
-| `{{SECTION_COMPETENCIES}}` | Core Competencies / Competencias Core |
-| `{{COMPETENCIES}}` | 4-5 items max: `<span class="competency-tag">keyword1</span> <span class="competency-tag">keyword2</span>...` (MUST fit on 1 line, no wrapping) |
 | `{{SECTION_EXPERIENCE}}` | Work Experience / Experiencia Laboral |
 | `{{EXPERIENCE}}` | HTML of each job with reordered bullets (use `<ul>` with `<li>` for each bullet) |
 | `{{SECTION_PROJECTS}}` | Projects / Proyectos |
