@@ -231,6 +231,6 @@ if (violations.length > 0) {
   });
 }
 
-console.log(`📊 Summary:\n   Competencies: ${competencyCount} tags | Projects: ${projectMatches.length} | Violations: ${violations.length} | Warnings: ${warnings.length}\n`);
+console.log(`📊 Summary:\n   Projects: ${projectMatches.length} | Violations: ${violations.length} | Warnings: ${warnings.length}\n`);
 
 process.exit(exitCode);
