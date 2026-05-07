@@ -19,9 +19,10 @@
    - Inject top 5 JD keywords naturally into this narrative (DON'T force them; only if they fit your truthful story)
 8. **Orders Work Experience: reverse chronological (most recent first)** — Ignore JD relevance; dates drive order
 9. Reorders experience bullets within each role by JD relevance (optional; preserve role structure)
-10. Builds competency grid from JD requirements (6-8 keyword phrases)
+10. **Builds competency grid: 4-5 keyword phrases max from JD requirements**. Must fit on exactly 1 line (no wrapping). Measure actual text width per competency tag: ~8px per char + padding = ~30px per tag + gap. Total max ~700px usable width.
 11. Injects keywords naturally into existing achievements (NEVER invents)
 12. Generates full HTML from template + personalized content
+13. **Post-generation: After PDF is created, if page count > 1, remove competencies section and regenerate.** Decision is per-resume, not global template.
 13. Reads `name` from `config/profile.yml` → normalizes to kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
 14. Writes HTML to `/tmp/cv-{candidate}-{company}.html`
 15. Executes: `node generate-pdf.mjs /tmp/cv-{candidate}-{company}.html output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4}`
@@ -120,13 +121,13 @@ Use the template in `cv-template.html`. Replace `{{...}}` placeholders with pers
 | `{{SECTION_EXPERIENCE}}` | Work Experience / Experiencia Laboral |
 | `{{EXPERIENCE}}` | HTML of each job with reordered bullets |
 | `{{SECTION_PROJECTS}}` | Projects / Proyectos |
-| `{{PROJECTS}}` | HTML of top 3-4 projects with bullets: `<div class="project"><div class="project-title">title</div><ul><li>impact bullet</li><li>impact bullet</li></ul><div class="project-tech">Stack: ...</div></div>` (each project MUST have `<ul>` with 2-3 `<li>` bullets, each 1 line max) |
+| `{{PROJECTS}}` | HTML of top 3-4 projects. Link titles to GitHub URLs from `config/profile.yml` proof_points: `<div class="project"><div class="project-header"><div class="project-title"><a href="github-url">Project Name</a></div><div class="project-tech">tech list</div></div><ul><li>impact bullet</li><li>impact bullet</li></ul></div>` (each project MUST have `<ul>` with 2-3 `<li>` bullets, each 1 line max) |
 | `{{SECTION_EDUCATION}}` | Education / Formación |
 | `{{EDUCATION}}` | HTML of education |
 | `{{SECTION_CERTIFICATIONS}}` | Certifications / Certificaciones |
 | `{{CERTIFICATIONS}}` | HTML of certifications |
 | `{{SECTION_SKILLS}}` | Skills / Competencias |
-| `{{SKILLS}}` | Max 3-4 skill groups, each fitting 1 line: `<div><span class="skill-category">Category:</span> skill1, skill2, skill3</div>` repeated. **CRITICAL:** measure text length per group; if category + skills > ~85 chars, split to new group. No group wraps to 2 lines. |
+| `{{SKILLS}}` | **FULL WRAPPER REQUIRED**: `<div class="section avoid-break"><div class="section-title">{{SECTION_SKILLS}}</div><div class="skills-grid">` + skill groups + `</div></div>`. Each group: `<div><span class="skill-category">Category:</span> skill1, skill2, skill3</div>`. Max 3-4 groups total, each <= 85 chars. **NO wrapping to 2 lines per group.** |
 
 ## Canva CV Generation (optional)
 

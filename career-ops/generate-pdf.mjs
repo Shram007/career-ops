@@ -4,16 +4,20 @@
  * generate-pdf.mjs — HTML → PDF via Playwright
  *
  * Usage:
- *   node career-ops/generate-pdf.mjs <input.html> <output.pdf> [--format=letter|a4]
+ *   node generate-pdf.mjs <input.html> <output.pdf> [--format=letter|a4] [--skip-validate]
  *
  * Requires: @playwright/test (or playwright) installed.
  * Uses Chromium headless to render the HTML and produce a clean, ATS-parseable PDF.
+ *
+ * Validation: By default, validates HTML against pdf.md specs before PDF generation.
+ * Use --skip-validate to skip validation.
  */
 
 import { chromium } from 'playwright';
 import { resolve, dirname } from 'path';
 import { readFile } from 'fs/promises';
 import { mkdirSync } from 'fs';
+import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -80,9 +84,13 @@ async function generatePDF() {
   // Parse arguments
   let inputPath, outputPath, format = 'a4';
 
+  let skipValidate = false;
+
   for (const arg of args) {
     if (arg.startsWith('--format=')) {
       format = arg.split('=')[1].toLowerCase();
+    } else if (arg === '--skip-validate') {
+      skipValidate = true;
     } else if (!inputPath) {
       inputPath = arg;
     } else if (!outputPath) {
@@ -108,6 +116,21 @@ async function generatePDF() {
   console.log(`📄 Input:  ${inputPath}`);
   console.log(`📁 Output: ${outputPath}`);
   console.log(`📏 Format: ${format.toUpperCase()}`);
+
+  // Validate HTML against formatting specs (unless skipped)
+  if (!skipValidate) {
+    console.log(`\n🔍 Validating HTML...`);
+    try {
+      execSync(`node validate-resume-html.mjs "${inputPath}"`, {
+        cwd: __dirname,
+        stdio: 'inherit'
+      });
+    } catch (err) {
+      console.error('\n⚠️  Validation errors detected. Fix them before PDF generation.');
+      console.error('Use --skip-validate to bypass validation (not recommended).\n');
+      process.exit(1);
+    }
+  }
 
   // Read HTML to inject font paths as absolute file:// URLs
   let html = await readFile(inputPath, 'utf-8');

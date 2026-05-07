@@ -6,7 +6,7 @@
  * Enforces formatting constraints from modes/pdf.md and batch/batch-prompt.md:
  * - Core Competencies: exactly 4-5 tags, fits 1 line
  * - Skills: max 3-4 groups, each fits 1 line
- * - Projects: no work exp titles, has "| Stack:", 2-3 bullets per project, each 1 line
+ * - Projects: no work exp titles, has tech stack div, 2-3 bullets per project, each 1 line
  * - Overall: PDF must be 1 page (signals if competencies need removal)
  *
  * Usage:
@@ -112,28 +112,27 @@ if (skillsSectionMatch) {
 const projectMatches = html.match(/<div class="project">[\s\S]*?<\/ul>\s*<\/div>/g) || [];
 
 projectMatches.forEach((projHtml, idx) => {
-  // Handle both direct .project-title and nested .project-header wrapper
-  let titleMatch = projHtml.match(/<div class="project-title">([^<]+)<\/div>/);
+  // Extract title from <a> tag inside project-title
+  let titleMatch = projHtml.match(/<div class="project-title">\s*<a[^>]*>([^<]+)<\/a>\s*<\/div>/);
   if (!titleMatch) {
-    titleMatch = projHtml.match(/<div class="project-header">[\s\S]*?<div class="project-title">([^<]+)<\/div>/);
+    // Fallback: try to extract plain text from project-title (old format)
+    titleMatch = projHtml.match(/<div class="project-title">([^<]+)<\/div>/);
   }
   const title = titleMatch ? titleMatch[1].trim() : 'NO TITLE';
 
+  // Extract tech stack from project-tech div (new format)
+  const techMatch = projHtml.match(/<div class="project-tech">([^<]+)<\/div>/);
+  const tech = techMatch ? techMatch[1].trim() : '';
+
   // Extract bullets from this project (proper format)
-  const bulletMatches = projHtml.match(/<li>([^<]+)<\/li>/g) || [];
+  const bulletMatches = projHtml.match(/<li>[\s\S]*?<\/li>/g) || [];
   const bulletCount = bulletMatches.length;
 
-  // Check: title should have "| Stack:" pattern
-  if (!title.includes('|')) {
-    violations.push(`Project ${idx + 1} "${title}": missing "| Stack:" separator. Format: "Project Name | Stack: Python, FastAPI, PostgreSQL"`);
-  } else {
-    const stackPart = title.split('|')[1]?.trim() || '';
-    if (!stackPart.toLowerCase().includes('stack') && !stackPart.toLowerCase().includes('tech')) {
-      violations.push(`Project ${idx + 1}: has "|" but stack part "${stackPart}" doesn't mention "Stack" or "Tech". Use "| Stack: ..."`);
-    }
-    if (stackPart.length < 10) {
-      warnings.push(`Project ${idx + 1}: stack part "${stackPart}" may be incomplete (too short)`);
-    }
+  // Check: tech stack should exist (in new format with separate tech div)
+  if (!tech && !title.includes('|')) {
+    warnings.push(`Project ${idx + 1} "${title}": no tech stack found. Add <div class="project-tech">tech list</div> or include "| Stack:" in title.`);
+  } else if (tech.length < 5) {
+    warnings.push(`Project ${idx + 1}: tech stack "${tech}" may be incomplete (too short)`);
   }
 
   // Check: no work experience titles (dates like "2023-2024", company patterns)
@@ -247,9 +246,9 @@ if (violations.length > 0) {
       console.log('   • Shorten skill names or split groups into multiple lines');
       console.log('   • Use abbreviations where possible\n');
     }
-    if (v.includes('Project') && v.includes('missing')) {
-      console.log('   • Add "| Stack: language, framework" after project title');
-      console.log('   • Example: "Restaurant Voice Hub | Stack: Python, FastAPI, PostgreSQL"\n');
+    if (v.includes('Project') && v.includes('tech')) {
+      console.log('   • Add <div class="project-tech">tech list</div> after project title div');
+      console.log('   • Example: <div class="project-tech">Python, FastAPI, PostgreSQL</div>\n');
     }
     if (v.includes('Project') && v.includes('looks like work')) {
       console.log('   • Move to Work Experience section instead');

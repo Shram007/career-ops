@@ -241,11 +241,6 @@
     color: hsl(270, 70%, 45%);
   }
 
-  .project-title::after {
-    content: ' |';
-    font-weight: 400;
-  }
-
   .project-badge {
     font-size: 9px;
     font-weight: 500;
@@ -266,7 +261,8 @@
   .project-tech {
     font-size: 9.5px;
     color: #888;
-    white-space: nowrap;
+    white-space: normal;
+    display: inline;
   }
 
   .project ul {
@@ -349,13 +345,18 @@
   .skills-grid {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 2px;
   }
 
   .skill-item {
     font-size: 10.5px;
     color: #444;
     display: block;
+  }
+
+  .project-title a {
+    color: hsl(270, 70%, 45%);
+    text-decoration: none;
   }
 
   .skill-category {

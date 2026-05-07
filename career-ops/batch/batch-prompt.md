@@ -216,6 +216,82 @@ Where `{company-slug}` is company name in lowercase, no spaces, with hyphens.
 (15-20 JD keywords for ATS)
 ```
 
+### Step 3.5 — HTML Format Validation (CRITICAL)
+
+Before converting HTML to PDF, verify generated HTML passes validation:
+
+```bash
+node validate-resume-html.mjs /tmp/cv-candidate-{company-slug}.html
+```
+
+**Required HTML format (non-negotiable):**
+
+**1. Core Competencies: Exactly 4-5 tags, fits 1 line**
+```html
+<!-- WRONG (10 tags, wraps 2+ lines) -->
+<div class="competencies-grid">
+  <div class="competency-tag">Systems Architecture</div>
+  <div class="competency-tag">Python</div>
+  ... (10 total)
+</div>
+
+<!-- RIGHT (4-5 tags, fits 1 line) -->
+<div class="competencies-grid">
+  <div class="competency-tag">Systems Architecture</div>
+  <div class="competency-tag">Python</div>
+  <div class="competency-tag">Distributed Systems</div>
+  <div class="competency-tag">Reliability Engineering</div>
+</div>
+```
+
+**2. Projects: "Project Name | Stack: technology list", 2-3 bullets as `<ul><li>`**
+```html
+<!-- WRONG (no Stack separator, description div instead of bullets) -->
+<div class="project">
+  <div class="project-title">Restaurant Voice Hub</div>
+  <div class="project-desc">Agentic orchestration system...</div>
+</div>
+
+<!-- RIGHT (Stack separator, 2-3 <li> bullets) -->
+<div class="project">
+  <div class="project-title">Restaurant Voice Hub | Stack: Python, FastAPI, PostgreSQL, ElevenLabs</div>
+  <ul>
+    <li><strong>Built agentic orchestration</strong> with 5 callable tools, real-time database sync, production error handling.</li>
+    <li><strong>Deployed end-to-end</strong> from design to production with fault tolerance and observability.</li>
+    <li><strong>Integrated with ElevenLabs Conversational AI</strong> for dynamic customer interactions.</li>
+  </ul>
+</div>
+```
+
+**3. Skills section: 3-4 groups max, each fits exactly 1 line**
+```html
+<!-- WRONG (groups too long, wrap to 2 lines) -->
+<div class="skills-grid">
+  <div class="skill-item">
+    <span class="skill-category">Languages:</span> Python, TypeScript, JavaScript, Java, SQL, C++, Go, Rust
+  </div>
+</div>
+
+<!-- RIGHT (groups split, each ≤85 chars per line) -->
+<div class="skills-grid">
+  <div class="skill-item">
+    <span class="skill-category">Languages:</span> Python, TypeScript, JavaScript, Java, SQL
+  </div>
+  <div class="skill-item">
+    <span class="skill-category">Infrastructure:</span> Docker, Kubernetes, AWS, GCP, PostgreSQL
+  </div>
+  <div class="skill-item">
+    <span class="skill-category">Tools:</span> FastAPI, LangChain, Redis, Git, CI/CD
+  </div>
+</div>
+```
+
+**If validation fails:** Do NOT proceed to PDF generation. Fix HTML and revalidate. Common fixes:
+- Remove 5-6 least relevant competencies to reach 4-5 total
+- Add "| Stack: ..." to all project titles
+- Replace `<div class="project-desc">` with `<ul><li>` (2-3 bullets per project)
+- Split skill groups that exceed 85 characters
+
 ### Step 4 — Generate PDF
 
 1. Read `cv.md` + `i18n.ts`
@@ -231,18 +307,27 @@ Where `{company-slug}` is company name in lowercase, no spaces, with hyphens.
    - Inject top 5 JD keywords naturally (don't force; only if truthful)
 7. **Order Work Experience: reverse chronological (most recent first)** — Sort by date descending, never by JD relevance
 8. Reorder experience bullets within each role by JD relevance (optional; preserve job order)
-9. Build competency grid (4-5 keyword phrases max, must fit in 1 line)
+9. **Build competency grid: 4-5 keyword phrases max from JD requirements.** Must fit exactly 1 line (no wrapping). Measure actual text: ~8px per char + tag padding (~30px) + gap (8px). Total max ~700px usable width. If exceeds → remove least relevant items.
 10. Inject keywords into existing achievements (**NEVER invents**)
 11. Generate full HTML from template (read `templates/cv-template.html`)
 12. Write HTML to `/tmp/cv-candidate-{company-slug}.html`
-13. Execute:
+13. **Post-generation check:** After PDF creation, if page count > 1, remove competencies section and regenerate PDF. Per-resume decision only.
+14. **Validate HTML** (Step 3.5 — required before PDF generation):
+```bash
+node validate-resume-html.mjs /tmp/cv-candidate-{company-slug}.html
+```
+If validation fails, fix HTML and revalidate.
+
+14. **Generate PDF** (HTML must pass validation):
 ```bash
 node generate-pdf.mjs \
   /tmp/cv-candidate-{company-slug}.html \
   output/cv-candidate-{company-slug}-{{DATE}}.pdf \
   --format={letter|a4}
 ```
-14. Report: PDF path, number of pages, % keyword coverage
+PDF generation includes embedded validation — will fail if HTML doesn't comply.
+
+15. Report: PDF path, number of pages, % keyword coverage
 
 ### Step 4.1 — Conditional Removal: Core Competencies if PDF > 1 Page
 
@@ -308,13 +393,13 @@ If PDF generated in step 14 has **more than 1 page**, remove entire "Core Compet
 | `{{SECTION_EXPERIENCE}}` | Work Experience / Experiencia Laboral |
 | `{{EXPERIENCE}}` | HTML of each job with reordered bullets (use `<ul>` with `<li>` for each bullet) |
 | `{{SECTION_PROJECTS}}` | Projects / Proyectos |
-| `{{PROJECTS}}` | HTML of top 3-4 projects: `<div class="project"><div class="project-title">title</div><ul><li>impact bullet</li><li>impact bullet</li></ul><div class="project-tech">Stack: ...</div></div>` (each project MUST have `<ul>` with 2-3 `<li>` bullets, each fitting 1 line max) |
+| `{{PROJECTS}}` | HTML of top 3-4 projects. Link titles to GitHub URLs from `config/profile.yml` proof_points: `<div class="project"><div class="project-header"><div class="project-title"><a href="github-url">Project Name</a></div><div class="project-tech">tech list</div></div><ul><li>impact bullet</li><li>impact bullet</li></ul></div>` (each project MUST have `<ul>` with 2-3 `<li>` bullets, each fitting 1 line max) |
 | `{{SECTION_EDUCATION}}` | Education / Formación |
 | `{{EDUCATION}}` | HTML of education |
 | `{{SECTION_CERTIFICATIONS}}` | Certifications / Certificaciones |
 | `{{CERTIFICATIONS}}` | HTML of certifications |
 | `{{SECTION_SKILLS}}` | Skills / Competencias |
-| `{{SKILLS}}` | Max 3-4 skill groups, each fitting 1 line: `<div><span class="skill-category">Category:</span> skill1, skill2, skill3</div>` repeated. **CRITICAL:** measure text length per group; if category + skills > ~85 chars (typical 1-line width at 10.5px font), split to new group. No group wraps to 2 lines. |
+| `{{SKILLS}}` | **FULL WRAPPER REQUIRED**: `<div class="section avoid-break"><div class="section-title">{{SECTION_SKILLS}}</div><div class="skills-grid">` + skill groups + `</div></div>`. Each group: `<div><span class="skill-category">Category:</span> skill1, skill2, skill3</div>`. Max 3-4 groups total, each <= 85 chars. **NO wrapping to 2 lines per group.** |
 
 ### Step 5 — Tracker Line
 
@@ -393,6 +478,7 @@ If anything fails:
 4. Recommend below-market comp
 5. Generate PDF without reading JD first
 6. Use corporate-speak
+7. Skip HTML validation. **HTML must pass `node validate-resume-html.mjs` before PDF generation.**
 
 ### ALWAYS
 1. Read cv.md, llms.txt and article-digest.md before evaluating
@@ -402,3 +488,4 @@ If anything fails:
 5. Generate content in JD language (EN default)
 6. Be direct and actionable — no fluff
 7. When generating English text (PDF summaries, bullets, STAR stories), use native tech English: short sentences, action verbs, no unnecessary passive voice, no "in order to" or "utilized"
+8. **Validate HTML before PDF generation** — Run `node validate-resume-html.mjs`. If validation fails, fix HTML (see Step 3.5) and revalidate. No exceptions.
