@@ -36,6 +36,19 @@ node refresh-search-query-dates.mjs --days 14
 
 This updates all `after:YYYY-MM-DD` filters in `portals.yml` to a rolling 14-day window based on the current date. Do this first so Level 3 WebSearch queries always use fresh recency bounds.
 
+**Pre-step (REQUIRED): run Playwright access preflight before Level 1 extraction.**
+
+```bash
+npm run playwright:bypass
+```
+
+Use `reports/playwright-bypass.tsv` to classify targets:
+- `bypassed`: proceed with full Level 1 extraction
+- `unclear`: attempt Level 1 extraction, but be ready to fallback
+- `blocked`/`failed`: still attempt a quick Level 1 probe once, then fallback to Level 2 API + Level 3 WebSearch if still blocked
+
+This prevents scan failures from stopping coverage when some careers sites trigger anti-bot defenses.
+
 Read `portals.yml` which contains:
 - `search_queries`: List of WebSearch queries with `site:` filters per portal (broad discovery)
 - `tracked_companies`: Specific companies with `careers_url` for direct navigation
@@ -117,9 +130,11 @@ The `search_queries` with `site:` filters cover portals across the board (all As
    e. If the page paginates results, navigate additional pages — extract from ALL pages
    f. If pagination limit reached, note partial results and continue
    g. Accumulate in candidate list
-   h. If `careers_url` fails (404, timeout, 403):
+   h. If `careers_url` fails (404, timeout, 403, anti-bot challenge page):
       - Log the failure
       - Attempt fallback: use `scan_query` from portals.yml if available
+      - If the site remains blocked after one retry, mark company as `playwright_blocked` for this run and continue (do not stop scan)
+      - Ensure the company is still covered via Level 2 API (if available) and Level 3 WebSearch
       - Note URL issue for manual update
    i. **Do NOT skip a company because Level 1 takes time.** Time cost is acceptable for comprehensive coverage.
    j. **Report Level 1 results**: How many jobs extracted from each company, any failures
