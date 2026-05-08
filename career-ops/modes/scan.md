@@ -20,6 +20,22 @@ Agent(
 
 ## Configuration
 
+**Pre-step (REQUIRED for both agent flow and CLI flow): refresh rolling `after:` cutoff before reading queries.**
+
+Run one of:
+
+```bash
+npm run scan:refresh-after
+```
+
+or
+
+```bash
+node refresh-search-query-dates.mjs --days 14
+```
+
+This updates all `after:YYYY-MM-DD` filters in `portals.yml` to a rolling 14-day window based on the current date. Do this first so Level 3 WebSearch queries always use fresh recency bounds.
+
 Read `portals.yml` which contains:
 - `search_queries`: List of WebSearch queries with `site:` filters per portal (broad discovery)
 - `tracked_companies`: Specific companies with `careers_url` for direct navigation
