@@ -30,11 +30,17 @@ modes/_profile.md
 .resolved-prompt-*
 node_modules/
 bun.lock
+batch/*.html
+batch/cv-gen-*.mjs
+batch/runner.log
+cv-candidate-*.html
+tmp/cv-candidate-*.html
 
 # OS
 .DS_Store
 *.mov
 *.mp4
+bash.exe.stackdump
 
 # Claude Code local
 .claude/settings.local.json
