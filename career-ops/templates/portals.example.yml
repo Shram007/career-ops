@@ -1,5 +1,5 @@
 # Portal Scanner Configuration
-# Used by /career-ops scan to discover new offers automatically.
+# Used by /career-ops scan to discover new jobs automatically.
 #
 # Strategy (3 levels):
 #   1. Playwright → careers_url of each company (real-time, reliable)
@@ -219,7 +219,7 @@ search_queries:
   # -- Spanish market specialized (high-value for Madrid/Barcelona-based candidates) --
 
   - name: Manfred — Tech Senior España
-    query: 'site:getmanfred.com/en/job-offers "Solutions Architect" OR "DevRel" OR "Forward Deployed" OR "AI Engineer" OR "Founding"'
+    query: 'site:getmanfred.com/en/job-jobs "Solutions Architect" OR "DevRel" OR "Forward Deployed" OR "AI Engineer" OR "Founding"'
     enabled: true
 
   - name: Manfred — Remote AI/Senior

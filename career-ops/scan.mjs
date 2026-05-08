@@ -5,7 +5,7 @@
  *
  * Fetches Greenhouse, Ashby, and Lever APIs directly, applies title
  * filters from portals.yml, deduplicates against existing history,
- * and appends new offers to pipeline.md + scan-history.tsv.
+ * and appends new jobs to pipeline.md + scan-history.tsv.
  *
  * Zero Claude API tokens — pure HTTP + JSON.
  *
@@ -209,8 +209,8 @@ function loadSeenCompanyRoles() {
 
 // ── Pipeline writer ─────────────────────────────────────────────────
 
-function appendToPipeline(offers) {
-  if (offers.length === 0) return;
+function appendToPipeline(jobs) {
+  if (jobs.length === 0) return;
 
   let text = readFileSync(PIPELINE_PATH, 'utf-8');
 
@@ -221,7 +221,7 @@ function appendToPipeline(offers) {
     // No Pendientes section — append at end before Procesadas
     const procIdx = text.indexOf('## Procesadas');
     const insertAt = procIdx === -1 ? text.length : procIdx;
-    const block = `\n${marker}\n\n` + offers.map(o =>
+    const block = `\n${marker}\n\n` + jobs.map(o =>
       `- [ ] ${o.posted_date} | ${o.url} | ${o.company} | ${o.title}`
     ).join('\n') + '\n\n';
     text = text.slice(0, insertAt) + block + text.slice(insertAt);
@@ -231,7 +231,7 @@ function appendToPipeline(offers) {
     const nextSection = text.indexOf('\n## ', afterMarker);
     const insertAt = nextSection === -1 ? text.length : nextSection;
 
-    const block = '\n' + offers.map(o =>
+    const block = '\n' + jobs.map(o =>
       `- [ ] ${o.posted_date} | ${o.url} | ${o.company} | ${o.title}`
     ).join('\n') + '\n';
     text = text.slice(0, insertAt) + block + text.slice(insertAt);
@@ -240,13 +240,13 @@ function appendToPipeline(offers) {
   writeFileSync(PIPELINE_PATH, text, 'utf-8');
 }
 
-function appendToScanHistory(offers, date) {
+function appendToScanHistory(jobs, date) {
   // Ensure file + header exist
   if (!existsSync(SCAN_HISTORY_PATH)) {
     writeFileSync(SCAN_HISTORY_PATH, 'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\n', 'utf-8');
   }
 
-  const lines = offers.map(o =>
+  const lines = jobs.map(o =>
     `${o.url}\t${date}\t${o.source}\t${o.title}\t${o.company}\tadded`
   ).join('\n') + '\n';
 
@@ -313,7 +313,7 @@ async function main() {
   let totalFound = 0;
   let totalFiltered = 0;
   let totalDupes = 0;
-  const newOffers = [];
+  const newJobs = [];
   const errors = [];
 
   const tasks = targets.map(company => async () => {
@@ -344,7 +344,7 @@ async function main() {
         // Mark as seen to avoid intra-scan dupes
         seenUrls.add(job.url);
         seenCompanyRoles.add(key);
-        newOffers.push({
+        newJobs.push({
           ...job,
           posted_date: extractDate(job.posted_at),
           source: `${type}-api`
@@ -358,9 +358,9 @@ async function main() {
   await parallelFetch(tasks, CONCURRENCY);
 
   // 5. Write results
-  if (!dryRun && newOffers.length > 0) {
-    appendToPipeline(newOffers);
-    appendToScanHistory(newOffers, date);
+  if (!dryRun && newJobs.length > 0) {
+    appendToPipeline(newJobs);
+    appendToScanHistory(newJobs, date);
   }
 
   // 6. Print summary
@@ -371,7 +371,7 @@ async function main() {
   console.log(`Total jobs found:      ${totalFound}`);
   console.log(`Filtered (title+age):  ${totalFiltered} removed`);
   console.log(`Duplicates:            ${totalDupes} skipped`);
-  console.log(`New offers added:      ${newOffers.length}`);
+  console.log(`New jobs added:      ${newJobs.length}`);
 
   if (errors.length > 0) {
     console.log(`\nErrors (${errors.length}):`);
@@ -380,9 +380,9 @@ async function main() {
     }
   }
 
-  if (newOffers.length > 0) {
-    console.log('\nNew offers:');
-    for (const o of newOffers) {
+  if (newJobs.length > 0) {
+    console.log('\nNew jobs:');
+    for (const o of newJobs) {
       console.log(`  + ${o.company} | ${o.title} | ${o.location || 'N/A'}`);
     }
     if (dryRun) {
@@ -392,7 +392,7 @@ async function main() {
     }
   }
 
-  console.log(`\n→ Run /career-ops pipeline to evaluate new offers.`);
+  console.log(`\n→ Run /career-ops pipeline to evaluate new jobs.`);
   console.log('→ Share results and get help: https://discord.gg/8pRpHETxa4');
 }
 

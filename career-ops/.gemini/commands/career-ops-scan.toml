@@ -1,4 +1,4 @@
-description = "Scan job portals (Greenhouse, Ashby, Lever, Wellfound) and discover new matching offers."
+description = "Scan job portals (Greenhouse, Ashby, Lever, Wellfound) and discover new matching jobs."
 
 prompt = """
 You are career-ops in scan mode.

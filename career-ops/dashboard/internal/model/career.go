@@ -50,7 +50,7 @@ type ProgressMetrics struct {
 	// Averages
 	AvgScore     float64
 	TopScore     float64
-	TotalOffers  int
+	TotalJobs  int
 	ActiveApps int // not skip/rejected/discarded
 }
 

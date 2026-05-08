@@ -1,6 +1,6 @@
 # Mode: pipeline — URL Inbox (Second Brain)
 
-Processes URLs of offers accumulated in `data/pipeline.md`. User adds URLs anytime and then runs `/career-ops pipeline` to process all of them.
+Processes URLs of jobs accumulated in `data/pipeline.md`. User adds URLs anytime and then runs `/career-ops pipeline` to process all of them.
 
 ## Workflow
 
@@ -31,7 +31,7 @@ Processes URLs of offers accumulated in `data/pipeline.md`. User adds URLs anyti
 - [x] 2026-04-29 | #144 | https://boards.greenhouse.io/xyz/jobs/012 | BigCo | SA | 2.1/5 | PDF ❌
 ```
 
-**Note:** Dates (YYYY-MM-DD) now appear automatically on new entries added by the scanner. This makes it easy to filter by age and avoid expired offers (> 7 days). Older entries without dates will process the same.
+**Note:** Dates (YYYY-MM-DD) now appear automatically on new entries added by the scanner. This makes it easy to filter by age and avoid expired jobs (> 7 days). Older entries without dates will process the same.
 
 ## Smart JD Detection from URL
 

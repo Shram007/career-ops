@@ -37,7 +37,7 @@ career-ops interacts with career portals and job boards (Greenhouse, Lever, Ashb
 
 career-ops is designed to help individuals make better career decisions, not to automate away human judgment. Acceptable use includes:
 
-- Evaluating job offers to prioritize your time
+- Evaluating job jobs to prioritize your time
 - Generating tailored CVs that you review and edit before submitting
 - Scanning public career pages for open positions
 - Tracking your application pipeline

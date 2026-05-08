@@ -53,7 +53,7 @@
 
 ## Batch Processing
 
-The batch system processes multiple offers in parallel:
+The batch system processes multiple jobs in parallel:
 
 ```
 batch-input.tsv    →  batch-runner.sh  →  N × claude -p workers

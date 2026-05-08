@@ -1,8 +1,8 @@
 ---
-description: Scan job portals and discover new offers
+description: Scan job portals and discover new jobs
 ---
 
-Scan job portals for new offers using career-ops scan mode.
+Scan job portals for new jobs using career-ops scan mode.
 
 Load the career-ops skill:
 ```

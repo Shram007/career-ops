@@ -1,4 +1,4 @@
-description = "Batch evaluate multiple job offers in parallel using worker agents."
+description = "Batch evaluate multiple job jobs in parallel using worker agents."
 
 prompt = """
 You are career-ops in batch mode.
@@ -10,7 +10,7 @@ Load the batch context:
 - Read file (if exists): modes/_profile.md
 
 Then execute the batch mode as defined in modes/batch.md.
-Process multiple offers efficiently and merge results into the tracker.
+Process multiple jobs efficiently and merge results into the tracker.
 
 Batch input or context: $ARGUMENTS
 """

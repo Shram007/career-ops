@@ -309,8 +309,8 @@ func (m ProgressModel) renderRates() string {
 	// Active summary
 	dimStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
 	activeInfo := dimStyle.Render(fmt.Sprintf(
-		"%d active applications | %d total offers",
-		m.metrics.ActiveApps, m.metrics.TotalOffers,
+		"%d active applications | %d total jobs",
+		m.metrics.ActiveApps, m.metrics.TotalJobs,
 	))
 	lines = append(lines, padStyle.Render(activeInfo))
 

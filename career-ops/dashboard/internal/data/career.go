@@ -635,7 +635,7 @@ func ComputeProgressMetrics(apps []model.CareerApplication) model.ProgressMetric
 		}
 
 		if norm == "offer" {
-			pm.TotalOffers++
+			pm.TotalJobs++
 		}
 		if norm != "skip" && norm != "rejected" && norm != "discarded" {
 			pm.ActiveApps++

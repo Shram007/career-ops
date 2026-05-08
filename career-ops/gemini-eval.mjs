@@ -171,7 +171,7 @@ const cvContent      = readFile(PATHS.cv,       'cv.md');
 // Build the system prompt (mirrors the Claude skill router logic)
 // ---------------------------------------------------------------------------
 const systemPrompt = `You are career-ops, an AI-powered job search assistant.
-You evaluate job offers against the user's CV using a structured A-G scoring system.
+You evaluate job jobs against the user's CV using a structured A-G scoring system.
 
 Your evaluation methodology is defined below. Follow it exactly.
 

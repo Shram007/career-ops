@@ -1,6 +1,6 @@
 # Mode: scan — Portal Scanner (Job Discovery)
 
-Scans configured job portals, filters by title relevance, and adds new offers to the pipeline for later evaluation.
+Scans configured job portals, filters by title relevance, and adds new jobs to the pipeline for later evaluation.
 
 > **Note (v1.5+):** The default scanner (`scan.mjs` / `npm run scan`) is **zero-token** and only queries the public APIs of Greenhouse, Ashby, and Lever directly. The levels with Playwright/WebSearch described below are the **agent** flow (executed by Claude/Codex), not what `scan.mjs` does. If a company doesn't have a Greenhouse/Ashby/Lever API, `scan.mjs` will ignore it; for those cases, the agent must manually complete Level 1 (Playwright) or Level 3 (WebSearch).
 
@@ -26,7 +26,7 @@ Read `portals.yml` which contains:
 - `title_filter`: Positive/negative/seniority_boost keywords for title filtering
 
 **CLI Flags (zero-token `scan.mjs` only):**
-- `--days N`: Filter offers by age (default: 7 days). Example: `node scan.mjs --days 14`
+- `--days N`: Filter jobs by age (default: 7 days). Example: `node scan.mjs --days 14`
 - `--company NAME`: Scan a single company. Example: `node scan.mjs --company Anthropic`
 - `--dry-run`: Preview without writing files
 
@@ -39,7 +39,7 @@ Read `portals.yml` which contains:
 **For each company in `tracked_companies`:** Navigate to its `careers_url` with Playwright (`browser_navigate` + `browser_snapshot`), read ALL visible job listings, and extract title + URL from each. This is the most reliable method because:
 - Sees the page in real-time (not cached Google results)
 - Works with SPAs (Ashby, Lever, Workday)
-- Detects new offers instantly
+- Detects new jobs instantly
 - Doesn't depend on Google indexing
 - **Only source of truth for companies with custom careers sites**
 
@@ -144,7 +144,7 @@ The `search_queries` with `site:` filters cover portals across the board (all As
 
 7.5. **Verify liveness of WebSearch results (Level 3)** — BEFORE adding to pipeline:
 
-   WebSearch results can be outdated (Google caches results for weeks or months). To avoid evaluating expired offers, verify each new URL from Level 3 with Playwright. Levels 1 and 2 are inherently real-time and don't require this verification.
+   WebSearch results can be outdated (Google caches results for weeks or months). To avoid evaluating expired jobs, verify each new URL from Level 3 with Playwright. Levels 1 and 2 are inherently real-time and don't require this verification.
 
    For each new Level 3 URL (sequential — NEVER parallel Playwright):
    a. `browser_navigate` to the URL
@@ -164,11 +164,11 @@ The `search_queries` with `site:` filters cover portals across the board (all As
    a. Add to `pipeline.md` "Pending" section: `- [ ] {posted_date} | {url} | {company} | {title}`
    b. Record in `scan-history.tsv`: `{url}\t{date}\t{query_name}\t{title}\t{company}\tadded`
    
-   **Note**: `{posted_date}` (YYYY-MM-DD) comes from each portal's API (Greenhouse `created_at`, Ashby `publishedDate`, Lever `createdAt`). This allows filtering by age and avoiding expired offers.
+   **Note**: `{posted_date}` (YYYY-MM-DD) comes from each portal's API (Greenhouse `created_at`, Ashby `publishedDate`, Lever `createdAt`). This allows filtering by age and avoiding expired jobs.
 
-9. **Offers filtered by title**: record in `scan-history.tsv` with status `skipped_title`
-10. **Duplicate offers**: record with status `skipped_dup`
-11. **Expired offers (Level 3)**: record with status `skipped_expired`
+9. **Jobs filtered by title**: record in `scan-history.tsv` with status `skipped_title`
+10. **Duplicate jobs**: record with status `skipped_dup`
+11. **Expired jobs (Level 3)**: record with status `skipped_expired`
 
 ## Title and Company Extraction from WebSearch Results
 
@@ -205,7 +205,7 @@ https://...	2026-02-10	WebSearch — AI PM	PM AI	ClosedCo	skipped_expired
 Portal Scan — {YYYY-MM-DD}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 Queries executed: N
-Offers found: N total
+Jobs found: N total
 Filtered by title: N relevant
 Duplicates: N (already evaluated or in pipeline)
 Expired discarded: N (dead links, Level 3)
@@ -214,7 +214,7 @@ New added to pipeline.md: N
   + {company} | {title} | {query_name}
   ...
 
-→ Run /career-ops pipeline to evaluate the new offers.
+→ Run /career-ops pipeline to evaluate the new jobs.
 ```
 
 ## Managing careers_url
@@ -236,7 +236,7 @@ Each company in `tracked_companies` must have `careers_url` — the direct URL t
 - Level 1 results: N jobs from M companies (Playwright)
 - Level 2 results: N jobs from M companies (APIs)
 - Level 3 results: N jobs from M companies (WebSearch)
-- Total: X new offers added to pipeline after filtering/dedup
+- Total: X new jobs added to pipeline after filtering/dedup
 - Failed companies/queries: list with reason
 
 **If you execute a scan and only report Level 2 results, the scan is INCOMPLETE and should be re-run with all 3 levels.**

@@ -18,4 +18,4 @@ Scoring matrix of 10 weighted dimensions:
 For each offer: score in each dimension, total weighted score.
 Final ranking + recommendation with time-to-offer considerations.
 
-Ask user for offers if not in context. Can be text, URLs, or references to offers already evaluated in tracker.
+Ask user for jobs if not in context. Can be text, URLs, or references to jobs already evaluated in tracker.

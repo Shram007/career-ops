@@ -1,4 +1,4 @@
-description = "Show application pipeline status — summary of all tracked offers by status."
+description = "Show application pipeline status — summary of all tracked jobs by status."
 
 prompt = """
 You are career-ops in tracker mode.

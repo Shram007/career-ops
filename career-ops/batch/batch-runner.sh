@@ -34,7 +34,7 @@ BATCH_SIZE=30
 
 usage() {
   cat <<'USAGE'
-career-ops batch runner — process job offers in batch via claude -p workers
+career-ops batch runner — process job jobs in batch via claude -p workers
 Uses your default Claude model (Claude Max subscription).
 
 Usage: batch-runner.sh [OPTIONS]
@@ -42,28 +42,28 @@ Usage: batch-runner.sh [OPTIONS]
 Options:
   --parallel N         Number of parallel workers (default: 1)
   --dry-run            Show what would be processed, don't execute
-  --retry-failed       Only retry offers marked as "failed" in state
-  --start-from N       Start from offer ID N (skip earlier IDs)
-  --max-retries N      Max retry attempts per offer (default: 2)
-  --min-score N        Skip offers scoring below N (default: 0 = off)
-  --batch-size N       Max offers to process per run (default: 30, 0 = unlimited)
+  --retry-failed       Only retry jobs marked as "failed" in state
+  --start-from N       Start from job ID N (skip earlier IDs)
+  --max-retries N      Max retry attempts per job (default: 2)
+  --min-score N        Skip jobs scoring below N (default: 0 = off)
+  --batch-size N       Max jobs to process per run (default: 30, 0 = unlimited)
   -h, --help           Show this help
 
 Files:
-  batch-input.tsv      Input offers (id, url, source, notes)
+  batch-input.tsv      Input jobs (id, url, source, notes)
   batch-state.tsv      Processing state (auto-managed)
   batch-prompt.md      Prompt template for workers
   logs/                Per-offer logs
   tracker-additions/   Tracker lines for post-batch merge
 
 Examples:
-  # Dry run to see pending offers
+  # Dry run to see pending jobs
   ./batch-runner.sh --dry-run
 
   # Process all pending
   ./batch-runner.sh
 
-  # Retry only failed offers
+  # Retry only failed jobs
   ./batch-runner.sh --retry-failed
 
   # Process 2 at a time starting from ID 10
@@ -115,7 +115,7 @@ trap release_lock EXIT
 # Validate prerequisites
 check_prerequisites() {
   if [[ ! -f "$INPUT_FILE" ]]; then
-    echo "ERROR: $INPUT_FILE not found. Add offers first."
+    echo "ERROR: $INPUT_FILE not found. Add jobs first."
     exit 1
   fi
 
@@ -564,13 +564,13 @@ main() {
 
   init_state
 
-  # Count input offers (skip header, ignore blank lines)
+  # Count input jobs (skip header, ignore blank lines)
   local total_input
   total_input=$(tail -n +2 "$INPUT_FILE" | grep -c '[^[:space:]]' 2>/dev/null || true)
   total_input="${total_input:-0}"
 
   if (( total_input == 0 )); then
-    echo "No offers in $INPUT_FILE. Add offers first."
+    echo "No jobs in $INPUT_FILE. Add jobs first."
     exit 0
   fi
 
@@ -582,10 +582,10 @@ main() {
     batch_size_label="unlimited"
   fi
   echo "Parallel: $PARALLEL | Max retries: $MAX_RETRIES | Batch size: $batch_size_label"
-  echo "Input: $total_input offers"
+  echo "Input: $total_input jobs"
   echo ""
 
-  # Build list of offers to process
+  # Build list of jobs to process
   local -a pending_ids=()
   local -a pending_urls=()
   local -a pending_sources=()
@@ -607,7 +607,7 @@ main() {
     status=$(get_status "$id")
 
     if [[ "$RETRY_FAILED" == "true" ]]; then
-      # Only process failed offers
+      # Only process failed jobs
       if [[ "$status" != "failed" ]]; then
         continue
       fi
@@ -619,11 +619,11 @@ main() {
         continue
       fi
     else
-      # Skip completed offers
+      # Skip completed jobs
       if [[ "$status" == "completed" ]]; then
         continue
       fi
-      # Skip failed offers that hit retry limit (unless --retry-failed)
+      # Skip failed jobs that hit retry limit (unless --retry-failed)
       if [[ "$status" == "failed" ]]; then
         local retries
         retries=$(get_retries "$id")
@@ -643,7 +643,7 @@ main() {
   local pending_count=${#pending_ids[@]}
 
   if (( pending_count == 0 )); then
-    echo "No offers to process."
+    echo "No jobs to process."
     print_summary
     exit 0
   fi
@@ -654,10 +654,10 @@ main() {
     pending_urls=("${pending_urls[@]:0:$BATCH_SIZE}")
     pending_sources=("${pending_sources[@]:0:$BATCH_SIZE}")
     pending_notes=("${pending_notes[@]:0:$BATCH_SIZE}")
-    echo "Pending: $pending_count offers (capped to $BATCH_SIZE per --batch-size)"
+    echo "Pending: $pending_count jobs (capped to $BATCH_SIZE per --batch-size)"
     pending_count=$BATCH_SIZE
   else
-    echo "Pending: $pending_count offers"
+    echo "Pending: $pending_count jobs"
   fi
   echo ""
 
@@ -670,11 +670,11 @@ main() {
       echo "  #${pending_ids[$i]}: ${pending_urls[$i]} [${pending_sources[$i]}] (status: $status)"
     done
     echo ""
-    echo "Would process $pending_count offers"
+    echo "Would process $pending_count jobs"
     exit 0
   fi
 
-  # Process offers
+  # Process jobs
   if (( PARALLEL <= 1 )); then
     # Sequential processing
     for i in "${!pending_ids[@]}"; do
