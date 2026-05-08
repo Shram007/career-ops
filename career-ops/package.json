@@ -15,8 +15,9 @@
     "rollback": "node update-system.mjs rollback",
     "liveness": "node check-liveness.mjs",
     "playwright:bypass": "node check-playwright-bypass.mjs",
+    "scan:dedup-websearch": "node scripts/deduplicate-websearch.mjs",
     "scan:refresh-after": "node refresh-search-query-dates.mjs --days 14",
-    "scan": "node refresh-search-query-dates.mjs --days 14 --quiet && node scan.mjs",
+    "scan": "node scan-with-instrumentation.mjs",
     "gemini:eval": "node gemini-eval.mjs"
   },
   "keywords": [
