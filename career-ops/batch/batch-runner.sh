@@ -445,8 +445,8 @@ process_offer() {
     [[ -n "$role_match" ]] && role="$role_match"
 
     # Check min-score gate
-    if [[ "$score" != "-" && -n "$score" ]] && (( $(echo "$MIN_SCORE > 0" | bc -l) )); then
-      if (( $(echo "$score < $MIN_SCORE" | bc -l) )); then
+    if [[ "$score" != "-" && -n "$score" ]] && [[ $(awk "BEGIN { print ($MIN_SCORE > 0 ? 1 : 0) }") -eq 1 ]]; then
+      if [[ $(awk -v s="$score" -v m="$MIN_SCORE" "BEGIN { print (s < m ? 1 : 0) }") -eq 1 ]]; then
         update_state "$id" "$url" "skipped" "$started_at" "$completed_at" "-" "$score" "below-min-score" "$retries"
         echo "    ⏭️  Skipped (score: $score < min-score: $MIN_SCORE)"
         return 0
@@ -454,7 +454,7 @@ process_offer() {
     fi
 
     # Queue next-step actions after batch for strong matches.
-    if [[ "$score" != "-" && -n "$score" ]] && (( $(echo "$score >= $FOLLOWUP_THRESHOLD" | bc -l) )); then
+    if [[ "$score" != "-" && -n "$score" ]] && [[ $(awk -v s="$score" -v t="$FOLLOWUP_THRESHOLD" "BEGIN { print (s >= t ? 1 : 0) }") -eq 1 ]]; then
       enqueue_followup "$id" "$date" "$score" "$company" "$role" "$url"
     fi
 
@@ -529,7 +529,7 @@ print_followup_prompt() {
     if [[ "$score" == "-" || -z "$score" ]]; then
       continue
     fi
-    if ! (( $(echo "$score >= $FOLLOWUP_THRESHOLD" | bc -l) )); then
+    if ! [[ $(awk -v s="$score" -v t="$FOLLOWUP_THRESHOLD" "BEGIN { print (s >= t ? 1 : 0) }") -eq 1 ]]; then
       continue
     fi
     url=$(get_url "$id")

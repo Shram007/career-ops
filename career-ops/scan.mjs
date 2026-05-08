@@ -83,6 +83,7 @@ function parseGreenhouse(json, companyName) {
     company: companyName,
     location: j.location?.name || '',
     posted_at: j.created_at || j.updated_at || new Date().toISOString(),
+    description: j.description || '',
   }));
 }
 
@@ -94,6 +95,7 @@ function parseAshby(json, companyName) {
     company: companyName,
     location: j.location || '',
     posted_at: j.publishedDate || j.createdAt || new Date().toISOString(),
+    description: j.description || '',
   }));
 }
 
@@ -105,6 +107,7 @@ function parseLever(json, companyName) {
     company: companyName,
     location: j.categories?.location || '',
     posted_at: j.createdAt || j.postedAt || new Date().toISOString(),
+    description: j.description || '',
   }));
 }
 
@@ -155,6 +158,37 @@ function extractDate(postedAtStr) {
   } catch {
     return new Date().toISOString().slice(0, 10);
   }
+}
+
+// ── Experience filter ───────────────────────────────────────────────
+
+function meetExperienceRequirement(description, maxYears = 3) {
+  if (!description) return true; // No description = assume OK
+  const lower = description.toLowerCase();
+
+  // Match patterns like "3+ years", "5+ years of experience", etc.
+  const xpPatterns = [
+    /(\d+)\+?\s+years?(?:\s+of)?\s+(?:professional\s+)?(?:work\s+)?experience/gi,
+    /(\d+)\+?\s+years?(?:\s+of)?\s+(?:in\s+)?(?:the\s+)?(?:industry|development|software|programming)/gi,
+    /(\d+)\+?\s+years?.*?required/gi,
+    /required:?\s+(\d+)\+?\s+years?/gi,
+  ];
+
+  const foundRequirements = [];
+  for (const pattern of xpPatterns) {
+    let match;
+    while ((match = pattern.exec(lower)) !== null) {
+      const years = parseInt(match[1], 10);
+      if (!isNaN(years)) foundRequirements.push(years);
+    }
+  }
+
+  // If no experience requirement found, assume OK
+  if (foundRequirements.length === 0) return true;
+
+  // Check if any requirement exceeds maxYears
+  const maxRequired = Math.max(...foundRequirements);
+  return maxRequired <= maxYears;
 }
 
 // ── Dedup ───────────────────────────────────────────────────────────
@@ -290,6 +324,7 @@ async function main() {
   const config = parseYaml(readFileSync(PORTALS_PATH, 'utf-8'));
   const companies = config.tracked_companies || [];
   const titleFilter = buildTitleFilter(config.title_filter);
+  const maxYears = config.experience_filter?.max_years || 3;
 
   // 2. Filter to enabled companies with detectable APIs
   const targets = companies
@@ -301,7 +336,7 @@ async function main() {
   const skippedCount = companies.filter(c => c.enabled !== false).length - targets.length;
 
   console.log(`Scanning ${targets.length} companies via API (${skippedCount} skipped — no API detected)`);
-  console.log(`Age filter: ${daysCutoff} days`);
+  console.log(`Age filter: ${daysCutoff} days | Experience filter: max ${maxYears} years`);
   if (dryRun) console.log('(dry run — no files will be written)\n');
 
   // 3. Load dedup sets
@@ -329,6 +364,10 @@ async function main() {
           continue;
         }
         if (!isRecentPosting(job.posted_at, daysCutoff)) {
+          totalFiltered++;
+          continue;
+        }
+        if (!meetExperienceRequirement(job.description, maxYears)) {
           totalFiltered++;
           continue;
         }
