@@ -268,11 +268,16 @@ function parseRssItems(xml, maxItems) {
   return out;
 }
 
-async function fetchSalesforceRss(careersUrl, maxLinks) {
+async function fetchSalesforceRss(rssUrl, maxLinks) {
   try {
-    const u = new URL(careersUrl);
-    const rssUrl = `${u.origin}/en/jobs/xml/?rss=true`;
-    const res = await fetch(rssUrl, {
+    // If passed a careers URL, derive the RSS URL; otherwise use directly
+    let url = rssUrl;
+    if (!rssUrl.includes('rss=true')) {
+      const u = new URL(rssUrl);
+      url = `${u.origin}/en/jobs/xml/?rss=true`;
+    }
+    
+    const res = await fetch(url, {
       headers: {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
       },
@@ -294,37 +299,9 @@ async function fetchUberListRoute(page, maxLinks) {
   }
 }
 
-function buildHostProbeUrls(careersUrl) {
-  let host = '';
-  try {
-    host = new URL(careersUrl).hostname.toLowerCase();
-  } catch {
-    return [];
-  }
-
-  if (host.includes('amazon.jobs')) {
-    return ['https://www.amazon.jobs/en/search?base_query=software+engineer'];
-  }
-  if (host.includes('careers.adobe.com')) {
-    return ['https://careers.adobe.com/us/en/search-results?keywords=software%20engineer'];
-  }
-  if (host.includes('careers.oracle.com')) {
-    return ['https://careers.oracle.com/en/sites/jobsearch/jobs?keyword=software%20engineer'];
-  }
-  if (host.includes('careers.pypl.com') || host.includes('pypl.com')) {
-    return ['https://paypal.eightfold.ai/careers'];
-  }
-  if (host.includes('metacareers.com')) {
-    return ['https://www.metacareers.com/jobsearch?q=software%20engineer'];
-  }
-  if (host.includes('google.com') || host.includes('careers.google.com')) {
-    return ['https://www.google.com/about/careers/applications/jobs/results/?q=software%20engineer'];
-  }
-  if (host.includes('uber.com')) {
-    return ['https://www.uber.com/us/en/careers/list/?query=software%20engineer'];
-  }
-
-  return [];
+function buildHostProbeUrls(fallbackUrl) {
+  if (!fallbackUrl) return [];
+  return [fallbackUrl];
 }
 
 async function main() {
@@ -342,7 +319,12 @@ async function main() {
     .filter(c => c?.enabled !== false)
     .filter(c => !companyFilter || String(c?.name || '').toLowerCase().includes(companyFilter))
     .filter(c => typeof c?.careers_url === 'string' && c.careers_url.trim().length > 0)
-    .map(c => ({ name: c.name, careers_url: c.careers_url, scan_method: c.scan_method || '-' }));
+    .map(c => ({
+      name: c.name,
+      careers_url: c.careers_url,
+      fallback_url: c.fallback_url,
+      scan_method: c.scan_method || '-',
+    }));
 
   if (targets.length === 0) {
     console.log('No careers targets matched.');
@@ -381,12 +363,16 @@ async function main() {
         }
       })();
 
-      const probeUrls = buildHostProbeUrls(t.careers_url);
+      const probeUrls = buildHostProbeUrls(t.fallback_url);
       if (links.length < 20 && probeUrls.length > 0) {
         const seen = new Set(links.map(x => x.url));
         for (const probeUrl of probeUrls) {
           let extra = [];
-          if (probeUrl.includes('uber.com/us/en/careers/list/')) {
+          
+          // Special handling for RSS feeds (Salesforce)
+          if (probeUrl.includes('rss=true')) {
+            extra = await fetchSalesforceRss(probeUrl, maxLinksPerCompany);
+          } else if (probeUrl.includes('uber.com/us/en/careers/list/')) {
             extra = await fetchUberListRoute(page, maxLinksPerCompany);
           } else {
             try {
@@ -403,17 +389,6 @@ async function main() {
             if (links.length >= maxLinksPerCompany) break;
           }
 
-          if (links.length >= maxLinksPerCompany) break;
-        }
-      }
-
-      if (careersHost.includes('salesforce.com')) {
-        const extra = await fetchSalesforceRss(t.careers_url, maxLinksPerCompany);
-        const seen = new Set(links.map(x => x.url));
-        for (const e of extra) {
-          if (seen.has(e.url)) continue;
-          seen.add(e.url);
-          links.push(e);
           if (links.length >= maxLinksPerCompany) break;
         }
       }
