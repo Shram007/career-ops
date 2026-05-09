@@ -170,7 +170,7 @@ function looksLikeJobLink(url, title) {
   const href = String(url || '').toLowerCase();
   const text = String(title || '').toLowerCase();
 
-  const urlSignal = /((\/jobs?\/\d+)|(\/jobs?\/[a-z0-9-]{6,})|(\/careers\/list\/\d+)|(\/profile\/job_details\/\d+)|(\/about\/careers\/applications\/jobs\/results\/\d+[a-z0-9-]*)|(\/en\/sites\/jobsearch\/job\/\d+)|(\/us\/en\/job\/[a-z0-9-]+)|(boards?\.greenhouse\.io\/[^\s]+\/jobs\/\d+)|(jobs\.lever\.co\/[^\s]+)|(jobs\.ashbyhq\.com\/[^\s]+)|(myworkdayjobs\.com\/[^\s]+\/job\/[^\s]+)|(jobid=\d+)|(gh_jid=\d+))/i;
+  const urlSignal = /((\/jobs?\/\d+)|(\/jobs?\/[a-z0-9-]{6,})|(\/careers\/list\/\d+)|(\/careers\/job\/\d+)|(\/profile\/job_details\/\d+)|(\/about\/careers\/applications\/jobs\/results\/\d+[a-z0-9-]*)|(\/en\/sites\/jobsearch\/job\/\d+)|(\/us\/en\/job\/[a-z0-9-]+)|(boards?\.greenhouse\.io\/[^\s]+\/jobs\/\d+)|(jobs\.lever\.co\/[^\s]+)|(jobs\.ashbyhq\.com\/[^\s]+)|(myworkdayjobs\.com\/[^\s]+\/job\/[^\s]+)|(jobid=\d+)|(gh_jid=\d+))/i;
   const weakCareersPath = /\/careers?\//i;
   const textSignal = /(engineer|developer|scientist|analyst|architect|intern|graduate|new grad|software|backend|frontend|full stack|machine learning|ai|ml)/i;
 
@@ -310,6 +310,9 @@ function buildHostProbeUrls(careersUrl) {
   }
   if (host.includes('careers.oracle.com')) {
     return ['https://careers.oracle.com/en/sites/jobsearch/jobs?keyword=software%20engineer'];
+  }
+  if (host.includes('careers.pypl.com') || host.includes('pypl.com')) {
+    return ['https://paypal.eightfold.ai/careers'];
   }
   if (host.includes('metacareers.com')) {
     return ['https://www.metacareers.com/jobsearch?q=software%20engineer'];
