@@ -7,9 +7,9 @@
  * run can prove which levels executed and with what outcome.
  *
  * Levels:
- *  - Level 1: Playwright bypass/access pass
+ *  - Level 1: Playwright extraction pass
  *  - Level 2: API scan (scan.mjs)
- *  - Level 3: WebSearch dedup pass (scripts/deduplicate-websearch.mjs)
+ *  - Level 3: WebSearch query scan (scan-websearch.mjs)
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from 'fs';
@@ -208,9 +208,9 @@ function main() {
   const level1 = runLevel({
     runId,
     level: 'level1-playwright',
-    evidence: `${REPORTS_DIR}/playwright-bypass.tsv`,
-    scriptPath: 'check-playwright-bypass.mjs',
-    scriptArgs: ['--output', `${REPORTS_DIR}/playwright-bypass.tsv`],
+    evidence: `${DATA_DIR}/scan-history.tsv;${DATA_DIR}/pipeline.md`,
+    scriptPath: 'scan-playwright.mjs',
+    scriptArgs: passthrough,
     skip: skipLevel1,
     skipReason: '--skip-level1 flag',
   });
@@ -227,10 +227,10 @@ function main() {
 
   const level3 = runLevel({
     runId,
-    level: 'level3-websearch-dedup',
-    evidence: '/tmp/new-websearch-jobs.json',
-    scriptPath: 'scripts/deduplicate-websearch.mjs',
-    scriptArgs: ['--allow-missing-results'],
+    level: 'level3-websearch',
+    evidence: `${DATA_DIR}/scan-history.tsv;${DATA_DIR}/pipeline.md`,
+    scriptPath: 'scan-websearch.mjs',
+    scriptArgs: passthrough,
     skip: skipLevel3,
     skipReason: '--skip-level3 flag',
   });
@@ -246,7 +246,7 @@ function main() {
       refresh_after: refresh.row,
       level1_playwright: level1.row,
       level2_api: level2.row,
-      level3_websearch_dedup: level3.row,
+      level3_websearch: level3.row,
     },
     websearch_history_rows_today: {
       before: beforeWebsearchCount,
