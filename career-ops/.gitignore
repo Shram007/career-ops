@@ -4,6 +4,9 @@ data/applications.md
 data/pipeline.md
 data/scan-history.tsv
 reports/*.md
+reports/scan-level-execution.tsv
+reports/scan-run-*.json
+reports/playwright-bypass.tsv
 !reports/.gitkeep
 output/*
 !output/.gitkeep
