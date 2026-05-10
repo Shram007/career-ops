@@ -15,6 +15,7 @@
     "rollback": "node update-system.mjs rollback",
     "liveness": "node check-liveness.mjs",
     "playwright:bypass": "node check-playwright-bypass.mjs",
+    "ingest": "node ingest-urls.mjs",
     "scan:playwright": "node scan-playwright.mjs",
     "scan:websearch": "node scan-websearch.mjs",
     "scan:dedup-websearch": "node scripts/deduplicate-websearch.mjs",

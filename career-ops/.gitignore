@@ -38,6 +38,7 @@ batch/cv-gen-*.mjs
 batch/runner.log
 cv-candidate-*.html
 tmp/cv-candidate-*.html
+tmp/ingest-urls.txt
 
 # OS
 .DS_Store
