@@ -312,7 +312,9 @@ async function main() {
   }
 
   const config = parseYaml(readFileSync(PORTALS_PATH, 'utf8'));
-  const companies = config?.tracked_companies || [];
+  const referralCompanies = config?.referral_companies || [];
+  const trackedCompanies = config?.tracked_companies || [];
+  const companies = [...referralCompanies, ...trackedCompanies];
   const titleFilter = buildTitleFilter(config?.title_filter);
 
   const targets = companies
