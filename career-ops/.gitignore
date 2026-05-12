@@ -3,6 +3,7 @@ cv.md
 data/applications.md
 data/pipeline.md
 data/scan-history.tsv
+data/ingest-extraction-*.csv
 reports/*.md
 reports/scan-level-execution.tsv
 reports/scan-run-*.json
@@ -14,10 +15,14 @@ batch/logs/*
 !batch/logs/.gitkeep
 batch/batch-state.tsv
 batch/batch-input.tsv
+batch/batch-input-new.tsv
+batch/followup-queue.tsv
+batch/BATCH_SUMMARY.md
 batch/tracker-additions/**/*.tsv
 !batch/tracker-additions/.gitkeep
 jds/*
 !jds/.gitkeep
+SCAN_REPORT_*.md
 
 # User config and customization (never auto-updated)
 config/profile.yml
@@ -25,6 +30,7 @@ portals.yml
 modes/_profile.md
 .update-dismissed
 .update-lock
+.claude/settings.json
 
 # Secrets (never commit — use .env.example as template)
 .env
@@ -35,10 +41,15 @@ node_modules/
 bun.lock
 batch/*.html
 batch/cv-gen-*.mjs
+batch-runner.mjs
 batch/runner.log
+cv-*.html
 cv-candidate-*.html
 tmp/cv-candidate-*.html
 tmp/ingest-urls.txt
+run-level*.mjs
+validate-ingest.mjs
+dashboard/career-dashboard.exe
 
 # OS
 .DS_Store
