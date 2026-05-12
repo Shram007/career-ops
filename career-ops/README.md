@@ -167,6 +167,8 @@ Career-ops is a single slash command with multiple modes:
 /career-ops {paste a JD}   → Full auto-pipeline (evaluate + PDF + tracker)
 /career-ops scan           → Scan portals for new jobs
 /career-ops pdf            → Generate ATS-optimized CV
+/career-ops pdf queue      → List tracker IDs ready for PDF generation
+/career-ops pdf id 22      → Generate CV PDF from tracked job #22 (no JD re-paste)
 /career-ops batch          → Batch evaluate multiple jobs
 /career-ops tracker        → View application status
 /career-ops apply          → Fill application forms with AI

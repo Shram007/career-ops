@@ -3,7 +3,7 @@ name: career-ops
 description: AI job search command center -- evaluate jobs, generate CVs, scan portals, track applications
 user_invocable: true
 args: mode
-argument-hint: "[scan | deep | pdf | oferta | ofertas | apply | batch | tracker | pipeline | contacto | training | project | interview-prep | update]"
+argument-hint: "[scan | deep | pdf | pdf queue | pdf id <num> | oferta | ofertas | apply | batch | tracker | pipeline | contacto | training | project | interview-prep | update]"
 ---
 
 # career-ops -- Router
@@ -21,12 +21,16 @@ Determine the mode from `{{mode}}`:
 | `contacto` | `contacto` |
 | `deep` | `deep` |
 | `pdf` | `pdf` |
+| `pdf queue` | `pdf` (list tracker IDs ready for PDF generation) |
+| `pdf id <num>` | `pdf` (generate PDF from tracker number, no JD re-paste) |
 | `training` | `training` |
 | `project` | `project` |
 | `tracker` | `tracker` |
 | `pipeline` | `pipeline` |
 | `apply` | `apply` |
-| `scan` | `scan` |
+| `scan` | `scan` (all sources: Playwright + APIs + WebSearch) |
+| `scan tracked` | `scan-tracked` (Playwright + APIs for tracked companies only) |
+| `scan api` | `scan-api` (APIs + WebSearch discovery only) |
 | `batch` | `batch` |
 | `patterns` | `patterns` |
 | `followup` | `followup` |
@@ -52,11 +56,15 @@ Available commands:
   /career-ops contacto  → LinkedIn power move: find contacts + draft message
   /career-ops deep      → Deep research prompt about company
   /career-ops pdf       → PDF only, ATS-optimized CV
+  /career-ops pdf queue → List tracker IDs ready for PDF generation
+  /career-ops pdf id N  → PDF from tracker job number (no JD/URL re-paste)
   /career-ops training  → Evaluate course/cert against North Star
   /career-ops project   → Evaluate portfolio project idea
   /career-ops tracker   → Application status overview
   /career-ops apply     → Live application assistant (reads form + generates answers)
-  /career-ops scan      → Scan portals and discover new jobs
+  /career-ops scan      → Scan all sources: Playwright + APIs + WebSearch
+  /career-ops scan tracked  → Scan tracked companies only (Playwright + APIs)
+  /career-ops scan api      → Scan APIs + WebSearch discovery only
   /career-ops batch     → Batch processing with parallel workers
   /career-ops patterns  → Analyze rejection patterns and improve targeting
   /career-ops followup  → Follow-up cadence tracker: flag overdue, generate drafts
@@ -74,7 +82,7 @@ After determining the mode, load the necessary files before executing:
 ### Modes that require `_shared.md` + their mode file:
 Read `modes/_shared.md` + `modes/{mode}.md`
 
-Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `contacto`, `apply`, `pipeline`, `scan`, `batch`
+Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `contacto`, `apply`, `pipeline`, `scan`, `scan-tracked`, `scan-api`, `batch`
 
 ### Standalone modes (only their mode file):
 Read `modes/{mode}.md`
@@ -82,7 +90,7 @@ Read `modes/{mode}.md`
 Applies to: `tracker`, `deep`, `training`, `project`, `patterns`, `followup`
 
 ### Modes delegated to subagent:
-For `scan`, `apply` (with Playwright), and `pipeline` (3+ URLs): launch as Agent with the content of `_shared.md` + `modes/{mode}.md` injected into the subagent prompt.
+For `scan`, `scan-tracked`, `scan-api`, `apply` (with Playwright), and `pipeline` (3+ URLs): launch as Agent with the content of `_shared.md` + `modes/{mode}.md` injected into the subagent prompt.
 
 ```
 Agent(

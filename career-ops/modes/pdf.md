@@ -2,6 +2,18 @@
 
 ## Full Pipeline
 
+### ID-First Shortcut (no URL/JD re-paste)
+
+If the user provides an applications tracker number (for example: "generate PDF for #22"), resolve the job context from existing files before asking for anything else:
+
+1. Read `data/applications.md` and locate the row by `#`.
+2. Resolve JD URL using this priority:
+   - `**URL:**` in the linked report file (if report exists)
+   - `**Batch ID:**` in report -> lookup in `batch/batch-input.tsv`
+3. If score is `< 3.5`, do not proceed unless the user explicitly overrides.
+4. Run the normal PDF pipeline with the resolved role/company/URL.
+5. Do not generate a new evaluation report in this shortcut flow.
+
 1. Reads `cv.md` as source of truth
 2. Asks user for JD if not in context (text or URL)
 3. Extracts 15-20 keywords from JD

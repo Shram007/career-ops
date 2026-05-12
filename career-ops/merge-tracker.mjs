@@ -222,6 +222,16 @@ function parseTsvContent(content, filename) {
     return null;
   }
 
+  const parsedScore = parseScore(addition.score || '');
+  // Enforce triage gate: sub-3.5 entries should not stay in Evaluated state.
+  if (Number.isFinite(parsedScore) && parsedScore > 0 && parsedScore < 3.5) {
+    if (String(addition.status || '').toLowerCase() === 'evaluated') {
+      addition.status = 'SKIP';
+    }
+    addition.pdf = '❌';
+    addition.report = '-';
+  }
+
   return addition;
 }
 
