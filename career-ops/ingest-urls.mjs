@@ -203,6 +203,53 @@ function appendToScanHistory(jobs, date) {
   appendFileSync(SCAN_HISTORY_PATH, lines, 'utf8');
 }
 
+function writeExtractionCsv(accepted, rejected, date) {
+  const csvPath = `data/ingest-extraction-${date}.csv`;
+
+  // CSV header: Date, Company, Title, URL, Status, Rejection Reason
+  const header = 'Date,Company,Title,URL,Status,Rejection Reason\n';
+
+  const acceptedLines = accepted.map(j =>
+    `${date},"${j.company}","${j.title.replace(/"/g, '""')}",${j.url},ACCEPTED,`
+  ).join('\n');
+
+  const rejectedLines = rejected.map(j =>
+    `${date},"${j.company}","${j.title.replace(/"/g, '""')}",${j.url},REJECTED,"${j.reason.replace(/"/g, '""')}"`
+  ).join('\n');
+
+  const csvContent = header + acceptedLines + (acceptedLines && rejectedLines ? '\n' : '') + rejectedLines;
+  writeFileSync(csvPath, csvContent, 'utf8');
+
+  return csvPath;
+}
+
+// ---------------------------------------------------------------------------
+// Title validation — STRICT exclusions
+// ---------------------------------------------------------------------------
+
+function validateTitle(title) {
+  // Excluded seniority keywords (case-insensitive, word boundaries)
+  const exclusions = [
+    /\bSr\.?(?:\s|$)/i,          // "Sr" or "Sr." followed by space or end
+    /\bSenior\b/i,
+    /\bLead\b/i,
+    /\bStaff\b/i,
+    /\bPrincipal\b/i,
+    /\bHead\s+of\b/i,
+    /\bDirector\b/i,
+    /\bManager\b/i,
+  ];
+
+  for (const regex of exclusions) {
+    if (regex.test(title)) {
+      const match = title.match(regex);
+      return { valid: false, reason: `Contains excluded keyword: "${match[0].trim()}"` };
+    }
+  }
+
+  return { valid: true, reason: null };
+}
+
 // ---------------------------------------------------------------------------
 // Infer company from known job board hostnames
 // ---------------------------------------------------------------------------
@@ -316,6 +363,7 @@ async function main() {
   const newJobs = [];
   const skippedDupes = [];
   const titleFetchErrors = [];
+  const rejectedByValidation = [];
 
   for (const { url, inlineTitle } of entries) {
     if (seenUrls.has(url)) {
@@ -344,6 +392,14 @@ async function main() {
       title = titleFromUrl(url) || 'Job Opening';
     }
 
+    // VALIDATION: reject titles with excluded keywords
+    const validation = validateTitle(title);
+    if (!validation.valid) {
+      const company = inferCompany(url);
+      rejectedByValidation.push({ url, title, company, reason: validation.reason });
+      continue;
+    }
+
     const company = inferCompany(url);
     seenUrls.add(url);
 
@@ -354,11 +410,12 @@ async function main() {
   console.log('');
   console.log('Ingest summary');
   console.log('--------------');
-  console.log(`Processed:    ${entries.length}`);
-  console.log(`New:          ${newJobs.length}`);
-  console.log(`Duplicates:   ${skippedDupes.length}`);
+  console.log(`Processed:        ${entries.length}`);
+  console.log(`New:              ${newJobs.length}`);
+  console.log(`Duplicates:       ${skippedDupes.length}`);
+  console.log(`Rejected (title): ${rejectedByValidation.length}`);
   if (titleFetchErrors.length > 0) {
-    console.log(`Title errors: ${titleFetchErrors.length} (used "Job Opening")`);
+    console.log(`Title errors:     ${titleFetchErrors.length} (used "Job Opening")`);
   }
 
   if (newJobs.length > 0) {
@@ -377,7 +434,33 @@ async function main() {
     }
   }
 
-  if (dryRun || newJobs.length === 0) return;
+  if (rejectedByValidation.length > 0) {
+    console.log('');
+    console.log('Rejected (title validation):');
+    for (const r of rejectedByValidation) {
+      console.log(`  - [${r.company}] ${r.title}`);
+      console.log(`    ${r.reason}`);
+    }
+  }
+
+  if (dryRun) {
+    console.log('');
+    console.log('(dry run — no files written)');
+    return;
+  }
+
+  // Write extraction CSV (both accepted + rejected for visibility)
+  if (newJobs.length > 0 || rejectedByValidation.length > 0) {
+    const csvPath = writeExtractionCsv(newJobs, rejectedByValidation, date);
+    console.log('');
+    console.log(`✓ Extraction log: ${csvPath}`);
+  }
+
+  if (newJobs.length === 0) {
+    console.log('');
+    console.log('No jobs passed validation.');
+    return;
+  }
 
   // Write to pipeline + history
   appendToPipeline(newJobs);
@@ -387,7 +470,6 @@ async function main() {
   const clearedText = commentLines.join('\n').trimEnd() + '\n';
   writeFileSync(INPUT_PATH, clearedText, 'utf8');
 
-  console.log('');
   console.log(`✓ Added ${newJobs.length} job(s) to pipeline.md and scan-history.tsv`);
   console.log(`✓ Cleared processed URLs from ${INPUT_PATH}`);
 }

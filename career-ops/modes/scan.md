@@ -191,15 +191,30 @@ The `search_queries` with `site:` filters cover portals across the board (all As
 
    **Don't interrupt entire scan if a URL fails.** If `browser_navigate` errors (timeout, 403, etc.), mark as `skipped_expired` and continue to next.
 
-8. **For each new verified offer that passes filters**:
+8. **Strict title validation** (BEFORE adding to pipeline):
+   
+   **MANDATORY:** Reject any title containing seniority keywords:
+   - "Sr" or "Sr." (followed by space or end of string)
+   - "Senior"
+   - "Lead"
+   - "Staff"
+   - "Principal"
+   - "Head of"
+   - "Director"
+   - "Manager"
+   
+   If rejected: record in `scan-history.tsv` with status `skipped_title_validation` and DO NOT add to pipeline.
+
+9. **For each job that passes ALL filters** (title + seniority + age + experience + dedup + validation):
    a. Add to `pipeline.md` "Pending" section: `- [ ] {posted_date} | {url} | {company} | {title}`
    b. Record in `scan-history.tsv`: `{url}\t{date}\t{query_name}\t{title}\t{company}\tadded`
    
    **Note**: `{posted_date}` (YYYY-MM-DD) comes from each portal's API (Greenhouse `created_at`, Ashby `publishedDate`, Lever `createdAt`). This allows filtering by age and avoiding expired jobs.
 
-9. **Jobs filtered by title**: record in `scan-history.tsv` with status `skipped_title`
-10. **Duplicate jobs**: record with status `skipped_dup`
-11. **Expired jobs (Level 3)**: record with status `skipped_expired`
+10. **Jobs filtered by title (portals.yml)**: record in `scan-history.tsv` with status `skipped_title`
+11. **Jobs failing strict validation (seniority keywords)**: record with status `skipped_title_validation`
+12. **Duplicate jobs**: record with status `skipped_dup`
+13. **Expired jobs (Level 3)**: record with status `skipped_expired`
 
 ## Title and Company Extraction from WebSearch Results
 
@@ -237,7 +252,8 @@ Portal Scan — {YYYY-MM-DD}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 Queries executed: N
 Jobs found: N total
-Filtered by title: N relevant
+Filtered by title (portals.yml): N removed
+Title validation (seniority check): N rejected
 Duplicates: N (already evaluated or in pipeline)
 Expired discarded: N (dead links, Level 3)
 New added to pipeline.md: N

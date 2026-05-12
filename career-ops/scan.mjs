@@ -127,6 +127,29 @@ async function fetchJson(url) {
   }
 }
 
+// ── Title validation — STRICT exclusions ───────────────────────────
+
+function validateTitle(title) {
+  const exclusions = [
+    /\bSr\.?(?:\s|$)/i,
+    /\bSenior\b/i,
+    /\bLead\b/i,
+    /\bStaff\b/i,
+    /\bPrincipal\b/i,
+    /\bHead\s+of\b/i,
+    /\bDirector\b/i,
+    /\bManager\b/i,
+  ];
+
+  for (const regex of exclusions) {
+    if (regex.test(title)) {
+      return { valid: false, reason: `Contains excluded keyword: "${title.match(regex)[0].trim()}"` };
+    }
+  }
+
+  return { valid: true, reason: null };
+}
+
 // ── Title filter ────────────────────────────────────────────────────
 
 function buildTitleFilter(titleFilter) {
@@ -274,14 +297,14 @@ function appendToPipeline(jobs) {
   writeFileSync(PIPELINE_PATH, text, 'utf-8');
 }
 
-function appendToScanHistory(jobs, date) {
+function appendToScanHistory(jobs, date, status = 'added') {
   // Ensure file + header exist
   if (!existsSync(SCAN_HISTORY_PATH)) {
     writeFileSync(SCAN_HISTORY_PATH, 'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\n', 'utf-8');
   }
 
   const lines = jobs.map(o =>
-    `${o.url}\t${date}\t${o.source}\t${o.title}\t${o.company}\tadded`
+    `${o.url}\t${date}\t${o.source}\t${o.title}\t${o.company}\t${status}`
   ).join('\n') + '\n';
 
   appendFileSync(SCAN_HISTORY_PATH, lines, 'utf-8');
@@ -347,8 +370,10 @@ async function main() {
   const date = new Date().toISOString().slice(0, 10);
   let totalFound = 0;
   let totalFiltered = 0;
+  let totalValidationRejected = 0;
   let totalDupes = 0;
   const newJobs = [];
+  const validationRejected = [];
   const errors = [];
 
   const tasks = targets.map(company => async () => {
@@ -369,6 +394,13 @@ async function main() {
         }
         if (!meetExperienceRequirement(job.description, maxYears)) {
           totalFiltered++;
+          continue;
+        }
+        // STRICT validation: reject Sr, Lead, Senior, etc.
+        const validation = validateTitle(job.title);
+        if (!validation.valid) {
+          totalValidationRejected++;
+          validationRejected.push({ ...job, reason: validation.reason });
           continue;
         }
         if (seenUrls.has(job.url)) {
@@ -401,6 +433,15 @@ async function main() {
     appendToPipeline(newJobs);
     appendToScanHistory(newJobs, date);
   }
+  // Log validation-rejected to history (for audit)
+  if (!dryRun && validationRejected.length > 0) {
+    appendToScanHistory(validationRejected.map(j => ({
+      ...j,
+      title: j.title,
+      posted_date: extractDate(j.posted_at),
+      source: 'validation-rejected'
+    })), date, 'skipped_title_validation');
+  }
 
   // 6. Print summary
   console.log(`\n${'━'.repeat(45)}`);
@@ -409,8 +450,9 @@ async function main() {
   console.log(`Companies scanned:     ${targets.length}`);
   console.log(`Total jobs found:      ${totalFound}`);
   console.log(`Filtered (title+age):  ${totalFiltered} removed`);
+  console.log(`Title validation:      ${totalValidationRejected} rejected`);
   console.log(`Duplicates:            ${totalDupes} skipped`);
-  console.log(`New jobs added:      ${newJobs.length}`);
+  console.log(`New jobs added:        ${newJobs.length}`);
 
   if (errors.length > 0) {
     console.log(`\nErrors (${errors.length}):`);
