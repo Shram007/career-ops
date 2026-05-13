@@ -88,6 +88,41 @@ function buildTitleFilter(titleFilter) {
   };
 }
 
+/**
+ * Location filter: only rejects if a NEGATIVE location keyword appears in the title.
+ * Allows through titles with no location info (we can't assume location from absence).
+ */
+function buildLocationFilter(locationFilter) {
+  if (!locationFilter) return () => ({ pass: true, reason: null });
+  const negative = (locationFilter?.negative || []).map(k => String(k).toLowerCase());
+
+  return (title) => {
+    const lower = String(title || '').toLowerCase();
+    const hit = negative.find(k => lower.includes(k));
+    if (hit) return { pass: false, reason: `loc:${hit}` };
+    return { pass: true, reason: null };
+  };
+}
+
+/**
+ * Experience filter: rejects if the title explicitly states more years than max_years.
+ * E.g. "Software Engineer, 5+ Years" or "Backend Engineer (3-5 years)" with max=3.
+ * Titles with no year info pass through — years are unknown until JD is fetched.
+ */
+function buildExperienceFilter(experienceFilter) {
+  const maxYears = Number(experienceFilter?.max_years);
+  if (!maxYears || maxYears <= 0) return () => ({ pass: true, reason: null });
+
+  return (title) => {
+    const lower = String(title || '').toLowerCase();
+    const m = lower.match(/(\d+)\s*(?:\+|-\s*\d+)?\s*(?:\+)?\s*years?/);
+    if (!m) return { pass: true, reason: null };
+    const years = parseInt(m[1], 10);
+    if (years > maxYears) return { pass: false, reason: `exp:${years}yr` };
+    return { pass: true, reason: null };
+  };
+}
+
 function readTextOrEmpty(path) {
   return existsSync(path) ? readFileSync(path, 'utf8') : '';
 }
@@ -327,6 +362,8 @@ async function main() {
   const pipelinePath = referralMode ? REFERRAL_PIPELINE_PATH : PIPELINE_PATH;
   const dedupQueuePaths = [PIPELINE_PATH, REFERRAL_PIPELINE_PATH];
   const titleFilter = buildTitleFilter(config?.title_filter);
+  const locationFilter = buildLocationFilter(config?.location_filter);
+  const experienceFilter = buildExperienceFilter(config?.experience_filter);
 
   const targets = companies
     .filter(c => c?.enabled !== false)
@@ -359,6 +396,9 @@ async function main() {
   const errors = [];
   let extractedCandidates = 0;
   let filteredOut = 0;
+  let filteredByTitle = 0;
+  let filteredByLocation = 0;
+  let filteredByExp = 0;
   let duplicates = 0;
 
   console.log(`Playwright extraction: scanning ${targets.length} companies`);
@@ -411,6 +451,23 @@ async function main() {
       for (const link of links) {
         if (!titleFilter(link.title)) {
           filteredOut += 1;
+          filteredByTitle += 1;
+          continue;
+        }
+
+        const locResult = locationFilter(link.title);
+        if (!locResult.pass) {
+          filteredOut += 1;
+          filteredByLocation += 1;
+          if (dryRun) console.log(`    [LOC-FILTER] ${link.title} — ${locResult.reason}`);
+          continue;
+        }
+
+        const expResult = experienceFilter(link.title);
+        if (!expResult.pass) {
+          filteredOut += 1;
+          filteredByExp += 1;
+          if (dryRun) console.log(`    [EXP-FILTER] ${link.title} — ${expResult.reason}`);
           continue;
         }
 
@@ -456,7 +513,7 @@ async function main() {
   console.log('----------------------------');
   console.log(`Targets scanned:      ${targets.length}`);
   console.log(`Candidates extracted: ${extractedCandidates}`);
-  console.log(`Filtered out:         ${filteredOut}`);
+  console.log(`Filtered out:         ${filteredOut}  (title: ${filteredByTitle}, location: ${filteredByLocation}, exp: ${filteredByExp})`);
   console.log(`Duplicates:           ${duplicates}`);
   console.log(`New jobs:             ${newJobs.length}`);
 
