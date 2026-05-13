@@ -99,10 +99,15 @@ projectMatches.forEach((projHtml, idx) => {
   const bulletCount = bulletMatches.length;
 
   // Check: tech stack should exist (in new format with separate tech div)
-  if (!tech && !title.includes('|')) {
-    warnings.push(`Project ${idx + 1} "${title}": no tech stack found. Add <div class="project-tech">tech list</div> or include "| Stack:" in title.`);
+  if (!tech) {
+    warnings.push(`Project ${idx + 1} "${title}": no tech stack found. Add <div class="project-tech">tech list</div> inside project-header.`);
   } else if (tech.length < 5) {
     warnings.push(`Project ${idx + 1}: tech stack "${tech}" may be incomplete (too short)`);
+  }
+
+  // Check: title must NOT use inline "| Stack:" format (old/wrong pattern)
+  if (title.includes('| Stack:') || title.includes('|Stack:')) {
+    violations.push(`Project ${idx + 1}: title uses forbidden "| Stack:" inline format ("${title.substring(0, 60)}..."). Use <div class="project-tech"> instead.`);
   }
 
   // Check: no work experience titles (dates like "2023-2024", company patterns)

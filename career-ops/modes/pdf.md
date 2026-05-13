@@ -38,7 +38,7 @@ If the user provides an applications tracker number (for example: "generate PDF 
 15. **Validate HTML before rendering PDF:**
     - Run: `node validate-resume-html.mjs /tmp/cv-{candidate}-{company}.html`
     - If validation fails, fix all reported issues and re-run until clean:
-      - **Projects title format**: must use `| Stack: technology list` — e.g. `Project Name | Stack: Node.js, PostgreSQL`
+      - **Projects title format**: must use `project-header` + `project-title` + `project-tech` div structure — e.g. `<div class="project-header"><div class="project-title"><a href="...">Name</a></div><div class="project-tech">Node.js, PostgreSQL</div></div>`. **NEVER use inline `| Stack:` text inside the title**.
       - **Projects bullets**: must use `<ul><li>` with 2-3 `<li>` items per project — **never** `<div class="project-desc">`
       - **Skills**: max 3-4 groups; each group must be ≤ 85 chars total (split or trim if longer)
     - Do not proceed to PDF generation until validation passes.
@@ -128,13 +128,13 @@ Use the template in `cv-template.html`. Replace `{{...}}` placeholders with pers
 | `{{SECTION_EXPERIENCE}}` | Work Experience / Experiencia Laboral |
 | `{{EXPERIENCE}}` | HTML of each job with reordered bullets |
 | `{{SECTION_PROJECTS}}` | Projects / Proyectos |
-| `{{PROJECTS}}` | HTML of top 3-4 projects. Link titles to GitHub URLs from `config/profile.yml` proof_points: `<div class="project"><div class="project-header"><div class="project-title"><a href="github-url">Project Name</a></div><div class="project-tech">tech list</div></div><ul><li>impact bullet</li><li>impact bullet</li></ul></div>` (each project MUST have `<ul>` with 2-3 `<li>` bullets, each 1 line max) |
+| `{{PROJECTS}}` | HTML of top 3-4 projects. Link titles to GitHub URLs from `config/profile.yml` proof_points. Required structure per project: `<div class="project"><div class="project-header"><div class="project-title"><a href="github-url">Project Name</a></div><div class="project-tech">Tech · More</div></div><ul><li>impact bullet</li><li>impact bullet</li></ul></div>`. **Never use `| Stack:` inline in the title.** (each project MUST have `<ul>` with 2-3 `<li>` bullets, each 1 line max) |
 | `{{SECTION_EDUCATION}}` | Education / Formación |
 | `{{EDUCATION}}` | HTML of education |
 | `{{SECTION_CERTIFICATIONS}}` | Certifications / Certificaciones |
 | `{{CERTIFICATIONS}}` | HTML of certifications |
 | `{{SECTION_SKILLS}}` | Skills / Competencias |
-| `{{SKILLS}}` | **FULL WRAPPER REQUIRED**: `<div class="section avoid-break"><div class="section-title">{{SECTION_SKILLS}}</div><div class="skills-grid">` + skill groups + `</div></div>`. Each group: `<div><span class="skill-category">Category:</span> skill1, skill2, skill3</div>`. Max 3-4 groups total, each <= 85 chars. **NO wrapping to 2 lines per group.** |
+| `{{SKILLS}}` | Inner skills grid only — **no section wrapper** (the template already wraps it): `<div class="skills-grid"><div class="skill-item"><span class="skill-category">Category:</span> skill1, skill2, skill3</div>...</div>`. Max 3-4 groups total, each group ≤ 85 chars. **NO wrapping to 2 lines per group.** |
 
 ## Canva CV Generation (optional)
 
