@@ -47,6 +47,7 @@ cv-*.html
 cv-candidate-*.html
 tmp/cv-candidate-*.html
 tmp/ingest-urls.txt
+tmp/jd-cache/
 run-level*.mjs
 validate-ingest.mjs
 dashboard/career-dashboard.exe
