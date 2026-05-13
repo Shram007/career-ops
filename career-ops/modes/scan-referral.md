@@ -8,19 +8,29 @@ Scans **referral companies only** (from `portals.yml` `referral_companies` secti
 
 > **Note:** This mode executes Levels 1+2 for all referral companies. It also runs **Level 3 WebSearch only** for referral companies with `scan_method: websearch` and a `scan_query`.
 
-## Recommended Execution
+## Execution
 
-Run as a subagent to avoid consuming main context:
+> **⚠️ SUBAGENT EXECUTION RULE — STRICTLY ENFORCED:**
+> The three levels described below are **already implemented** in `scan-with-instrumentation.mjs`.
+> Your job is to **run the script**, not to implement the levels yourself.
+> - **DO NOT** use `browser_navigate`, `browser_snapshot`, or any Playwright tools directly.
+> - **DO NOT** call ATS APIs manually with `fetch` or `WebFetch`.
+> - **DO NOT** create a new `.mjs` file or any other script.
+> - **DO NOT** write code to implement the scan.
+> Running the script IS the execution of Levels 1, 2, and 3.
 
+**Run this exact command:**
+
+```bash
+node scan-with-instrumentation.mjs --referral
 ```
-Agent(
-    subagent_type="general-purpose",
-    prompt="[contents of this file + specific data]",
-    run_in_background=True
-)
-```
 
-**CRITICAL: LEVELS 1 + 2 MUST EXECUTE.** Level 1 (Playwright) is mandatory. Level 3 executes for configured websearch referral targets.
+This single command orchestrates all three levels automatically:
+1. Level 1 (Playwright) — all referral companies with `careers_url`
+2. Level 2 (ATS APIs) — all referral companies with a detectable API
+3. Level 3 (WebSearch) — only referral companies with `scan_method: websearch` + `scan_query`
+
+Results are written to `data/pipeline-referral.md`. When done, report the summary output to the user.
 
 ## Configuration
 

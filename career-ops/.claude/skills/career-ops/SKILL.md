@@ -110,6 +110,11 @@ Agent(
 
 Execute the instructions from the loaded mode file.
 
+> **SCAN MODE SUBAGENT RULE:** For `scan-referral`, `scan`, and `scan-discovery`, the subagent **must run the pre-built script** — not implement the scan manually with tools. Include this in the invocation-specific data section of the subagent prompt:
+> - `scan-referral` → `node scan-with-instrumentation.mjs --referral`
+> - `scan-discovery` → `node scan-with-instrumentation.mjs --skip-level1 --skip-level2` (Level 3 only)
+> - `scan` (all) → `node scan-with-instrumentation.mjs`
+
 > **ROUTING AGENT RULE — STRICTLY ENFORCED:**
 > When routing to a delegated mode, your **only** job is to read the mode file and forward its contents to the subagent.
 > - **DO NOT** edit, simplify, rewrite, or "improve" any `modes/*.md` file.

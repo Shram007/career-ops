@@ -1,3 +1,84 @@
 ## Pending
 
+- [ ] 2026-05-13 | https://www.amazon.jobs/en/job_categories | Amazon | (from Playwright)
+- [ ] 2026-05-13 | https://www.amazon.jobs/content/en/job-categories | Amazon | (from Playwright)
+- [ ] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results | Google | (from Playwright)
+- [ ] 2026-05-13 | https://www.linkedin.com/company/google/jobs/ | Google | (from Playwright)
+- [ ] 2026-05-13 | https://careers.google.com/jobs/dist/legal/EEOC_KnowYourRights_10_20.pdf | Google | (from Playwright)
+- [ ] 2026-05-13 | https://www.metacareers.com/jobsearch/ | Meta | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/#content | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/saved-jobs/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/#results | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/?page=2#results | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/?page=3#results | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/?page=71#results | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr339282/lead-solution-engineer-service-cloud/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341794/field-marketing-lead-middle-east-commercial-business/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341625/commercial-account-executive/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr342259/partner-account-senior-manager-vietnam/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr332152/cloud-account-executive/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr334809/lead-account-se-higher-education/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr339139/forward-deployed-engineering-lead-data-science-integration/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr340256/engagement-director-strategic-transformation-customer-success-leader/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr325990/lead-backend-software-engineer/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr338243/chief-customer-officer-global-life-sciences/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr340791/software-engineering-smts/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr342191/business-development-rep/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr322979/senior-success-guide-commerce-cloud/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341981/named-account-executive-mid-market-singapore/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341586/account-executive-tth-travel-transport-and-hospitality/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr321330/salesforce-support-engineer-industries-revenue-cloud/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr333705/technical-support-engineer/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341126/director-technical-program-management/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr340582/senior-director-global-rewards-business-partner/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr339485/%E3%83%91%E3%83%BC%E3%83%88%E3%83%8A%E3%83%BC%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0-%E3%82%AA%E3%83%9A%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%B9%E3%83%9A%E3%82%B7%E3%83%A3%E3%83%AA%E3%82%B9%E3%83%88-%E9%9A%9C%E5%AE%B3%E8%80%85%E6%8E%A1%E7%94%A8/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://www.linkedin.com/company/salesforce/jobs/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/se/jobb/ | Salesforce | (from Playwright)
+- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/#onetrust-pc-sdk | Salesforce | (from Playwright)
+
+- [ ] 2026-05-11 | https://www.amazon.jobs/en/jobs/3093439/software-engineer | Amazon | Software Engineer
+- [ ] 2026-05-11 | https://www.amazon.jobs/en/jobs/3141336/software-engineer-i | Amazon | Software Engineer I
+- [ ] 2026-05-11 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/120479753218990790-software-engineer-full-stack-gup-engineering?q=software%20engineer | Google | 120479753218990790 software engineer full stack gup engineering
+- [ ] 2026-05-11 | https://apply.careers.microsoft.com/careers/job/1970393556863744 | Microsoft | Software EngineerCanada, British Columbia, VancouverPosted an hour ago
+- [ ] 2026-05-11 | https://www.uber.com/careers/list/156790 | Uber | Software Engineer
+- [ ] 2026-05-11 | https://jobs.lever.co/zoox/fe3ec246-6f0a-4405-9ae8-10e322ac6799 | Zoox | AI Developer Productivity EngineerSoftwareSoftware & Machine Learning InfrastructureFull-timeFoster City, CA
+- [ ] 2026-05-11 | https://jobs.lever.co/zoox/78320bf3-5c38-4583-a16b-e67b676cc1f8 | Zoox | AV Safety Software EngineerSafety Policy and StrategyFull-timeFoster City, CA
+- [ ] 2026-05-10 | https://careers.adobe.com/us/en/job/R164609/Backend-Software-Engineer | Adobe | Backend Software Engineer
+- [ ] 2026-05-10 | https://www.amazon.jobs/en/jobs/3092179/software-engineer | Amazon | Software Engineer
+- [ ] 2026-05-10 | https://www.amazon.jobs/en/jobs/10414752/software-engineer-ring | Amazon | Software Engineer, Ring
+- [ ] 2026-05-10 | https://www.amazon.jobs/en/jobs/3155750/software-engineer-i | Amazon | Software Engineer I
+- [ ] 2026-05-10 | https://www.amazon.jobs/en/jobs/10390629/software-engineer-safety | Amazon | Software Engineer, Safety
+- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/122948486462087878-software-engineer-crossplatform-material?q=software%20engineer | Google | 122948486462087878 software engineer crossplatform material
+- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/119716248828158662-software-engineer-gce-control-plane-early-careers-phd?q=software%20engineer | Google | 119716248828158662 software engineer gce control plane early careers phd
+- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/114738878203470534-security-software-engineer-emerging-onprem-ai-infrastructure?q=software%20engineer | Google | 114738878203470534 security software engineer emerging onprem ai infrastructure
+- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/99326551270531782-software-engineer-iii-technical-infrastructure?q=software%20engineer | Google | 99326551270531782 software engineer iii technical infrastructure
+- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/128553246984676038-software-engineer-site-reliability-engineer-g1?q=software%20engineer | Google | 128553246984676038 software engineer site reliability engineer g1
+- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/81389984547775174-software-engineer-compiling-quantum-ai?q=software%20engineer | Google | 81389984547775174 software engineer compiling quantum ai
+- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/96112286329905862-software-engineer-future-of-git?q=software%20engineer | Google | 96112286329905862 software engineer future of git
+- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/1436181490732782/ | Meta | Software Engineer, Machine LearningSunnyvale, CA + 12 locations
+- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/677160418622314/ | Meta | Software Engineer, InfrastructureSunnyvale, CA + 8 locations
+- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/1436181490732782 | Meta | Software Engineer, Machine LearningSunnyvale, CA +12 locations⋅Advertising Technology +14 more⋅EngineeringMultiple LocationsAdvertising TechnologyAI InfrastructureAI ResearchAR/VRArtificial IntelligenceData & AnalyticsFacebookFacebook Reality LabsGenerative AIInfrastructureInstagramMessengerResearchSoftware EngineeringWhatsAppEngineering
+- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/677160418622314 | Meta | Software Engineer, InfrastructureSunnyvale, CA +8 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering
+- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/1368969190886166 | Meta | Software Engineer, Machine LearningSausalito, CA +14 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering
+- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/998357492128826 | Meta | Software Engineer, Machine LearningSunnyvale, CA +11 locations⋅Software Engineering⋅Machine LearningMultiple LocationsSoftware EngineeringMachine Learning
+- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/9657291271065759 | Meta | Software Engineer, ProductBellevue, WA +5 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering
+- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/2486789151677735 | Meta | Software Engineer, InfrastructureSunnyvale, CA +7 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering
+- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/1770681236847041 | Meta | Software Engineer, InfrastructureSunnyvale, CA +5 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering
+- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/727671609895617 | Meta | Software Engineer, ProductBellevue, WA +3 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering
+- [ ] 2026-05-10 | https://www.uber.com/careers/list/156794 | Uber | Software Engineer
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/Commure/aff8345e-e6c8-4710-b822-8bb1039a9b90 | Commure | Software Engineer, EHR Platform & Data (India)
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/Commure/4f90cc05-3978-40c7-8f39-80aab6d134c2 | Commure | Backend Engineer, RCM Core
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/Commure/faeeff7f-b1f9-4db2-93ff-99da570f85b0 | Commure | Forward Deployed Engineer
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/Commure/7d4ec84a-9fdc-4238-81e7-8f666836006e | Commure | Software Engineer, Applied AI
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/Commure/e4289924-f96a-4c32-ba17-d24041798556 | Commure | Software Engineer, Scribe Growth 
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/Commure/6a421e56-45ee-4ef9-9d6d-6454b3bcb3e7 | Commure | Software Engineer, Athelas Home
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/claylabs/232ab8c1-36d7-4114-91c1-0f9c9e4064bc | Clay | Solutions Engineer
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/claylabs/9b008b26-189b-45cf-83d8-fee117d32874 | Clay | Software Engineer, Developer Experience (AI)
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/claylabs/045ce27d-8693-4402-86f6-2f09932cc777 | Clay | Software Engineer, Full Stack
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/claylabs/248aa0c7-034f-47d3-a57e-ce16736eeab6 | Clay | Software Engineer, Backend
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/claylabs/18a42bd0-5bff-4c8e-a403-fb79aad2c57b | Clay | Software Engineer, Frontend
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/claylabs/3940ea40-4c11-40f5-b710-d770c88d0f1b | Clay | Software Engineer, Infrastructure
+- [ ] 2026-05-08 | https://jobs.ashbyhq.com/claylabs/26c9a251-b616-49f7-a489-4d393a02ea5f | Clay | Forward Deployed GTME
+
 ## Processed
