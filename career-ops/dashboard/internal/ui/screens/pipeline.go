@@ -24,6 +24,12 @@ type PipelineOpenReportMsg struct {
 	JobURL string
 }
 
+// PipelineOpenNotesMsg is emitted to show an inline notes summary for apps without a report file.
+type PipelineOpenNotesMsg struct {
+	Lines []string
+	Title string
+}
+
 // PipelineOpenURLMsg is emitted when a job URL should be opened in browser.
 type PipelineOpenURLMsg struct {
 	URL string
@@ -309,6 +315,12 @@ func (m PipelineModel) handleKey(msg tea.KeyMsg) (PipelineModel, tea.Cmd) {
 			jobURL := app.JobURL
 			return m, func() tea.Msg {
 				return PipelineOpenReportMsg{Path: fullPath, Title: title, JobURL: jobURL}
+			}
+		} else if app, ok := m.CurrentApp(); ok && app.Notes != "" {
+			lines := buildNotesLines(app)
+			title := fmt.Sprintf("%s — %s", app.Company, app.Role)
+			return m, func() tea.Msg {
+				return PipelineOpenNotesMsg{Lines: lines, Title: title}
 			}
 		}
 
@@ -982,4 +994,49 @@ func statusLabel(norm string) string {
 	default:
 		return norm
 	}
+}
+
+// buildNotesLines generates concise report-style lines from an app's scored notes.
+// Used for entries that have a score but no full report file.
+func buildNotesLines(app model.CareerApplication) []string {
+	score := "—"
+	if app.Score > 0 {
+		score = fmt.Sprintf("%.1f/5", app.Score)
+	}
+
+	lines := []string{
+		fmt.Sprintf("# %s — %s", app.Company, app.Role),
+		"",
+		fmt.Sprintf("**Score:** %s   **Status:** %s   **Date:** %s", score, app.Status, app.Date),
+		"",
+	}
+
+	if app.JobURL != "" {
+		lines = append(lines, fmt.Sprintf("**URL:** %s", app.JobURL), "")
+	}
+
+	lines = append(lines, "## Notes", "")
+
+	// Split notes on sentence boundaries or pipe-delimited fields for readability
+	raw := strings.TrimSpace(app.Notes)
+	// Strip NEXT[...] tracking suffix
+	if idx := strings.Index(raw, " NEXT["); idx >= 0 {
+		raw = strings.TrimSpace(raw[:idx])
+	}
+
+	// Each ". " becomes a new bullet
+	sentences := strings.Split(raw, ". ")
+	for i, s := range sentences {
+		s = strings.TrimSpace(s)
+		if s == "" {
+			continue
+		}
+		if i < len(sentences)-1 && !strings.HasSuffix(s, ".") {
+			s += "."
+		}
+		lines = append(lines, "  "+s)
+	}
+
+	lines = append(lines, "", "---", "Press q or Esc to close.")
+	return lines
 }

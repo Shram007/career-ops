@@ -88,6 +88,15 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.state = viewReport
 		return m, nil
 
+	case screens.PipelineOpenNotesMsg:
+		m.viewer = screens.NewViewerModelFromContent(
+			m.theme,
+			msg.Lines, msg.Title,
+			m.pipeline.Width(), m.pipeline.Height(),
+		)
+		m.state = viewReport
+		return m, nil
+
 	case screens.ViewerClosedMsg:
 		m.state = viewPipeline
 		return m, nil

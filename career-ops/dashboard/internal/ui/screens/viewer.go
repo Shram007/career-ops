@@ -40,6 +40,17 @@ func NewViewerModel(t theme.Theme, path, title string, width, height int) Viewer
 	}
 }
 
+// NewViewerModelFromContent creates a viewer from pre-built text lines (no file needed).
+func NewViewerModelFromContent(t theme.Theme, lines []string, title string, width, height int) ViewerModel {
+	return ViewerModel{
+		lines:  lines,
+		title:  title,
+		width:  width,
+		height: height,
+		theme:  t,
+	}
+}
+
 func (m ViewerModel) Init() tea.Cmd {
 	return nil
 }

@@ -163,6 +163,10 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 	// Strategy 5: company name fallback from batch-input.tsv
 	enrichAppURLsByCompany(careerOpsPath, apps)
 
+	// Strategy 6: pipeline files (pipeline.md, pipeline-referral.md)
+	// Most reliable for playwright-scanned entries that never went through the batch system.
+	enrichFromPipelineFiles(careerOpsPath, apps)
+
 	return apps
 }
 
@@ -318,8 +322,13 @@ func enrichFromScanHistory(careerOpsPath string, apps []model.CareerApplication)
 		if apps[i].JobURL != "" {
 			continue
 		}
-		key := normalizeCompany(apps[i].Company)
-		matches := byCompany[key]
+		var matches []scanEntry
+		for _, k := range companyKeys(apps[i].Company) {
+			if m, ok := byCompany[k]; ok {
+				matches = m
+				break
+			}
+		}
 		if len(matches) == 1 {
 			apps[i].JobURL = matches[0].url
 		} else if len(matches) > 1 {
@@ -352,6 +361,102 @@ func normalizeCompany(name string) string {
 		s = strings.TrimSuffix(s, suffix)
 	}
 	return strings.TrimSpace(s)
+}
+
+// companyKeys returns all normalized keys to try for a company name.
+// For slash-separated names like "Amazon/Twitch" it also yields each part ("amazon", "twitch").
+func companyKeys(name string) []string {
+	main := normalizeCompany(name)
+	keys := []string{main}
+	if strings.Contains(name, "/") {
+		for _, part := range strings.Split(name, "/") {
+			k := normalizeCompany(part)
+			if k != main && k != "" {
+				keys = append(keys, k)
+			}
+		}
+	}
+	return keys
+}
+
+// enrichFromPipelineFiles fills JobURL by reading pipeline .md files and matching company+title.
+// This covers playwright-scanned jobs that were scored but never went through the batch system.
+func enrichFromPipelineFiles(careerOpsPath string, apps []model.CareerApplication) {
+	pipelineFiles := []string{
+		filepath.Join(careerOpsPath, "data", "pipeline.md"),
+		filepath.Join(careerOpsPath, "data", "pipeline-referral.md"),
+	}
+
+	type pipeEntry struct {
+		url     string
+		title   string
+		company string
+	}
+	// Index by all company keys
+	byCompany := make(map[string][]pipeEntry)
+
+	// Pipeline line format: - [x/ / ~] DATE | URL | Company | Title [| tags...]
+	reLine := regexp.MustCompile(`^-\s*\[[x ~!]\]\s*\d{4}-\d{2}-\d{2}\s*\|\s*(https?://\S+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)`)
+
+	for _, path := range pipelineFiles {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			continue
+		}
+		for _, line := range strings.Split(string(data), "\n") {
+			m := reLine.FindStringSubmatch(line)
+			if m == nil {
+				continue
+			}
+			e := pipeEntry{
+				url:     strings.TrimSpace(m[1]),
+				company: strings.TrimSpace(m[2]),
+				title:   strings.TrimSpace(m[3]),
+			}
+			for _, k := range companyKeys(e.company) {
+				byCompany[k] = append(byCompany[k], e)
+			}
+		}
+	}
+
+	for i := range apps {
+		if apps[i].JobURL != "" {
+			continue
+		}
+		// Try all keys for this app's company (handles "Amazon/Twitch" -> "amazon")
+		var matches []pipeEntry
+		for _, k := range companyKeys(apps[i].Company) {
+			if m, ok := byCompany[k]; ok {
+				matches = m
+				break
+			}
+		}
+		if len(matches) == 0 {
+			continue
+		}
+		if len(matches) == 1 {
+			apps[i].JobURL = matches[0].url
+			continue
+		}
+		// Multiple: pick best title match
+		appRole := strings.ToLower(apps[i].Role)
+		best := matches[0].url
+		bestScore := 0
+		for _, m := range matches {
+			score := 0
+			mTitle := strings.ToLower(m.title)
+			for _, word := range strings.Fields(appRole) {
+				if len(word) > 2 && strings.Contains(mTitle, word) {
+					score++
+				}
+			}
+			if score > bestScore {
+				bestScore = score
+				best = m.url
+			}
+		}
+		apps[i].JobURL = best
+	}
 }
 
 // enrichAppURLsByCompany fills in JobURL for apps that didn't get one via report_num mapping.
