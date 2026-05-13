@@ -30,6 +30,7 @@ function parseArgs(argv) {
     referralMode: false,
     timeoutMs: 15000,
     maxLinksPerCompany: 150,
+    directUrl: null,   // --url <url>  ad-hoc single-URL scan
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -37,6 +38,13 @@ function parseArgs(argv) {
 
     if (arg === '--dry-run') {
       out.dryRun = true;
+      continue;
+    }
+
+    if (arg === '--url') {
+      const v = (args[++i] || '').trim();
+      if (!v || !/^https?:\/\//i.test(v)) throw new Error('Invalid --url value (must start with http/https)');
+      out.directUrl = v;
       continue;
     }
 
@@ -68,7 +76,7 @@ function parseArgs(argv) {
 
     if (arg === '-h' || arg === '--help') {
       console.log('Usage:');
-      console.log('  node scan-playwright.mjs [--dry-run] [--referral] [--company <name>] [--timeout <ms>] [--max-links <n>]');
+      console.log('  node scan-playwright.mjs [--dry-run] [--referral] [--company <name>] [--url <url>] [--timeout <ms>] [--max-links <n>]');
       process.exit(0);
     }
   }
@@ -349,7 +357,7 @@ function buildHostProbeUrls(fallbackUrl) {
 }
 
 async function main() {
-  const { dryRun, companyFilter, referralMode, timeoutMs, maxLinksPerCompany } = parseArgs(process.argv);
+  const { dryRun, companyFilter, referralMode, timeoutMs, maxLinksPerCompany, directUrl } = parseArgs(process.argv);
 
   if (!existsSync(PORTALS_PATH)) {
     throw new Error('portals.yml not found.');
@@ -365,16 +373,36 @@ async function main() {
   const locationFilter = buildLocationFilter(config?.location_filter);
   const experienceFilter = buildExperienceFilter(config?.experience_filter);
 
-  const targets = companies
-    .filter(c => c?.enabled !== false)
-    .filter(c => !companyFilter || String(c?.name || '').toLowerCase().includes(companyFilter))
-    .filter(c => typeof c?.careers_url === 'string' && c.careers_url.trim().length > 0)
-    .map(c => ({
-      name: c.name,
-      careers_url: c.careers_url,
-      fallback_url: c.fallback_url,
-      scan_method: c.scan_method || '-',
-    }));
+  // --url mode: bypass portals.yml and scan a single ad-hoc URL
+  let targets;
+  if (directUrl) {
+    const domainMatch = directUrl.match(/^https?:\/\/(?:www\.)?([^/]+)/);
+    const name = domainMatch ? domainMatch[1].split('.')[0] : 'ad-hoc';
+    targets = [{
+      name,
+      careers_url: directUrl,
+      fallback_url: null,
+      search_urls: null,
+      scan_method: 'playwright',
+    }];
+    console.log(`Direct URL scan: ${directUrl}`);
+  } else {
+    targets = companies
+      .filter(c => c?.enabled !== false)
+      .filter(c => !companyFilter || String(c?.name || '').toLowerCase().includes(companyFilter))
+      .filter(c => {
+        const hasSearchUrls = Array.isArray(c?.search_urls) && c.search_urls.length > 0;
+        const hasCareersUrl = typeof c?.careers_url === 'string' && c.careers_url.trim().length > 0;
+        return hasSearchUrls || hasCareersUrl;
+      })
+      .map(c => ({
+        name: c.name,
+        careers_url: c.careers_url || (Array.isArray(c.search_urls) ? c.search_urls[0] : ''),
+        fallback_url: c.fallback_url,
+        search_urls: Array.isArray(c.search_urls) && c.search_urls.length > 0 ? c.search_urls : null,
+        scan_method: c.scan_method || '-',
+      }));
+  }
 
   if (targets.length === 0) {
     console.log('No careers targets matched.');
@@ -406,7 +434,27 @@ async function main() {
 
   for (const t of targets) {
     try {
-      let links = await extractJobLinks(page, t.careers_url, maxLinksPerCompany);
+      let links = [];
+
+      if (t.search_urls && t.search_urls.length > 0) {
+        // Multi-query mode: visit every search URL and merge results
+        const seen = new Set();
+        for (const searchUrl of t.search_urls) {
+          let extra = [];
+          try {
+            extra = await extractJobLinks(page, searchUrl, maxLinksPerCompany);
+          } catch {
+            extra = [];
+          }
+          for (const e of extra) {
+            if (seen.has(e.url)) continue;
+            seen.add(e.url);
+            links.push(e);
+          }
+        }
+      } else {
+        links = await extractJobLinks(page, t.careers_url, maxLinksPerCompany);
+      }
 
       const careersHost = (() => {
         try {
@@ -417,7 +465,7 @@ async function main() {
       })();
 
       const probeUrls = buildHostProbeUrls(t.fallback_url);
-      if (links.length < 20 && probeUrls.length > 0) {
+      if (!t.search_urls && links.length < 20 && probeUrls.length > 0) {
         const seen = new Set(links.map(x => x.url));
         for (const probeUrl of probeUrls) {
           let extra = [];
