@@ -1,10 +1,10 @@
-# Mode: scan-tracked — Scan Tracked Companies Only
+# Mode: scan-referral — Scan Referral Companies Only
 
-Scans **tracked companies only** (from `portals.yml` `tracked_companies` section) using direct Playwright + API extraction. This provides deep coverage of companies you're actively following without broad-sweep WebSearch discovery.
+Scans **referral companies only** (from `portals.yml` `referral_companies` section) using direct Playwright + API extraction. These are companies where you have active referral contacts, prioritized for higher signal and faster processing.
 
-**Speed/Scope Tradeoff:** Faster than full scan (no WebSearch), narrower discovery (tracked companies only).
+**Speed/Scope Tradeoff:** Fast (no WebSearch overhead), high signal (referral contacts = warm introductions), narrower reach (only companies with referrals).
 
-> **Note:** This mode executes Levels 1+2 (Playwright + APIs). It **skips Level 3 (WebSearch)** for broad discovery. Use `/career-ops scan api` for WebSearch + API discovery, or `/career-ops scan` for all three levels combined.
+> **Note:** This mode executes Levels 1+2 (Playwright + APIs). It **skips Level 3 (WebSearch)** for broad discovery. Use `/career-ops scan discovery` for WebSearch-only discovery, or `/career-ops scan` for all three levels combined.
 
 ## Recommended Execution
 
@@ -36,16 +36,16 @@ Use `reports/playwright-bypass.tsv` to classify targets:
 This prevents scan failures from stopping coverage when some careers sites trigger anti-bot defenses.
 
 Read `portals.yml` which contains:
-- `tracked_companies`: Specific companies with `careers_url` for direct navigation
+- `referral_companies`: Specific companies with `careers_url` for direct navigation (high-priority targets)
 - `title_filter`: Positive/negative/seniority_boost keywords for title filtering
 
 ## Discovery Strategy (Levels 1 + 2 Only)
 
 ### Level 1 — Direct Playwright (PRIMARY — MANDATORY)
 
-**CRITICAL: Level 1 is MANDATORY. Must execute for all tracked companies.** Do NOT skip even if time-consuming.
+**CRITICAL: Level 1 is MANDATORY. Must execute for all referral companies.** Do NOT skip even if time-consuming.
 
-**For each company in `tracked_companies`:** Navigate to its `careers_url` with Playwright (`browser_navigate` + `browser_snapshot`), read ALL visible job listings, and extract title + URL from each. This is the most reliable method because:
+**For each company in `referral_companies`:** Navigate to its `careers_url` with Playwright (`browser_navigate` + `browser_snapshot`), read ALL visible job listings, and extract title + URL from each. This is the most reliable method because:
 - Sees the page in real-time (not cached Google results)
 - Works with SPAs (Ashby, Lever, Workday)
 - Detects new jobs instantly
@@ -81,19 +81,19 @@ For companies with public API or structured feed, use the JSON/XML response as a
 
 ### Level 3 (SKIPPED in this mode)
 
-WebSearch discovery is intentionally skipped. Use `/career-ops scan api` for WebSearch + API discovery, or `/career-ops scan` for comprehensive scanning with all three levels.
+WebSearch discovery is intentionally skipped. Use `/career-ops scan discovery` for WebSearch-only discovery, or `/career-ops scan` for comprehensive scanning with all three levels.
 
 ## Workflow
 
 1. **Read configuration**: `portals.yml`
 2. **Read history**: `data/scan-history.tsv` → URLs already seen
-3. **Read dedup sources**: `data/applications.md` + `data/pipeline.md`
+3. **Read dedup sources**: `data/applications.md` + `data/pipeline.md` + `data/pipeline-referral.md`
 
 4. **STEP 4: Level 1 — Playwright scan (MANDATORY — EXECUTE FIRST)** (parallel in batches of 3-5):
    
    **This step MUST complete before proceeding to Level 2.**
    
-   For EACH company in `tracked_companies` with `enabled: true` AND `careers_url` defined:
+   For EACH company in `referral_companies` with `enabled: true` AND `careers_url` defined:
    a. `browser_navigate` to the `careers_url`
    b. `browser_snapshot` to read ALL visible job listings (wait for networkidle)
    c. If the page has filters/departments, navigate relevant sections (Engineering, AI/ML, etc.)
@@ -112,7 +112,7 @@ WebSearch discovery is intentionally skipped. Use `/career-ops scan api` for Web
 
 5. **STEP 5: Level 2 — ATS APIs / feeds (REQUIRED — execute after or parallel to Level 1)** (parallel):
    
-   For each company in `tracked_companies` with `api:` defined and `enabled: true`:
+   For each company in `referral_companies` with `api:` defined and `enabled: true`:
    a. WebFetch from the API/feed URL
    b. If `api_provider` is defined, use its parser; if not defined, infer by domain (`boards-api.greenhouse.io`, `jobs.ashbyhq.com`, `api.lever.co`, `*.bamboohr.com`, `*.teamtailor.com`, `*.myworkdayjobs.com`)
    c. For **Ashby**, send POST with:
@@ -129,10 +129,11 @@ WebSearch discovery is intentionally skipped. Use `/career-ops scan api` for Web
    - 0 keywords from `negative` must appear
    - `seniority_boost` keywords give priority but are not required
 
-7. **Deduplicate** against 3 sources:
+7. **Deduplicate** against 4 sources:
    - `scan-history.tsv` → exact URL already seen
    - `applications.md` → normalized company + role already evaluated
-   - `pipeline.md` → exact URL already pending or processed
+   - `pipeline.md` → exact URL already pending or processed in discovery queue
+   - `pipeline-referral.md` → exact URL already pending or processed in referral queue
 
 8. **Strict title validation** (BEFORE adding to pipeline):
    
@@ -149,7 +150,7 @@ WebSearch discovery is intentionally skipped. Use `/career-ops scan api` for Web
    If rejected: record in `scan-history.tsv` with status `skipped_title_validation` and DO NOT add to pipeline.
 
 9. **For each job that passes ALL filters** (title + seniority + age + experience + dedup + validation):
-   a. Add to `pipeline.md` "Pending" section: `- [ ] {posted_date} | {url} | {company} | {title}`
+   a. Add to `pipeline-referral.md` "Pending" section: `- [ ] {posted_date} | {url} | {company} | {title}`
    b. Record in `scan-history.tsv`: `{url}\t{date}\t{query_name}\t{title}\t{company}\tadded`
    
    **Note**: `{posted_date}` (YYYY-MM-DD) comes from each portal's API (Greenhouse `created_at`, Ashby `publishedDate`, Lever `createdAt`). This allows filtering by age and avoiding expired jobs.
@@ -164,27 +165,27 @@ WebSearch discovery is intentionally skipped. Use `/career-ops scan api` for Web
 
 ```
 url	first_seen	portal	title	company	status
-https://...	2026-02-10	Ashby — AI PM	PM AI	Acme	added
-https://...	2026-02-10	Greenhouse — SA	Junior Dev	BigCo	skipped_title
-https://...	2026-02-10	Ashby — AI PM	SA AI	OldCo	skipped_dup
+https://...	2026-02-10	Ashby — Referral	PM AI	Acme	added
+https://...	2026-02-10	Greenhouse — Referral	Junior Dev	BigCo	skipped_title
+https://...	2026-02-10	Ashby — Referral	SA AI	OldCo	skipped_dup
 ```
 
 ## Output Summary
 
 ```
-Portal Scan (Tracked Companies) — {YYYY-MM-DD}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Companies scanned: N (tracked only)
+Portal Scan (Referral Companies) — {YYYY-MM-DD}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Companies scanned: N (referral contacts only)
 Jobs found: N total
 Filtered by title (portals.yml): N removed
 Title validation (seniority check): N rejected
 Duplicates: N (already evaluated or in pipeline)
-New added to pipeline.md: N
+New added to pipeline-referral.md: N
 
   + {company} | {title} | {source}
   ...
 
-→ Run /career-ops pipeline to evaluate the new jobs.
+→ Run /career-ops score referral to score the new jobs.
 ```
 
 ## ENFORCEMENT: Levels 1 + 2 Required
@@ -193,7 +194,7 @@ New added to pipeline.md: N
 
 1. **Do NOT skip Level 1.** Playwright careers page scraping is mandatory.
 2. **Do NOT prioritize Level 2 over Level 1.** APIs are complementary, not primary.
-3. **This mode intentionally skips Level 3 (WebSearch).** Use `/career-ops scan api` or `/career-ops scan` if you need broad discovery.
+3. **This mode intentionally skips Level 3 (WebSearch).** Use `/career-ops scan discovery` or `/career-ops scan` if you need broad discovery.
 
 **Expected output from scan execution:**
 - Level 1 results: N jobs from M companies (Playwright)
@@ -215,4 +216,4 @@ Fallback: if you only have the direct ATS URL, first navigate to the company's w
 
 ## Managing careers_url
 
-Each company in `tracked_companies` must have `careers_url` — the direct URL to its jobs page. This avoids looking it up each time.
+Each company in `referral_companies` must have `careers_url` — the direct URL to its jobs page. This avoids looking it up each time.

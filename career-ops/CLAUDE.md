@@ -1,5 +1,15 @@
 # Career-Ops -- AI Job Search Pipeline
 
+## Instruction Precedence (Read First)
+
+To avoid conflicting behavior across docs, follow this precedence order:
+
+1. `.claude/skills/career-ops/SKILL.md` -- canonical command router and mode mapping
+2. `modes/*.md` -- execution behavior for each selected mode
+3. `CLAUDE.md` / `GEMINI.md` -- platform context and onboarding guidance
+
+If any command examples in this file conflict with `SKILL.md`, follow `SKILL.md`.
+
 ## Origin
 
 This system was built and used by [santifer](https://santifer.io) to evaluate 740+ job listings, generate 100+ tailored CVs, and land a Head of Applied AI role. The archetypes, scoring logic, negotiation scripts, and proof point structure all reflect his specific career search in AI/automation roles.
@@ -51,7 +61,8 @@ AI-powered job search automation built on Claude Code: pipeline tracking, offer 
 | File | Function |
 |------|----------|
 | `data/applications.md` | Application tracker |
-| `data/pipeline.md` | Inbox of pending URLs |
+| `data/pipeline.md` | Discovery/all-scan URL queue |
+| `data/pipeline-referral.md` | Referral-scan URL queue |
 | `data/scan-history.tsv` | Scanner dedup history |
 | `portals.yml` | Query and company config |
 | `templates/cv-template.html` | HTML template for CVs |
@@ -76,7 +87,9 @@ When using [OpenCode](https://opencode.ai), the following slash commands are ava
 | Command | Claude Code Equivalent | Description |
 |---------|------------------------|-------------|
 | `/career-ops` | `/career-ops` | Show menu or evaluate JD with args |
-| `/career-ops-pipeline` | `/career-ops pipeline` | Process pending URLs from inbox |
+| `/career-ops-pipeline` | `/career-ops pipeline` | Legacy alias of score discovery |
+| `/career-ops-score` | `/career-ops score discovery` | Score discovery queue URLs (no report/PDF) |
+| `/career-ops-score-referral` | `/career-ops score referral` | Score referral queue URLs (no report/PDF) |
 | `/career-ops-evaluate` | `/career-ops oferta` | Evaluate job offer (A-F scoring) |
 | `/career-ops-compare` | `/career-ops ofertas` | Compare and rank multiple jobs |
 | `/career-ops-contact` | `/career-ops contacto` | LinkedIn outreach (find contacts + draft) |
@@ -96,6 +109,8 @@ When using [OpenCode](https://opencode.ai), the following slash commands are ava
 
 **Note:** OpenCode commands invoke the same `.claude/skills/career-ops/SKILL.md` skill used by Claude Code. The `modes/*` files are shared between both platforms.
 
+For command routing and source-of-truth behavior, always defer to `.claude/skills/career-ops/SKILL.md`.
+
 ### Gemini CLI Commands
 
 When using the [Gemini CLI](https://github.com/google-gemini/gemini-cli), the following slash commands are available (defined in `.gemini/commands/`):
@@ -103,7 +118,9 @@ When using the [Gemini CLI](https://github.com/google-gemini/gemini-cli), the fo
 | Command | Claude Code Equivalent | Description |
 |---------|------------------------|-------------|
 | `/career-ops` | `/career-ops` | Show menu or evaluate JD with args |
-| `/career-ops-pipeline` | `/career-ops pipeline` | Process pending URLs from inbox |
+| `/career-ops-pipeline` | `/career-ops pipeline` | Legacy alias of score discovery |
+| `/career-ops-score` | `/career-ops score discovery` | Score discovery queue URLs (no report/PDF) |
+| `/career-ops-score-referral` | `/career-ops score referral` | Score referral queue URLs (no report/PDF) |
 | `/career-ops-evaluate` | `/career-ops oferta` | Evaluate job offer (A-G scoring) |
 | `/career-ops-compare` | `/career-ops ofertas` | Compare and rank multiple jobs |
 | `/career-ops-contact` | `/career-ops contacto` | LinkedIn outreach (find contacts + draft) |
@@ -121,6 +138,8 @@ When using the [Gemini CLI](https://github.com/google-gemini/gemini-cli), the fo
 | `/career-ops-followup` | `/career-ops followup` | Follow-up cadence tracker |
 
 **Note:** Gemini CLI commands are defined in `.gemini/commands/*.toml`. The project context is auto-loaded from `GEMINI.md`. All `modes/*` files are shared across Claude Code, OpenCode, and Gemini CLI.
+
+For command routing and source-of-truth behavior, always defer to `.claude/skills/career-ops/SKILL.md`.
 
 ### First Run — Onboarding (IMPORTANT)
 

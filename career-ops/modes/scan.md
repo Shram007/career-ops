@@ -116,7 +116,7 @@ The `search_queries` with `site:` filters cover portals across the board (all As
 
 1. **Read configuration**: `portals.yml`
 2. **Read history**: `data/scan-history.tsv` → URLs already seen
-3. **Read dedup sources**: `data/applications.md` + `data/pipeline.md`
+3. **Read dedup sources**: `data/applications.md` + `data/pipeline.md` + `data/pipeline-referral.md`
 
 4. **STEP 4: Level 1 — Playwright scan (MANDATORY — EXECUTE FIRST)** (parallel in batches of 3-5):
    
@@ -168,10 +168,11 @@ The `search_queries` with `site:` filters cover portals across the board (all As
    - 0 keywords from `negative` must appear
    - `seniority_boost` keywords give priority but are not required
 
-7. **Deduplicate** against 3 sources:
+7. **Deduplicate** against 4 sources:
    - `scan-history.tsv` → exact URL already seen
    - `applications.md` → normalized company + role already evaluated
-   - `pipeline.md` → exact URL already pending or processed
+   - `pipeline.md` → exact URL already pending or processed in discovery queue
+   - `pipeline-referral.md` → exact URL already pending or processed in referral queue
 
 7.5. **Verify liveness of WebSearch results (Level 3)** — BEFORE adding to pipeline:
 
@@ -261,7 +262,7 @@ New added to pipeline.md: N
   + {company} | {title} | {query_name}
   ...
 
-→ Run /career-ops pipeline to evaluate the new jobs.
+→ Run /career-ops score discovery to score the new jobs.
 ```
 
 ## Managing careers_url

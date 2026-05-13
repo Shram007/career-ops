@@ -58,7 +58,9 @@ Then paste a job offer URL or description. Career-ops will automatically evaluat
 |--------|-----|
 | Evaluate an offer | Paste a URL or JD text |
 | Search for jobs | `/career-ops scan` |
-| Process pending URLs | `/career-ops pipeline` |
+| Score discovery queue | `/career-ops score discovery` |
+| Score referral queue | `/career-ops score referral` |
+| Legacy compatibility | `/career-ops pipeline` (alias of score discovery) |
 | Generate a PDF | `/career-ops pdf` |
 | Batch evaluate | `/career-ops batch` |
 | Check tracker status | `/career-ops tracker` |

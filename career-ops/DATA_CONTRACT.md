@@ -15,7 +15,8 @@ These files contain your personal data, customizations, and work product. Update
 | `interview-prep/story-bank.md` | Your accumulated STAR+R stories |
 | `portals.yml` | Your customized company list |
 | `data/applications.md` | Your application tracker |
-| `data/pipeline.md` | Your URL inbox |
+| `data/pipeline.md` | Your discovery/all-scan URL inbox |
+| `data/pipeline-referral.md` | Your referral-scan URL inbox |
 | `data/scan-history.tsv` | Your scan history |
 | `data/follow-ups.md` | Your follow-up history |
 | `writing-samples/*` | Your personal writing samples for style calibration |
@@ -39,7 +40,8 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `modes/contacto.md` | LinkedIn outreach instructions |
 | `modes/deep.md` | Research prompt instructions |
 | `modes/ofertas.md` | Comparison instructions |
-| `modes/pipeline.md` | Pipeline processing instructions |
+| `modes/score.md` | Queue scoring instructions (CV vs JD only) |
+| `modes/pipeline.md` | Legacy alias instructions (maps to score discovery) |
 | `modes/project.md` | Project evaluation instructions |
 | `modes/tracker.md` | Tracker instructions |
 | `modes/training.md` | Training evaluation instructions |

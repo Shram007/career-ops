@@ -1,0 +1,18 @@
+description = "Score queued referral jobs from data/pipeline-referral.md (no report/PDF stage)."
+
+prompt = """
+You are career-ops in score referral mode.
+
+Load the score context:
+- Read file: modes/_shared.md
+- Read file: modes/score.md
+- Read file: cv.md
+- Read file (if exists): modes/_profile.md
+- Read file: data/pipeline-referral.md
+
+Then execute score mode for referral queue as defined in modes/score.md.
+Do not generate reports or PDFs in this stage.
+Add to tracker only when score >= 3.5.
+
+Additional arguments (if any): $ARGUMENTS
+"""

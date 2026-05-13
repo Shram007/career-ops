@@ -1,4 +1,4 @@
-description = "Process pending job URLs from data/pipeline.md — evaluate each and update the tracker."
+description = "Legacy alias for score discovery queue from data/pipeline.md."
 
 prompt = """
 You are career-ops in pipeline mode.
@@ -11,7 +11,10 @@ Load the pipeline context:
 - Read file: data/pipeline.md
 
 Then execute pipeline mode as defined in modes/pipeline.md.
-Process each pending URL in data/pipeline.md, evaluate it, and update the tracker.
+Treat pipeline as a legacy alias of score discovery:
+- score CV vs JD from pending URLs in data/pipeline.md
+- do not generate reports or PDFs in this stage
+- add to tracker only when score >= 3.5
 
 Additional arguments (if any): $ARGUMENTS
 """

@@ -4,6 +4,16 @@
 > It is the Gemini equivalent of CLAUDE.md.
 > All slash commands are defined in `.gemini/commands/`.
 
+## Instruction Precedence (Read First)
+
+To avoid conflicting behavior across docs, follow this precedence order:
+
+1. `.claude/skills/career-ops/SKILL.md` -- canonical command router and mode mapping
+2. `modes/*.md` -- execution behavior for each selected mode
+3. `GEMINI.md` / `CLAUDE.md` -- platform context and onboarding guidance
+
+If any command examples in this file conflict with `SKILL.md`, follow `SKILL.md`.
+
 ## What is career-ops
 
 AI-powered job search automation: pipeline tracking, offer evaluation, CV generation, portal scanning, batch processing. Originally built on Claude Code, now fully supported on Gemini CLI and OpenCode.
@@ -40,7 +50,9 @@ When using [Gemini CLI](https://github.com/google-gemini/gemini-cli), the follow
 | Command | Claude Code Equivalent | Description |
 |---------|------------------------|-------------|
 | `/career-ops` | `/career-ops` | Show menu or evaluate JD |
-| `/career-ops-pipeline` | `/career-ops pipeline` | Process pending URLs from inbox |
+| `/career-ops-pipeline` | `/career-ops pipeline` | Legacy alias of score discovery |
+| `/career-ops-score` | `/career-ops score discovery` | Score discovery queue URLs (no report/PDF) |
+| `/career-ops-score-referral` | `/career-ops score referral` | Score referral queue URLs (no report/PDF) |
 | `/career-ops-evaluate` | `/career-ops oferta` | Evaluate job offer (A-G scoring) |
 | `/career-ops-compare` | `/career-ops ofertas` | Compare and rank multiple jobs |
 | `/career-ops-contact` | `/career-ops contacto` | LinkedIn outreach |
@@ -86,7 +98,9 @@ If `modes/_profile.md` is missing, copy from `modes/_profile.template.md` silent
 | Asks about application status | read `modes/tracker.md` |
 | Fills out application form | read `modes/_shared.md` + `modes/apply.md` |
 | Searches for new jobs | read `modes/_shared.md` + `modes/scan.md` |
-| Processes pending URLs | read `modes/_shared.md` + `modes/pipeline.md` |
+| Runs `score discovery` | read `modes/_shared.md` + `modes/score.md` (queue: `data/pipeline.md`) |
+| Runs `score referral` | read `modes/_shared.md` + `modes/score.md` (queue: `data/pipeline-referral.md`) |
+| Runs `pipeline` | legacy alias of `score discovery` |
 | Batch processes jobs | read `modes/_shared.md` + `modes/batch.md` |
 | Asks about rejection patterns | read `modes/patterns.md` |
 | Asks about follow-ups | read `modes/followup.md` |
@@ -96,7 +110,8 @@ If `modes/_profile.md` is missing, copy from `modes/_profile.template.md` silent
 | File | Function |
 |------|----------|
 | `data/applications.md` | Application tracker |
-| `data/pipeline.md` | Inbox of pending URLs |
+| `data/pipeline.md` | Discovery/all-scan URL queue |
+| `data/pipeline-referral.md` | Referral-scan URL queue |
 | `portals.yml` | Query and company config |
 | `templates/cv-template.html` | HTML template for CVs |
 | `generate-pdf.mjs` | Playwright: HTML to PDF |
