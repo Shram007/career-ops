@@ -30,7 +30,8 @@
     "score-pipeline": "bash batch/score-pipeline.sh",
     "score-pipeline:referral": "bash batch/score-pipeline.sh --referral",
     "score-pipeline:dry-run": "bash batch/score-pipeline.sh --dry-run",
-    "gemini:eval": "node gemini-eval.mjs"
+    "gemini:eval": "node gemini-eval.mjs",
+    "re-eval": "node re-eval.mjs"
   },
   "keywords": [
     "ai",
