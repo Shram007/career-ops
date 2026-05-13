@@ -57,6 +57,24 @@ function parseArgs(argv) {
       continue;
     }
 
+    // Accept common shorthand forms so referral runs do not silently fall back to discovery queue.
+    if (String(arg).toLowerCase() === 'referral') {
+      referralMode = true;
+      if (!passthrough.includes('--referral')) passthrough.push('--referral');
+      continue;
+    }
+
+    if (arg === '--mode') {
+      const modeValue = String(args[++i] || '').trim().toLowerCase();
+      if (modeValue === 'referral') {
+        referralMode = true;
+        if (!passthrough.includes('--referral')) passthrough.push('--referral');
+      } else if (modeValue) {
+        passthrough.push('--mode', modeValue);
+      }
+      continue;
+    }
+
     passthrough.push(arg);
   }
 
