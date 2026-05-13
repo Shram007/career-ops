@@ -39,6 +39,18 @@ const warnings = [];
 
 console.log(`\n📋 Validating: ${inputFile}\n`);
 
+// ─────────────────────────────────────────────────────────────
+// 0. UNFILLED PLACEHOLDER CHECK (must run first)
+// ─────────────────────────────────────────────────────────────
+
+const unfilledPlaceholders = [...html.matchAll(/\{\{([A-Z0-9_]+)\}\}/g)];
+if (unfilledPlaceholders.length > 0) {
+  const unique = [...new Set(unfilledPlaceholders.map(m => `{{${m[1]}}}`))]
+    .sort()
+    .join(', ');
+  violations.push(`Unfilled template placeholder(s): ${unique} — agent did not replace all {{…}} tokens`);
+}
+
 // Helper: extract text from HTML tags
 function stripHtml(text) {
   return text.replace(/<[^>]*>/g, '');
