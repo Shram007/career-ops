@@ -87,10 +87,22 @@ Or paste a JD directly to run the full pipeline.
 
 After determining the mode, load the necessary files before executing:
 
+### Scan modes — run directly, no subagent:
+
+For `scan`, `scan-referral`, and `scan-discovery`, **do not launch a subagent**. Run the pre-built script directly and report the terminal output to the user.
+
+| Mode | Command |
+|------|---------|
+| `scan` | `node scan-with-instrumentation.mjs` |
+| `scan referral` | `node scan-with-instrumentation.mjs --referral` |
+| `scan discovery` | `node scan-with-instrumentation.mjs --skip-level1 --skip-level2` |
+
+Do not read `modes/scan*.md` before running. Do not implement any scan logic manually. Run the command, wait for it to finish, and show the output.
+
 ### Modes that require `_shared.md` + their mode file:
 Read `modes/_shared.md` + `modes/{mode}.md`
 
-Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `contacto`, `apply`, `score`, `scan`, `scan-referral`, `scan-discovery`, `batch`
+Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `contacto`, `apply`, `score`, `batch`
 
 ### Standalone modes (only their mode file):
 Read `modes/{mode}.md`
@@ -98,7 +110,7 @@ Read `modes/{mode}.md`
 Applies to: `tracker`, `deep`, `training`, `project`, `patterns`, `followup`, `interview-prep`
 
 ### Modes delegated to subagent:
-For `scan`, `scan-referral`, `scan-discovery`, `apply` (with Playwright), and `score` (3+ URLs): launch as Agent with the content of `_shared.md` + `modes/{mode}.md` injected into the subagent prompt.
+For `apply` (with Playwright) and `score` (3+ URLs): launch as Agent with the content of `_shared.md` + `modes/{mode}.md` injected into the subagent prompt.
 
 ```
 Agent(
@@ -109,11 +121,6 @@ Agent(
 ```
 
 Execute the instructions from the loaded mode file.
-
-> **SCAN MODE SUBAGENT RULE:** For `scan-referral`, `scan`, and `scan-discovery`, the subagent **must run the pre-built script** — not implement the scan manually with tools. Include this in the invocation-specific data section of the subagent prompt:
-> - `scan-referral` → `node scan-with-instrumentation.mjs --referral`
-> - `scan-discovery` → `node scan-with-instrumentation.mjs --skip-level1 --skip-level2` (Level 3 only)
-> - `scan` (all) → `node scan-with-instrumentation.mjs`
 
 > **ROUTING AGENT RULE — STRICTLY ENFORCED:**
 > When routing to a delegated mode, your **only** job is to read the mode file and forward its contents to the subagent.
