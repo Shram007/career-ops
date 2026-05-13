@@ -12,11 +12,10 @@ Scans **referral companies only** (from `portals.yml` `referral_companies` secti
 
 > **⚠️ SUBAGENT EXECUTION RULE — STRICTLY ENFORCED:**
 > The three levels described below are **already implemented** in `scan-with-instrumentation.mjs`.
-> Your job is to **run the script**, not to implement the levels yourself.
-> - **DO NOT** use `browser_navigate`, `browser_snapshot`, or any Playwright tools directly.
-> - **DO NOT** call ATS APIs manually with `fetch` or `WebFetch`.
-> - **DO NOT** create a new `.mjs` file or any other script.
-> - **DO NOT** write code to implement the scan.
+> Your job is to **run the script**, not to reimplement it.
+> - **DO NOT** manually reimplement the scan by calling browser tools, APIs, or WebSearch yourself.
+> - **DO NOT** create a new `.mjs` file or any other script to wrap or replicate this functionality.
+> The workflow section below documents what the script does — it is for reference, not for manual execution.
 > Running the script IS the execution of Levels 1, 2, and 3.
 
 **Run this exact command:**
