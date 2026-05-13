@@ -109,3 +109,10 @@ Agent(
 ```
 
 Execute the instructions from the loaded mode file.
+
+> **ROUTING AGENT RULE — STRICTLY ENFORCED:**
+> When routing to a delegated mode, your **only** job is to read the mode file and forward its contents to the subagent.
+> - **DO NOT** edit, simplify, rewrite, or "improve" any `modes/*.md` file.
+> - **DO NOT** analyse portals.yml to decide what the mode file "should" say.
+> - **DO NOT** emit file edits before or after launching the subagent.
+> Mode files are curated specifications. Modifying them during execution corrupts future runs.
