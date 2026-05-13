@@ -73,6 +73,7 @@ const (
 const (
 	filterAll       = "all"
 	filterEvaluated = "evaluated"
+	filterPDF       = "pdf"
 	filterApplied   = "applied"
 	filterInterview = "interview"
 	filterSkip      = "skip"
@@ -89,6 +90,7 @@ type pipelineTab struct {
 var pipelineTabs = []pipelineTab{
 	{filterAll, "ALL"},
 	{filterEvaluated, "EVALUATED"},
+	{filterPDF, "PDF GEN"},
 	{filterApplied, "APPLIED"},
 	{filterInterview, "INTERVIEW"},
 	{filterTop, "TOP ≥4"},
@@ -99,10 +101,10 @@ var pipelineTabs = []pipelineTab{
 
 var sortCycle = []string{sortScore, sortDate, sortCompany, sortStatus}
 
-var statusOptions = []string{"Evaluated", "Applied", "Responded", "Interview", "Offer", "Rejected", "Discarded", "SKIP"}
+var statusOptions = []string{"Evaluated", "PDF Generated", "Applied", "Responded", "Interview", "Offer", "Rejected", "Discarded", "SKIP"}
 
 // statusGroupOrder defines display order for grouped view.
-var statusGroupOrder = []string{"interview", "offer", "responded", "applied", "evaluated", "skip", "rejected", "discarded"}
+var statusGroupOrder = []string{"interview", "offer", "responded", "applied", "pdf", "evaluated", "skip", "rejected", "discarded"}
 
 // PipelineModel implements the career pipeline dashboard screen.
 type PipelineModel struct {
@@ -745,9 +747,8 @@ func (m PipelineModel) renderAppLine(app model.CareerApplication, selected bool)
 	companyW := 16
 	statusW := 12
 	compW := 14
-	flagsW := 6 // "S P A I" pipeline state flags
 	// Role gets remaining space
-	roleW := m.width - numW - scoreW - dateW - companyW - statusW - compW - flagsW - 14
+	roleW := m.width - numW - scoreW - dateW - companyW - statusW - compW - 13
 	if roleW < 15 {
 		roleW = 15
 	}
@@ -792,41 +793,13 @@ func (m PipelineModel) renderAppLine(app model.CareerApplication, selected bool)
 		compText = compStyle.Render(comp)
 	}
 
-	// Pipeline state flags: S(cored) P(DF) A(pplied) I(nterview prep)
-	// Active = colored letter, inactive = dim dot
-	dimStyle := lipgloss.NewStyle().Foreground(m.theme.Overlay)
-	statusNorm := data.NormalizeStatus(app.Status)
-	isApplied := statusNorm == "applied" || statusNorm == "responded" ||
-		statusNorm == "interview" || statusNorm == "offer"
-
-	flagS := dimStyle.Render("·")
-	if app.HasReport {
-		flagS = lipgloss.NewStyle().Foreground(m.theme.Sky).Bold(true).Render("S")
-	}
-	flagP := dimStyle.Render("·")
-	if app.HasPDF {
-		flagP = lipgloss.NewStyle().Foreground(m.theme.Green).Bold(true).Render("P")
-	}
-	flagA := dimStyle.Render("·")
-	if isApplied {
-		flagA = lipgloss.NewStyle().Foreground(m.theme.Yellow).Bold(true).Render("A")
-	}
-	flagI := dimStyle.Render("·")
-	if app.HasInterviewPrep {
-		flagI = lipgloss.NewStyle().Foreground(m.theme.Mauve).Bold(true).Render("I")
-	}
-	flagsText := lipgloss.NewStyle().Width(flagsW).Render(
-		flagS + " " + flagP + " " + flagA + " " + flagI,
-	)
-
-	line := fmt.Sprintf(" %s %s %s %s %s %s %s %s",
+	line := fmt.Sprintf(" %s %s %s %s %s %s %s",
 		numStyle.Render(truncateRunes(numText, numW)),
 		score,
 		dateStyle.Render(truncateRunes(dateText, dateW)),
 		companyStyle.Render(company),
 		roleStyle.Render(role),
 		statusText,
-		flagsText,
 		compText,
 	)
 
@@ -973,6 +946,7 @@ func (m PipelineModel) statusColorMap() map[string]lipgloss.Color {
 		"offer":     m.theme.Green,
 		"applied":   m.theme.Sky,
 		"responded": m.theme.Blue,
+		"pdf":       m.theme.Mauve,
 		"evaluated": m.theme.Text,
 		"skip":      m.theme.Red,
 		"rejected":  m.theme.Subtext,
@@ -1012,6 +986,8 @@ func statusLabel(norm string) string {
 		return "Responded"
 	case "applied":
 		return "Applied"
+	case "pdf":
+		return "PDF Generated"
 	case "evaluated":
 		return "Evaluated"
 	case "skip":

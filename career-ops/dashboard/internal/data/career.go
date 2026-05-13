@@ -100,7 +100,6 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 		if rm := reReportLink.FindStringSubmatch(fields[7]); rm != nil {
 			app.ReportNumber = rm[1]
 			app.ReportPath = rm[2]
-			app.HasReport = true
 		}
 
 		// Notes (field 8 if exists)
@@ -168,42 +167,7 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 	// Most reliable for playwright-scanned entries that never went through the batch system.
 	enrichFromPipelineFiles(careerOpsPath, apps)
 
-	// Detect interview-prep files: scan interview-prep/ for files whose name
-	// contains a normalised form of the company name.
-	enrichInterviewPrep(careerOpsPath, apps)
-
 	return apps
-}
-
-// enrichInterviewPrep sets HasInterviewPrep on apps whose company has a
-// matching file under <careerOpsPath>/interview-prep/.
-func enrichInterviewPrep(careerOpsPath string, apps []model.CareerApplication) {
-	dir := filepath.Join(careerOpsPath, "interview-prep")
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		return // directory absent or unreadable — no-op
-	}
-
-	// Build a normalised filename set from every file in the directory.
-	normFile := func(s string) string {
-		return strings.ToLower(strings.ReplaceAll(s, " ", "-"))
-	}
-
-	for i, app := range apps {
-		if app.Company == "" {
-			continue
-		}
-		normCompany := normFile(app.Company)
-		for _, e := range entries {
-			if e.IsDir() {
-				continue
-			}
-			if strings.Contains(normFile(e.Name()), normCompany) {
-				apps[i].HasInterviewPrep = true
-				break
-			}
-		}
-	}
 }
 
 // loadBatchInputURLs reads batch-input.tsv and returns a map of batch ID -> job URL.
@@ -624,6 +588,8 @@ func NormalizeStatus(raw string) string {
 	// Most restrictive first — accepts both English and Spanish
 	case strings.Contains(s, "no aplicar") || strings.Contains(s, "no_aplicar") || s == "skip" || strings.Contains(s, "geo blocker"):
 		return "skip"
+	case strings.Contains(s, "pdf generated") || s == "pdf":
+		return "pdf"
 	case strings.Contains(s, "interview") || strings.Contains(s, "entrevista"):
 		return "interview"
 	case s == "offer" || strings.Contains(s, "oferta"):

@@ -10,8 +10,6 @@ type CareerApplication struct {
 	Score        float64
 	ScoreRaw     string
 	HasPDF       bool
-	HasReport    bool // has an evaluation report file
-	HasInterviewPrep bool // a file in interview-prep/ matches this company
 	ReportPath   string
 	ReportNumber string
 	Notes        string
