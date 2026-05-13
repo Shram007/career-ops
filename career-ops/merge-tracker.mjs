@@ -34,7 +34,7 @@ mkdirSync(join(CAREER_OPS, 'data'), { recursive: true });
 mkdirSync(ADDITIONS_DIR, { recursive: true });
 
 // Canonical states and aliases
-const CANONICAL_STATES = ['Evaluated', 'Applied', 'Responded', 'Interview', 'Offer', 'Rejected', 'Discarded', 'SKIP'];
+const CANONICAL_STATES = ['Scored', 'Evaluated', 'Applied', 'Responded', 'Interview', 'Offer', 'Rejected', 'Discarded', 'SKIP'];
 
 function validateStatus(status) {
   const clean = status.replace(/\*\*/g, '').replace(/\s+\d{4}-\d{2}-\d{2}.*$/, '').trim();
@@ -46,6 +46,8 @@ function validateStatus(status) {
 
   // Aliases
   const aliases = {
+    // scored aliases
+    'scored': 'Scored', 'evaluado': 'Scored',
     // Spanish → English
     'evaluada': 'Evaluated', 'condicional': 'Evaluated', 'hold': 'Evaluated', 'evaluar': 'Evaluated', 'verificar': 'Evaluated',
     'aplicado': 'Applied', 'enviada': 'Applied', 'aplicada': 'Applied', 'applied': 'Applied', 'sent': 'Applied',
@@ -217,10 +219,11 @@ function parseTsvContent(content, filename) {
     };
   }
 
-  if (isNaN(addition.num) || addition.num === 0) {
+  if (isNaN(addition.num)) {
     console.warn(`⚠️  Skipping ${filename}: invalid entry number`);
     return null;
   }
+  // num === 0 is a valid auto-assign placeholder; merge logic will assign ++maxNum
 
   const parsedScore = parseScore(addition.score || '');
   // Enforce triage gate: sub-3.5 entries should not stay in Evaluated state.

@@ -25,6 +25,11 @@
     "scan:refresh-after": "node refresh-search-query-dates.mjs --days 14",
     "scan": "node scan-with-instrumentation.mjs",
     "scan:referral": "node scan-with-instrumentation.mjs --referral",
+    "enrich": "node enrich-pipeline.mjs",
+    "enrich:referral": "node enrich-pipeline.mjs --referral",
+    "score-pipeline": "bash batch/score-pipeline.sh",
+    "score-pipeline:referral": "bash batch/score-pipeline.sh --referral",
+    "score-pipeline:dry-run": "bash batch/score-pipeline.sh --dry-run",
     "gemini:eval": "node gemini-eval.mjs"
   },
   "keywords": [

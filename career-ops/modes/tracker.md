@@ -7,7 +7,9 @@ Lee y muestra `data/applications.md`.
 | # | Fecha | Empresa | Rol | Score | Estado | PDF | Report |
 ```
 
-Estados posibles: `Evaluada` → `Aplicado` → `Respondido` → `Contacto` → `Entrevista` → `Oferta` / `Rechazada` / `Descartada` / `NO APLICAR`
+Estados posibles: `Scored` → `Aplicado` → `Respondido` → `Contacto` → `Entrevista` → `Oferta` / `Rechazada` / `Descartada` / `NO APLICAR`
+
+- `Scored` = evaluado por CV, aún no se ha enviado candidatura
 
 - `Aplicado` = el candidato envió su candidatura
 - `Respondido` = Un recruiter/empresa contactó y el candidato respondió (inbound)

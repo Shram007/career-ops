@@ -29,6 +29,9 @@ Determine the mode from `{{mode}}`:
 | `score` | `score` |
 | `score referral` | `score` (reads only `data/pipeline-referral.md`) |
 | `score discovery` | `score` (reads only `data/pipeline.md`) |
+| `score pipeline` | `score-pipeline` (parallel `claude -p` workers via `batch/score-pipeline.sh`) |
+| `score pipeline referral` | `score-pipeline` (`--referral` flag) |
+| `score pipeline discovery` | `score-pipeline` (`--discovery` flag) |
 | `pipeline` | `score` (legacy alias for `score discovery`) |
 | `apply` | `apply` |
 | `scan` | `scan` (all sources: Playwright + APIs + WebSearch) |
@@ -71,6 +74,9 @@ Available commands:
   /career-ops scan            → Scan all sources: Playwright + APIs + WebSearch
   /career-ops scan referral   → Scan referral companies (Playwright + APIs + conditional WebSearch)
   /career-ops scan discovery  → Scan WebSearch discovery queries only
+  /career-ops score pipeline           → Parallel claude -p workers: score referral pipeline
+  /career-ops score pipeline referral  → Parallel workers: score data/pipeline-referral.md
+  /career-ops score pipeline discovery → Parallel workers: score data/pipeline.md
   /career-ops batch     → Batch processing with parallel workers
   /career-ops patterns  → Analyze rejection patterns and improve targeting
   /career-ops followup  → Follow-up cadence tracker: flag overdue, generate drafts
@@ -89,15 +95,18 @@ After determining the mode, load the necessary files before executing:
 
 ### Scan modes — run directly, no subagent:
 
-For `scan`, `scan-referral`, and `scan-discovery`, **do not launch a subagent**. Run the pre-built script directly and report the terminal output to the user.
+For `scan`, `scan-referral`, `scan-discovery`, and `score-pipeline`, **do not launch a subagent**. Run the pre-built script directly and report the terminal output to the user.
 
 | Mode | Command |
 |------|---------|
 | `scan` | `node scan-with-instrumentation.mjs` |
 | `scan referral` | `node scan-with-instrumentation.mjs --referral` |
 | `scan discovery` | `node scan-with-instrumentation.mjs --skip-level1 --skip-level2` |
+| `score pipeline` | `bash batch/score-pipeline.sh --referral` |
+| `score pipeline referral` | `bash batch/score-pipeline.sh --referral` |
+| `score pipeline discovery` | `bash batch/score-pipeline.sh --discovery` |
 
-Do not read `modes/scan*.md` before running. Do not implement any scan logic manually. Run the command, wait for it to finish, and show the output.
+Do not read `modes/scan*.md` or `modes/score.md` before running score-pipeline. Do not implement any scoring logic manually. Run the command, wait for it to finish, and show the output.
 
 ### Modes that require `_shared.md` + their mode file:
 Read `modes/_shared.md` + `modes/{mode}.md`

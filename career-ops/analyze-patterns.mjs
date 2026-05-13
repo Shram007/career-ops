@@ -31,8 +31,9 @@ const MIN_THRESHOLD = minThresholdIdx !== -1 && args[minThresholdIdx + 1] !== un
 
 // --- Status normalization (mirrors verify-pipeline.mjs) ---
 const ALIASES = {
-  'evaluada': 'evaluated', 'condicional': 'evaluated', 'hold': 'evaluated',
-  'evaluar': 'evaluated', 'verificar': 'evaluated',
+  'evaluada': 'scored', 'condicional': 'scored', 'hold': 'scored',
+  'evaluar': 'scored', 'verificar': 'scored', 'evaluated': 'scored',
+  'scored': 'scored',
   'aplicado': 'applied', 'enviada': 'applied', 'aplicada': 'applied',
   'applied': 'applied', 'sent': 'applied',
   'respondido': 'responded',
@@ -55,7 +56,7 @@ function classifyOutcome(status) {
   if (['interview', 'offer', 'responded', 'applied'].includes(s)) return 'positive';
   if (['rejected', 'discarded'].includes(s)) return 'negative';
   if (['skip'].includes(s)) return 'self_filtered';
-  return 'pending'; // evaluated
+  return 'pending'; // scored (not yet actioned)
 }
 
 // --- Parse applications.md ---
@@ -198,6 +199,24 @@ function classifyCompanySize(teamSize) {
   return 'unknown';
 }
 
+// --- Parse structured reason tags from Notes column ---
+// Tags have the format: key:value (e.g. location:AU, exp:3yr, stack:java)
+const KNOWN_TAG_KEYS = new Set(['location', 'exp', 'seniority', 'stack', 'remote', 'domain', 'comp', 'scope', 'fit']);
+
+function parseReasonTags(notes) {
+  if (!notes || notes === '—' || notes === '-') return [];
+  const matches = notes.match(/\b([a-z]+):([a-zA-Z0-9._-]+)\b/g) || [];
+  return matches.filter(t => KNOWN_TAG_KEYS.has(t.split(':')[0]));
+}
+
+// Map reason tag keys → blocker types used in blockerAnalysis
+const TAG_TO_BLOCKER = {
+  location: 'geo-restriction',
+  stack: 'stack-mismatch',
+  seniority: 'seniority-mismatch',
+  remote: 'onsite-requirement',
+};
+
 // --- Extract hard blocker keywords from gaps ---
 function extractBlockerType(gap) {
   const desc = gap.description.toLowerCase();
@@ -242,10 +261,10 @@ function analyze() {
   });
 
   // Count entries beyond "Evaluated"
-  const beyondEvaluated = enriched.filter(e => e.normalizedStatus !== 'evaluated');
+  const beyondEvaluated = enriched.filter(e => e.normalizedStatus !== 'scored');
   if (beyondEvaluated.length < MIN_THRESHOLD) {
     return {
-      error: `Not enough data: ${beyondEvaluated.length}/${MIN_THRESHOLD} applications beyond "Evaluated". Keep applying and come back later.`,
+      error: `Not enough data: ${beyondEvaluated.length}/${MIN_THRESHOLD} applications beyond "Scored". Keep applying and come back later.`,
       current: beyondEvaluated.length,
       threshold: MIN_THRESHOLD,
     };
@@ -301,11 +320,19 @@ function analyze() {
   const blockerCounts = new Map();
   const totalWithGaps = enriched.filter(e => e.report?.gaps?.length > 0);
   for (const e of enriched) {
-    if (!e.report?.gaps) continue;
-    for (const gap of e.report.gaps) {
-      const type = extractBlockerType(gap);
-      if (!type) continue;
-      blockerCounts.set(type, (blockerCounts.get(type) || 0) + 1);
+    if (e.report?.gaps?.length > 0) {
+      // Prefer gap analysis from full report when available
+      for (const gap of e.report.gaps) {
+        const type = extractBlockerType(gap);
+        if (!type) continue;
+        blockerCounts.set(type, (blockerCounts.get(type) || 0) + 1);
+      }
+    } else {
+      // Fall back to reason tags when no report exists
+      for (const tag of parseReasonTags(e.notes)) {
+        const type = TAG_TO_BLOCKER[tag.split(':')[0]];
+        if (type) blockerCounts.set(type, (blockerCounts.get(type) || 0) + 1);
+      }
     }
   }
   const blockerAnalysis = [...blockerCounts.entries()]
@@ -379,6 +406,17 @@ function analyze() {
     .map(([skill, frequency]) => ({ skill, frequency }))
     .sort((a, b) => b.frequency - a.frequency)
     .slice(0, 15);
+
+  // --- Reason tag frequency ---
+  const reasonTagCounts = new Map();
+  for (const e of enriched) {
+    for (const tag of parseReasonTags(e.notes)) {
+      reasonTagCounts.set(tag, (reasonTagCounts.get(tag) || 0) + 1);
+    }
+  }
+  const reasonTagAnalysis = [...reasonTagCounts.entries()]
+    .map(([tag, count]) => ({ tag, count, percentage: Math.round((count / enriched.length) * 100) }))
+    .sort((a, b) => b.count - a.count);
 
   // --- Generate recommendations ---
   const recommendations = [];
@@ -457,6 +495,7 @@ function analyze() {
     companySizeBreakdown,
     scoreThreshold,
     techStackGaps,
+    reasonTagAnalysis,
     recommendations,
   };
 }
@@ -468,7 +507,7 @@ function printSummary(result) {
     return;
   }
 
-  const { metadata, funnel, scoreComparison, archetypeBreakdown, blockerAnalysis, remotePolicy, scoreThreshold, techStackGaps, recommendations } = result;
+  const { metadata, funnel, scoreComparison, archetypeBreakdown, blockerAnalysis, remotePolicy, scoreThreshold, techStackGaps, reasonTagAnalysis, recommendations } = result;
 
   console.log(`\n${'='.repeat(60)}`);
   console.log(`  Pattern Analysis — ${metadata.analysisDate}`);
@@ -478,7 +517,7 @@ function printSummary(result) {
   // Funnel
   console.log('CONVERSION FUNNEL');
   console.log('-'.repeat(40));
-  const funnelOrder = ['evaluated', 'applied', 'responded', 'interview', 'offer', 'rejected', 'discarded', 'skip'];
+  const funnelOrder = ['scored', 'applied', 'responded', 'interview', 'offer', 'rejected', 'discarded', 'skip'];
   for (const status of funnelOrder) {
     if (funnel[status]) {
       const pct = Math.round((funnel[status] / metadata.total) * 100);
@@ -523,6 +562,15 @@ function printSummary(result) {
   // Score threshold
   console.log(`\nSCORE THRESHOLD: ${scoreThreshold.recommended}/5`);
   console.log(`  ${scoreThreshold.reasoning}`);
+
+  // Reason tags
+  if (reasonTagAnalysis && reasonTagAnalysis.length > 0) {
+    console.log('\nREASON TAGS (from scored jobs)');
+    console.log('-'.repeat(40));
+    for (const t of reasonTagAnalysis) {
+      console.log(`  ${t.tag.padEnd(25)} ${String(t.count).padStart(2)}x (${t.percentage}%)`);
+    }
+  }
 
   // Recommendations
   if (recommendations.length > 0) {
