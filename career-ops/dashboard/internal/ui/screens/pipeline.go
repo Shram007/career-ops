@@ -745,8 +745,9 @@ func (m PipelineModel) renderAppLine(app model.CareerApplication, selected bool)
 	companyW := 16
 	statusW := 12
 	compW := 14
+	flagsW := 6 // "S P A I" pipeline state flags
 	// Role gets remaining space
-	roleW := m.width - numW - scoreW - dateW - companyW - statusW - compW - 13
+	roleW := m.width - numW - scoreW - dateW - companyW - statusW - compW - flagsW - 14
 	if roleW < 15 {
 		roleW = 15
 	}
@@ -791,13 +792,41 @@ func (m PipelineModel) renderAppLine(app model.CareerApplication, selected bool)
 		compText = compStyle.Render(comp)
 	}
 
-	line := fmt.Sprintf(" %s %s %s %s %s %s %s",
+	// Pipeline state flags: S(cored) P(DF) A(pplied) I(nterview prep)
+	// Active = colored letter, inactive = dim dot
+	dimStyle := lipgloss.NewStyle().Foreground(m.theme.Overlay)
+	statusNorm := data.NormalizeStatus(app.Status)
+	isApplied := statusNorm == "applied" || statusNorm == "responded" ||
+		statusNorm == "interview" || statusNorm == "offer"
+
+	flagS := dimStyle.Render("·")
+	if app.HasReport {
+		flagS = lipgloss.NewStyle().Foreground(m.theme.Sky).Bold(true).Render("S")
+	}
+	flagP := dimStyle.Render("·")
+	if app.HasPDF {
+		flagP = lipgloss.NewStyle().Foreground(m.theme.Green).Bold(true).Render("P")
+	}
+	flagA := dimStyle.Render("·")
+	if isApplied {
+		flagA = lipgloss.NewStyle().Foreground(m.theme.Yellow).Bold(true).Render("A")
+	}
+	flagI := dimStyle.Render("·")
+	if app.HasInterviewPrep {
+		flagI = lipgloss.NewStyle().Foreground(m.theme.Mauve).Bold(true).Render("I")
+	}
+	flagsText := lipgloss.NewStyle().Width(flagsW).Render(
+		flagS + " " + flagP + " " + flagA + " " + flagI,
+	)
+
+	line := fmt.Sprintf(" %s %s %s %s %s %s %s %s",
 		numStyle.Render(truncateRunes(numText, numW)),
 		score,
 		dateStyle.Render(truncateRunes(dateText, dateW)),
 		companyStyle.Render(company),
 		roleStyle.Render(role),
 		statusText,
+		flagsText,
 		compText,
 	)
 
