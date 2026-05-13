@@ -115,7 +115,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "linux":
 				cmd = exec.Command("xdg-open", url)
 			case "windows":
-				cmd = exec.Command("cmd", "/c", "start", "", url)
+				cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
 			default:
 				cmd = exec.Command("xdg-open", url)
 			}
