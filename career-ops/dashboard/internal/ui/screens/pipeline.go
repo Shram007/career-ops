@@ -54,6 +54,25 @@ type PipelineRefreshMsg struct{}
 // PipelineOpenProgressMsg is emitted when the progress screen should open.
 type PipelineOpenProgressMsg struct{}
 
+// PipelineRescanMsg triggers a re-evaluation of a specific tracker entry.
+type PipelineRescanMsg struct {
+	CareerOpsPath string
+	EntryNumber   int
+	CompanyName   string
+}
+
+// PipelineRescanDoneMsg carries the output of a completed rescan.
+type PipelineRescanDoneMsg struct {
+	CompanyName string
+	Output      string
+}
+
+// PipelineRunInputMsg is emitted when the user submits a URL or ID from the input box.
+type PipelineRunInputMsg struct {
+	CareerOpsPath string
+	Input         string // URL or numeric ID
+}
+
 type reportSummary struct {
 	archetype string
 	tldr      string
@@ -74,6 +93,7 @@ const (
 	filterAll       = "all"
 	filterEvaluated = "evaluated"
 	filterPDF       = "pdf"
+	filterScored    = "scored"
 	filterApplied   = "applied"
 	filterInterview = "interview"
 	filterSkip      = "skip"
@@ -91,6 +111,7 @@ var pipelineTabs = []pipelineTab{
 	{filterAll, "ALL"},
 	{filterEvaluated, "EVALUATED"},
 	{filterPDF, "PDF GEN"},
+	{filterScored, "SCORED"},
 	{filterApplied, "APPLIED"},
 	{filterInterview, "INTERVIEW"},
 	{filterTop, "TOP ≥4"},
@@ -101,10 +122,10 @@ var pipelineTabs = []pipelineTab{
 
 var sortCycle = []string{sortScore, sortDate, sortCompany, sortStatus}
 
-var statusOptions = []string{"Evaluated", "PDF Generated", "Applied", "Responded", "Interview", "Offer", "Rejected", "Discarded", "SKIP"}
+var statusOptions = []string{"Evaluated", "Scored", "PDF'd", "Applied", "Responded", "Interview", "Offer", "Rejected", "Discarded", "SKIP"}
 
 // statusGroupOrder defines display order for grouped view.
-var statusGroupOrder = []string{"interview", "offer", "responded", "applied", "pdf", "evaluated", "skip", "rejected", "discarded"}
+var statusGroupOrder = []string{"interview", "offer", "responded", "applied", "pdf", "evaluated", "scored", "skip", "rejected", "discarded"}
 
 // PipelineModel implements the career pipeline dashboard screen.
 type PipelineModel struct {
@@ -123,6 +144,9 @@ type PipelineModel struct {
 	// Status picker sub-state
 	statusPicker bool
 	statusCursor int
+	// URL/ID input sub-state
+	urlInput      bool
+	urlInputValue string
 }
 
 // NewPipelineModel creates a new pipeline screen.
@@ -239,6 +263,9 @@ func (m PipelineModel) Update(msg tea.Msg) (PipelineModel, tea.Cmd) {
 		if m.statusPicker {
 			return m.handleStatusPicker(msg)
 		}
+		if m.urlInput {
+			return m.handleURLInput(msg)
+		}
 		return m.handleKey(msg)
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
@@ -311,18 +338,30 @@ func (m PipelineModel) handleKey(msg tea.KeyMsg) (PipelineModel, tea.Cmd) {
 		}
 
 	case "enter":
-		if app, ok := m.CurrentApp(); ok && app.ReportPath != "" {
-			fullPath := filepath.Join(m.careerOpsPath, app.ReportPath)
-			title := fmt.Sprintf("%s — %s", app.Company, app.Role)
-			jobURL := app.JobURL
-			return m, func() tea.Msg {
-				return PipelineOpenReportMsg{Path: fullPath, Title: title, JobURL: jobURL}
+		if app, ok := m.CurrentApp(); ok {
+			if app.ReportPath != "" {
+				fullPath := filepath.Join(m.careerOpsPath, app.ReportPath)
+				title := fmt.Sprintf("%s — %s", app.Company, app.Role)
+				jobURL := app.JobURL
+				return m, func() tea.Msg {
+					return PipelineOpenReportMsg{Path: fullPath, Title: title, JobURL: jobURL}
+				}
 			}
-		} else if app, ok := m.CurrentApp(); ok && app.Notes != "" {
+			// No report file: show notes or a plain summary panel
 			lines := buildNotesLines(app)
 			title := fmt.Sprintf("%s — %s", app.Company, app.Role)
 			return m, func() tea.Msg {
 				return PipelineOpenNotesMsg{Lines: lines, Title: title}
+			}
+		}
+
+	case "x":
+		if app, ok := m.CurrentApp(); ok && app.Company != "" {
+			co := m.careerOpsPath
+			num := app.Number
+			company := app.Company
+			return m, func() tea.Msg {
+				return PipelineRescanMsg{CareerOpsPath: co, EntryNumber: num, CompanyName: company}
 			}
 		}
 
@@ -345,6 +384,9 @@ func (m PipelineModel) handleKey(msg tea.KeyMsg) (PipelineModel, tea.Cmd) {
 			m.statusCursor = 0
 		}
 
+	case "i":
+		m.urlInput = true
+		m.urlInputValue = ""
 	case "g":
 		if len(m.filtered) > 0 {
 			m.cursor = 0
@@ -420,6 +462,38 @@ func (m PipelineModel) handleStatusPicker(msg tea.KeyMsg) (PipelineModel, tea.Cm
 					NewStatus:     newStatus,
 				}
 			}
+		}
+	}
+	return m, nil
+}
+
+func (m PipelineModel) handleURLInput(msg tea.KeyMsg) (PipelineModel, tea.Cmd) {
+	switch msg.String() {
+	case "esc", "ctrl+c":
+		m.urlInput = false
+		m.urlInputValue = ""
+
+	case "enter":
+		val := strings.TrimSpace(m.urlInputValue)
+		m.urlInput = false
+		m.urlInputValue = ""
+		if val != "" {
+			co := m.careerOpsPath
+			return m, func() tea.Msg {
+				return PipelineRunInputMsg{CareerOpsPath: co, Input: val}
+			}
+		}
+
+	case "backspace", "ctrl+h":
+		if len(m.urlInputValue) > 0 {
+			runes := []rune(m.urlInputValue)
+			m.urlInputValue = string(runes[:len(runes)-1])
+		}
+
+	default:
+		// Accept printable characters
+		if len(msg.String()) == 1 {
+			m.urlInputValue += msg.String()
 		}
 	}
 	return m, nil
@@ -579,6 +653,11 @@ func (m PipelineModel) View() string {
 	// Status picker overlay
 	if m.statusPicker {
 		body = m.overlayStatusPicker(body)
+	}
+
+	// URL/ID input overlay
+	if m.urlInput {
+		body = m.overlayURLInput(body)
 	}
 
 	return lipgloss.JoinVertical(lipgloss.Left,
@@ -874,6 +953,13 @@ func (m PipelineModel) renderHelp() string {
 				keyStyle.Render("Esc") + descStyle.Render(" cancel"))
 	}
 
+	if m.urlInput {
+		return style.Render(
+			keyStyle.Render("type") + descStyle.Render(" URL or ID  ") +
+				keyStyle.Render("Enter") + descStyle.Render(" run  ") +
+				keyStyle.Render("Esc") + descStyle.Render(" cancel"))
+	}
+
 	brand := lipgloss.NewStyle().Foreground(m.theme.Overlay).Render("career-ops by santifer.io")
 
 	keys := keyStyle.Render("↑↓/jk") + descStyle.Render(" nav  ") +
@@ -883,6 +969,8 @@ func (m PipelineModel) renderHelp() string {
 		keyStyle.Render("Enter") + descStyle.Render(" report  ") +
 		keyStyle.Render("o") + descStyle.Render(" open URL  ") +
 		keyStyle.Render("c") + descStyle.Render(" change  ") +
+		keyStyle.Render("x") + descStyle.Render(" rescan  ") +
+		keyStyle.Render("i") + descStyle.Render(" input  ") +
 		keyStyle.Render("v") + descStyle.Render(" view  ") +
 		keyStyle.Render("p") + descStyle.Render(" progress  ") +
 		keyStyle.Render("Esc") + descStyle.Render(" quit")
@@ -925,6 +1013,26 @@ func (m PipelineModel) overlayStatusPicker(body string) string {
 	return strings.Join(bodyLines, "\n")
 }
 
+func (m PipelineModel) overlayURLInput(body string) string {
+	bodyLines := strings.Split(body, "\n")
+
+	padStyle := lipgloss.NewStyle().Padding(0, 2)
+	borderStyle := lipgloss.NewStyle().Foreground(m.theme.Blue).Bold(true)
+	hintStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
+	inputStyle := lipgloss.NewStyle().Foreground(m.theme.Text).Width(60)
+
+	display := m.urlInputValue + "█" // block cursor
+
+	overlay := []string{
+		padStyle.Render(borderStyle.Render("Scan URL  /  Ingest URL  /  PDF from ID:")),
+		padStyle.Render(inputStyle.Render(display)),
+		padStyle.Render(hintStyle.Render("https://... → scan listing  |  http://...job/... → ingest  |  42 → pdf-from-id  |  Esc cancel")),
+	}
+
+	bodyLines = append(bodyLines, overlay...)
+	return strings.Join(bodyLines, "\n")
+}
+
 // -- Helpers --
 
 func (m PipelineModel) scoreStyle(score float64) lipgloss.Style {
@@ -948,6 +1056,7 @@ func (m PipelineModel) statusColorMap() map[string]lipgloss.Color {
 		"responded": m.theme.Blue,
 		"pdf":       m.theme.Mauve,
 		"evaluated": m.theme.Text,
+		"scored":    m.theme.Yellow,
 		"skip":      m.theme.Red,
 		"rejected":  m.theme.Subtext,
 		"discarded": m.theme.Subtext,
@@ -987,7 +1096,9 @@ func statusLabel(norm string) string {
 	case "applied":
 		return "Applied"
 	case "pdf":
-		return "PDF Generated"
+		return "PDF'd"
+	case "scored":
+		return "Scored"
 	case "evaluated":
 		return "Evaluated"
 	case "skip":

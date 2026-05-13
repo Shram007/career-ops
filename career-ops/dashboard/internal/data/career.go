@@ -588,8 +588,10 @@ func NormalizeStatus(raw string) string {
 	// Most restrictive first — accepts both English and Spanish
 	case strings.Contains(s, "no aplicar") || strings.Contains(s, "no_aplicar") || s == "skip" || strings.Contains(s, "geo blocker"):
 		return "skip"
-	case strings.Contains(s, "pdf generated") || s == "pdf":
+	case strings.Contains(s, "pdf generated") || s == "pdf" || s == "pdf'd":
 		return "pdf"
+	case s == "scored":
+		return "scored"
 	case strings.Contains(s, "interview") || strings.Contains(s, "entrevista"):
 		return "interview"
 	case s == "offer" || strings.Contains(s, "oferta"):
@@ -667,17 +669,25 @@ func UpdateApplicationStatus(careerOpsPath string, app model.CareerApplication, 
 		if !strings.HasPrefix(strings.TrimSpace(line), "|") {
 			continue
 		}
-		// Match by report number
+		// Match by report number (preferred — works for fully evaluated entries)
 		if app.ReportNumber != "" && strings.Contains(line, fmt.Sprintf("[%s]", app.ReportNumber)) {
-			// Replace the status field
 			lines[i] = replaceStatusInLine(line, app.Status, newStatus)
 			found = true
 			break
 		}
+		// Fallback: match by tracker row number (for scored entries with no report)
+		if app.ReportNumber == "" && app.Number > 0 {
+			parts := strings.Split(line, "|")
+			if len(parts) > 1 && strings.TrimSpace(parts[1]) == fmt.Sprintf("%d", app.Number) {
+				lines[i] = replaceStatusInLine(line, app.Status, newStatus)
+				found = true
+				break
+			}
+		}
 	}
 
 	if !found {
-		return fmt.Errorf("application not found: report %s", app.ReportNumber)
+		return fmt.Errorf("application not found: number %d report %s", app.Number, app.ReportNumber)
 	}
 
 	return os.WriteFile(filePath, []byte(strings.Join(lines, "\n")), 0644)
@@ -707,16 +717,20 @@ func StatusPriority(status string) int {
 		return 2
 	case "applied":
 		return 3
-	case "evaluated":
+	case "pdf":
 		return 4
-	case "skip":
+	case "evaluated":
 		return 5
-	case "rejected":
+	case "scored":
 		return 6
-	case "discarded":
+	case "skip":
 		return 7
-	default:
+	case "rejected":
 		return 8
+	case "discarded":
+		return 9
+	default:
+		return 10
 	}
 }
 
