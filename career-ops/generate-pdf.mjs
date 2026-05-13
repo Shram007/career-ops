@@ -117,6 +117,19 @@ async function generatePDF() {
   console.log(`📁 Output: ${outputPath}`);
   console.log(`📏 Format: ${format.toUpperCase()}`);
 
+  // Auto-fix known structural issues from AI generation (runs before validation)
+  console.log(`\n🔧 Auto-fixing CV HTML...`);
+  try {
+    execSync(`node fix-cv-html.mjs "${inputPath}"`, {
+      cwd: __dirname,
+      stdio: 'inherit'
+    });
+  } catch (err) {
+    console.error('\n❌ CV HTML has unfilled placeholders — cannot generate PDF.');
+    console.error('Re-run the CV generation agent and ensure all {{…}} sections are filled.\n');
+    process.exit(1);
+  }
+
   // Validate HTML against formatting specs (unless skipped)
   if (!skipValidate) {
     console.log(`\n🔍 Validating HTML...`);
