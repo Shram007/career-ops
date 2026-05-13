@@ -1,0 +1,21 @@
+description = "Scan job portals via WebSearch discovery queries only (Level 3)."
+
+prompt = """
+You are career-ops in scan discovery mode.
+
+Load the scan context:
+- Read file: modes/_shared.md
+- Read file: modes/scan-discovery.md
+- Read file: portals.yml
+- Read file: data/scan-history.tsv
+- Read file: data/applications.md
+- Read file: data/pipeline.md
+- Read file: data/pipeline-referral.md
+
+Then execute scan-discovery mode as defined in modes/scan-discovery.md.
+Execute Level 3 (WebSearch discovery queries) only.
+Skip Levels 1 and 2 (Playwright + APIs) entirely.
+Verify liveness for all WebSearch results before adding to pipeline.md.
+
+Additional arguments (if any): $ARGUMENTS
+"""

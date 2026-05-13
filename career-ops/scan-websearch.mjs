@@ -5,8 +5,8 @@
  *
  * Executes websearch queries from portals.yml and extracts result URLs.
  * Sources:
- * - tracked_companies[].scan_query (enabled companies)
- * - search_queries[] (enabled entries, unless --company is used)
+ * - referral mode: referral_companies[] with scan_method=websearch + scan_query
+ * - discovery mode: tracked_companies[].scan_query and search_queries[]
  */
 
 import { existsSync, readFileSync, writeFileSync, appendFileSync, mkdirSync } from 'fs';
@@ -17,6 +17,7 @@ const parseYaml = yaml.load;
 const PORTALS_PATH = 'portals.yml';
 const SCAN_HISTORY_PATH = 'data/scan-history.tsv';
 const PIPELINE_PATH = 'data/pipeline.md';
+const REFERRAL_PIPELINE_PATH = 'data/pipeline-referral.md';
 const APPLICATIONS_PATH = 'data/applications.md';
 
 mkdirSync('data', { recursive: true });
@@ -26,6 +27,7 @@ function parseArgs(argv) {
   const out = {
     dryRun: false,
     companyFilter: null,
+    referralMode: false,
     maxResultsPerQuery: 12,
     pauseMs: 600,
   };
@@ -45,6 +47,11 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === '--referral') {
+      out.referralMode = true;
+      continue;
+    }
+
     if (arg === '--max-results') {
       const v = Number(args[++i]);
       if (!Number.isFinite(v) || v <= 0) throw new Error('Invalid --max-results value');
@@ -61,7 +68,7 @@ function parseArgs(argv) {
 
     if (arg === '-h' || arg === '--help') {
       console.log('Usage:');
-      console.log('  node scan-websearch.mjs [--dry-run] [--company <name>] [--max-results <n>] [--pause-ms <ms>]');
+      console.log('  node scan-websearch.mjs [--dry-run] [--referral] [--company <name>] [--max-results <n>] [--pause-ms <ms>]');
       process.exit(0);
     }
   }
@@ -89,7 +96,7 @@ function buildTitleFilter(titleFilter) {
   };
 }
 
-function loadSeenUrls() {
+function loadSeenUrls(pipelinePaths) {
   const seen = new Set();
 
   if (existsSync(SCAN_HISTORY_PATH)) {
@@ -101,9 +108,11 @@ function loadSeenUrls() {
     }
   }
 
-  const pipelineText = readTextOrEmpty(PIPELINE_PATH);
-  for (const match of pipelineText.matchAll(/https?:\/\/[^\s|)]+/g)) {
-    seen.add(match[0]);
+  for (const path of pipelinePaths) {
+    const pipelineText = readTextOrEmpty(path);
+    for (const match of pipelineText.matchAll(/https?:\/\/[^\s|)]+/g)) {
+      seen.add(match[0]);
+    }
   }
 
   const applicationsText = readTextOrEmpty(APPLICATIONS_PATH);
@@ -135,15 +144,15 @@ function ensureScanHistoryHeader() {
   }
 }
 
-function appendToPipeline(jobs) {
+function appendToPipeline(jobs, pipelinePath) {
   if (jobs.length === 0) return;
 
-  let text = readTextOrEmpty(PIPELINE_PATH);
+  let text = readTextOrEmpty(pipelinePath);
   if (!text) {
-    text = '# Pipeline\n\n## Pendientes\n\n## Procesadas\n';
+    text = '## Pending\n\n## Processed\n';
   }
 
-  const marker = '## Pendientes';
+  const marker = text.includes('## Pending') ? '## Pending' : '## Pendientes';
   const markerIndex = text.indexOf(marker);
   const nextSection = text.indexOf('\n## ', markerIndex + marker.length);
   const insertAt = nextSection === -1 ? text.length : nextSection;
@@ -153,10 +162,10 @@ function appendToPipeline(jobs) {
   ).join('\n') + '\n';
 
   const out = markerIndex === -1
-    ? `${text.trimEnd()}\n\n## Pendientes\n${block}\n`
+    ? `${text.trimEnd()}\n\n## Pending\n${block}\n`
     : text.slice(0, insertAt) + block + text.slice(insertAt);
 
-  writeFileSync(PIPELINE_PATH, out, 'utf8');
+  writeFileSync(pipelinePath, out, 'utf8');
 }
 
 function appendToScanHistory(jobs, date) {
@@ -233,8 +242,31 @@ async function fetchSearchResults(query, maxResults) {
   return extractResultsFromHtml(html, maxResults);
 }
 
-function buildQueryTargets(config, companyFilter) {
+function buildQueryTargets(config, companyFilter, referralMode) {
   const targets = [];
+
+  if (referralMode) {
+    const companies = config?.referral_companies || [];
+    for (const c of companies) {
+      if (c?.enabled === false) continue;
+      const name = String(c?.name || '').trim();
+      if (!name) continue;
+      if (companyFilter && !name.toLowerCase().includes(companyFilter)) continue;
+
+      const scanMethod = String(c?.scan_method || '').trim().toLowerCase();
+      const query = String(c?.scan_query || '').trim();
+      if (scanMethod !== 'websearch' || !query) continue;
+
+      targets.push({
+        sourceType: 'referral_company_scan_query',
+        label: `${name} (referral websearch)`,
+        company: name,
+        query,
+      });
+    }
+
+    return targets;
+  }
 
   const companies = config?.tracked_companies || [];
   for (const c of companies) {
@@ -276,7 +308,7 @@ function buildQueryTargets(config, companyFilter) {
 }
 
 async function main() {
-  const { dryRun, companyFilter, maxResultsPerQuery, pauseMs } = parseArgs(process.argv);
+  const { dryRun, companyFilter, referralMode, maxResultsPerQuery, pauseMs } = parseArgs(process.argv);
 
   if (!existsSync(PORTALS_PATH)) {
     throw new Error('portals.yml not found.');
@@ -284,14 +316,16 @@ async function main() {
 
   const config = parseYaml(readFileSync(PORTALS_PATH, 'utf8'));
   const titleFilter = buildTitleFilter(config?.title_filter);
-  const targets = buildQueryTargets(config, companyFilter);
+  const targets = buildQueryTargets(config, companyFilter, referralMode);
+  const outputQueuePath = referralMode ? REFERRAL_PIPELINE_PATH : PIPELINE_PATH;
+  const sourceTag = referralMode ? 'websearch-referral' : 'websearch';
 
   if (targets.length === 0) {
     console.log('No websearch queries matched.');
     return;
   }
 
-  const seenUrls = loadSeenUrls();
+  const seenUrls = loadSeenUrls([PIPELINE_PATH, REFERRAL_PIPELINE_PATH]);
   const seenCompanyRoles = loadSeenCompanyRoles();
 
   const date = new Date().toISOString().slice(0, 10);
@@ -302,6 +336,7 @@ async function main() {
   let failures = 0;
 
   console.log(`WebSearch scan: running ${targets.length} queries`);
+  if (referralMode) console.log('(referral mode: only referral_companies with scan_method=websearch)');
   if (dryRun) console.log('(dry run — no files will be written)');
 
   for (const t of targets) {
@@ -334,7 +369,7 @@ async function main() {
           title: r.title,
           company: t.company,
           posted_date: date,
-          source: 'websearch',
+          source: sourceTag,
         });
         acceptedForTarget += 1;
       }
@@ -348,7 +383,7 @@ async function main() {
   }
 
   if (!dryRun && newJobs.length > 0) {
-    appendToPipeline(newJobs);
+    appendToPipeline(newJobs, outputQueuePath);
     appendToScanHistory(newJobs, date);
   }
 

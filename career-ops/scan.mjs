@@ -11,6 +11,7 @@
  *
  * Usage:
  *   node scan.mjs                          # scan all enabled companies
+ *   node scan.mjs --referral               # scan referral_companies and write to pipeline-referral.md
  *   node scan.mjs --dry-run                # preview without writing files
  *   node scan.mjs --company Cohere         # scan a single company
  *   node scan.mjs --days 14                # filter for jobs posted in last 14 days (default: 7)
@@ -25,6 +26,7 @@ const parseYaml = yaml.load;
 const PORTALS_PATH = 'portals.yml';
 const SCAN_HISTORY_PATH = 'data/scan-history.tsv';
 const PIPELINE_PATH = 'data/pipeline.md';
+const REFERRAL_PIPELINE_PATH = 'data/pipeline-referral.md';
 const APPLICATIONS_PATH = 'data/applications.md';
 
 // Ensure required directories exist (fresh setup)
@@ -216,7 +218,7 @@ function meetExperienceRequirement(description, maxYears = 3) {
 
 // ── Dedup ───────────────────────────────────────────────────────────
 
-function loadSeenUrls() {
+function loadSeenUrls(pipelinePaths) {
   const seen = new Set();
 
   // scan-history.tsv
@@ -228,10 +230,10 @@ function loadSeenUrls() {
     }
   }
 
-  // pipeline.md — extract URLs from checkbox lines (with or without dates)
-  if (existsSync(PIPELINE_PATH)) {
-    const text = readFileSync(PIPELINE_PATH, 'utf-8');
-    // Matches: - [ ] YYYY-MM-DD | https:// or - [ ] https://
+  // queue files — extract URLs from checkbox lines (with or without dates)
+  for (const path of pipelinePaths) {
+    if (!existsSync(path)) continue;
+    const text = readFileSync(path, 'utf-8');
     for (const match of text.matchAll(/- \[[ x]\] (?:\d{4}-\d{2}-\d{2} \| )?(https?:\/\/\S+)/g)) {
       seen.add(match[1]);
     }
@@ -266,35 +268,34 @@ function loadSeenCompanyRoles() {
 
 // ── Pipeline writer ─────────────────────────────────────────────────
 
-function appendToPipeline(jobs) {
+function appendToPipeline(jobs, pipelinePath) {
   if (jobs.length === 0) return;
 
-  let text = readFileSync(PIPELINE_PATH, 'utf-8');
+  let text = existsSync(pipelinePath)
+    ? readFileSync(pipelinePath, 'utf-8')
+    : '## Pending\n\n## Processed\n';
 
-  // Find "## Pendientes" section and append after it
-  const marker = '## Pendientes';
+  // Support both EN and legacy ES section titles.
+  const marker = text.includes('## Pending') ? '## Pending' : '## Pendientes';
+  const fallbackMarker = marker === '## Pending' ? '## Processed' : '## Procesadas';
   const idx = text.indexOf(marker);
+
+  const block = '\n' + jobs.map(o =>
+    `- [ ] ${o.posted_date} | ${o.url} | ${o.company} | ${o.title}`
+  ).join('\n') + '\n';
+
   if (idx === -1) {
-    // No Pendientes section — append at end before Procesadas
-    const procIdx = text.indexOf('## Procesadas');
+    const procIdx = text.indexOf(fallbackMarker);
     const insertAt = procIdx === -1 ? text.length : procIdx;
-    const block = `\n${marker}\n\n` + jobs.map(o =>
-      `- [ ] ${o.posted_date} | ${o.url} | ${o.company} | ${o.title}`
-    ).join('\n') + '\n\n';
-    text = text.slice(0, insertAt) + block + text.slice(insertAt);
+    text = `${text.slice(0, insertAt).trimEnd()}\n\n## Pending\n${block}\n${text.slice(insertAt)}`;
   } else {
-    // Find the end of existing Pendientes content (next ## or end)
     const afterMarker = idx + marker.length;
     const nextSection = text.indexOf('\n## ', afterMarker);
     const insertAt = nextSection === -1 ? text.length : nextSection;
-
-    const block = '\n' + jobs.map(o =>
-      `- [ ] ${o.posted_date} | ${o.url} | ${o.company} | ${o.title}`
-    ).join('\n') + '\n';
     text = text.slice(0, insertAt) + block + text.slice(insertAt);
   }
 
-  writeFileSync(PIPELINE_PATH, text, 'utf-8');
+  writeFileSync(pipelinePath, text, 'utf-8');
 }
 
 function appendToScanHistory(jobs, date, status = 'added') {
@@ -333,10 +334,13 @@ async function parallelFetch(tasks, limit) {
 async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes('--dry-run');
+  const referralMode = args.includes('--referral');
   const companyFlag = args.indexOf('--company');
   const filterCompany = companyFlag !== -1 ? args[companyFlag + 1]?.toLowerCase() : null;
   const daysFlag = args.indexOf('--days');
   const daysCutoff = daysFlag !== -1 ? parseInt(args[daysFlag + 1], 10) : 7;
+  const pipelinePath = referralMode ? REFERRAL_PIPELINE_PATH : PIPELINE_PATH;
+  const dedupQueuePaths = [PIPELINE_PATH, REFERRAL_PIPELINE_PATH];
 
   // 1. Read portals.yml
   if (!existsSync(PORTALS_PATH)) {
@@ -345,7 +349,9 @@ async function main() {
   }
 
   const config = parseYaml(readFileSync(PORTALS_PATH, 'utf-8'));
-  const companies = config.tracked_companies || [];
+  const companies = referralMode
+    ? (config.referral_companies || [])
+    : (config.tracked_companies || []);
   const titleFilter = buildTitleFilter(config.title_filter);
   const maxYears = config.experience_filter?.max_years || 3;
 
@@ -363,7 +369,7 @@ async function main() {
   if (dryRun) console.log('(dry run — no files will be written)\n');
 
   // 3. Load dedup sets
-  const seenUrls = loadSeenUrls();
+  const seenUrls = loadSeenUrls(dedupQueuePaths);
   const seenCompanyRoles = loadSeenCompanyRoles();
 
   // 4. Fetch all APIs
@@ -430,7 +436,7 @@ async function main() {
 
   // 5. Write results
   if (!dryRun && newJobs.length > 0) {
-    appendToPipeline(newJobs);
+    appendToPipeline(newJobs, pipelinePath);
     appendToScanHistory(newJobs, date);
   }
   // Log validation-rejected to history (for audit)
@@ -469,11 +475,15 @@ async function main() {
     if (dryRun) {
       console.log('\n(dry run — run without --dry-run to save results)');
     } else {
-      console.log(`\nResults saved to ${PIPELINE_PATH} and ${SCAN_HISTORY_PATH}`);
+      console.log(`\nResults saved to ${pipelinePath} and ${SCAN_HISTORY_PATH}`);
     }
   }
 
-  console.log(`\n→ Run /career-ops pipeline to evaluate new jobs.`);
+  if (referralMode) {
+    console.log(`\n→ Run /career-ops score referral to evaluate new jobs.`);
+  } else {
+    console.log(`\n→ Run /career-ops score discovery to evaluate new jobs.`);
+  }
   console.log('→ Share results and get help: https://discord.gg/8pRpHETxa4');
 }
 

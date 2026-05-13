@@ -36,6 +36,7 @@ function parseArgs(argv) {
   const passthrough = [];
   let skipLevel1 = false;
   let skipLevel3 = false;
+  let referralMode = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -50,10 +51,16 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === '--referral') {
+      referralMode = true;
+      passthrough.push(arg);
+      continue;
+    }
+
     passthrough.push(arg);
   }
 
-  return { passthrough, skipLevel1, skipLevel3 };
+  return { passthrough, skipLevel1, skipLevel3, referralMode };
 }
 
 function ensureDirs() {
@@ -113,7 +120,7 @@ function countTodayWebsearchRows(date) {
     if (cols.length < 3) continue;
     const firstSeen = (cols[1] || '').trim();
     const portal = (cols[2] || '').trim().toLowerCase();
-    if (firstSeen === date && portal === 'websearch') {
+    if (firstSeen === date && portal.startsWith('websearch')) {
       count += 1;
     }
   }
@@ -174,7 +181,7 @@ function writeRunSummary(path, summary) {
 }
 
 function main() {
-  const { passthrough, skipLevel1, skipLevel3 } = parseArgs(process.argv);
+  const { passthrough, skipLevel1, skipLevel3, referralMode } = parseArgs(process.argv);
 
   ensureDirs();
   ensureLedger();
@@ -186,7 +193,14 @@ function main() {
 
   console.log(`Scan run: ${runId}`);
   console.log(`Date: ${runDate}`);
+  if (referralMode) {
+    console.log('Mode: referral (Level 3 runs for companies configured with scan_method=websearch)');
+  }
   console.log('');
+
+  const queueEvidence = referralMode
+    ? `${DATA_DIR}/scan-history.tsv;${DATA_DIR}/pipeline-referral.md`
+    : `${DATA_DIR}/scan-history.tsv;${DATA_DIR}/pipeline.md`;
 
   const beforeWebsearchCount = countTodayWebsearchRows(runDate);
 
@@ -208,7 +222,7 @@ function main() {
   const level1 = runLevel({
     runId,
     level: 'level1-playwright',
-    evidence: `${DATA_DIR}/scan-history.tsv;${DATA_DIR}/pipeline.md`,
+    evidence: queueEvidence,
     scriptPath: 'scan-playwright.mjs',
     scriptArgs: passthrough,
     skip: skipLevel1,
@@ -218,7 +232,7 @@ function main() {
   const level2 = runLevel({
     runId,
     level: 'level2-api',
-    evidence: `${DATA_DIR}/scan-history.tsv;${DATA_DIR}/pipeline.md`,
+    evidence: queueEvidence,
     scriptPath: 'scan.mjs',
     scriptArgs: passthrough,
     skip: false,
@@ -228,7 +242,7 @@ function main() {
   const level3 = runLevel({
     runId,
     level: 'level3-websearch',
-    evidence: `${DATA_DIR}/scan-history.tsv;${DATA_DIR}/pipeline.md`,
+    evidence: queueEvidence,
     scriptPath: 'scan-websearch.mjs',
     scriptArgs: passthrough,
     skip: skipLevel3,

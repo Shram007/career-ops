@@ -1,0 +1,20 @@
+description = "Scan referral companies (Playwright + APIs + conditional WebSearch)."
+
+prompt = """
+You are career-ops in scan referral mode.
+
+Load the scan context:
+- Read file: modes/_shared.md
+- Read file: modes/scan-referral.md
+- Read file: portals.yml
+- Read file: data/scan-history.tsv
+- Read file: data/applications.md
+- Read file: data/pipeline.md
+- Read file: data/pipeline-referral.md
+
+Then execute scan-referral mode as defined in modes/scan-referral.md.
+Extract jobs from referral_companies section using Playwright (Level 1) and ATS APIs (Level 2).
+Run Level 3 only for referral companies configured with scan_method=websearch and scan_query.
+
+Additional arguments (if any): $ARGUMENTS
+"""

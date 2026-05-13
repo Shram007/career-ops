@@ -32,7 +32,7 @@ Determine the mode from `{{mode}}`:
 | `pipeline` | `score` (legacy alias for `score discovery`) |
 | `apply` | `apply` |
 | `scan` | `scan` (all sources: Playwright + APIs + WebSearch) |
-| `scan referral` | `scan-referral` (Playwright + APIs for referral companies only) |
+| `scan referral` | `scan-referral` (Playwright + APIs + conditional WebSearch for referral companies) |
 | `scan discovery` | `scan-discovery` (WebSearch discovery queries only) |
 | `batch` | `batch` |
 | `patterns` | `patterns` |
@@ -69,7 +69,7 @@ Available commands:
   /career-ops tracker   → Application status overview
   /career-ops apply     → Live application assistant (reads form + generates answers)
   /career-ops scan            → Scan all sources: Playwright + APIs + WebSearch
-  /career-ops scan referral   → Scan referral companies only (Playwright + APIs)
+  /career-ops scan referral   → Scan referral companies (Playwright + APIs + conditional WebSearch)
   /career-ops scan discovery  → Scan WebSearch discovery queries only
   /career-ops batch     → Batch processing with parallel workers
   /career-ops patterns  → Analyze rejection patterns and improve targeting

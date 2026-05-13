@@ -102,7 +102,9 @@ When using [OpenCode](https://opencode.ai), the following slash commands are ava
 | `/career-ops-project` | `/career-ops project` | Evaluate portfolio project idea |
 | `/career-ops-tracker` | `/career-ops tracker` | Application status overview |
 | `/career-ops-apply` | `/career-ops apply` | Live application assistant |
-| `/career-ops-scan` | `/career-ops scan` | Scan portals for new jobs |
+| `/career-ops-scan` | `/career-ops scan` | Scan all sources (Playwright + APIs + WebSearch) |
+| `/career-ops-scan-referral` | `/career-ops scan referral` | Scan referral companies (Playwright + APIs + conditional WebSearch) |
+| `/career-ops-scan-discovery` | `/career-ops scan discovery` | Scan via WebSearch discovery queries only |
 | `/career-ops-batch` | `/career-ops batch` | Batch processing with parallel workers |
 | `/career-ops-patterns` | `/career-ops patterns` | Analyze rejection patterns and improve targeting |
 | `/career-ops-followup` | `/career-ops followup` | Follow-up cadence tracker |
@@ -132,7 +134,9 @@ When using the [Gemini CLI](https://github.com/google-gemini/gemini-cli), the fo
 | `/career-ops-project` | `/career-ops project` | Evaluate portfolio project idea |
 | `/career-ops-tracker` | `/career-ops tracker` | Application status overview |
 | `/career-ops-apply` | `/career-ops apply` | Live application assistant |
-| `/career-ops-scan` | `/career-ops scan` | Scan portals for new jobs |
+| `/career-ops-scan` | `/career-ops scan` | Scan all sources (Playwright + APIs + WebSearch) |
+| `/career-ops-scan-referral` | `/career-ops scan referral` | Scan referral companies (Playwright + APIs + conditional WebSearch) |
+| `/career-ops-scan-discovery` | `/career-ops scan discovery` | Scan via WebSearch discovery queries only |
 | `/career-ops-batch` | `/career-ops batch` | Batch processing with parallel workers |
 | `/career-ops-patterns` | `/career-ops patterns` | Analyze rejection patterns and improve targeting |
 | `/career-ops-followup` | `/career-ops followup` | Follow-up cadence tracker |
@@ -279,8 +283,11 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 | Evaluates portfolio project | `project` |
 | Asks about application status | `tracker` |
 | Fills out application form | `apply` |
-| Searches for new jobs | `scan` |
-| Processes pending URLs | `pipeline` |
+| Searches for new jobs (all sources) | `scan` (Playwright + APIs + WebSearch) |
+| Searches referral companies only | `scan-referral` (Playwright + APIs + conditional WebSearch) |
+| Searches via WebSearch discovery | `scan-discovery` (WebSearch only) |
+| Processes pending URLs from discovery | `score` (or `pipeline` legacy alias) |
+| Processes pending URLs from referral | `score` with referral argument |
 | Batch processes jobs | `batch` |
 | Asks about rejection patterns or wants to improve targeting | `patterns` |
 | Asks about follow-ups or application cadence | `followup` |

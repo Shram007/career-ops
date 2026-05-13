@@ -1,10 +1,10 @@
 # Mode: scan-referral — Scan Referral Companies Only
 
-Scans **referral companies only** (from `portals.yml` `referral_companies` section) using direct Playwright + API extraction. These are companies where you have active referral contacts, prioritized for higher signal and faster processing.
+Scans **referral companies only** (from `portals.yml` `referral_companies` section) using direct Playwright + API extraction, plus conditional WebSearch for referral companies configured with `scan_method: websearch`. These are companies where you have active referral contacts, prioritized for higher signal and faster processing.
 
-**Speed/Scope Tradeoff:** Fast (no WebSearch overhead), high signal (referral contacts = warm introductions), narrower reach (only companies with referrals).
+**Speed/Scope Tradeoff:** High signal (referral contacts = warm introductions), narrower reach (only companies with referrals), with optional WebSearch expansion for referral targets that explicitly require it.
 
-> **Note:** This mode executes Levels 1+2 (Playwright + APIs). It **skips Level 3 (WebSearch)** for broad discovery. Use `/career-ops scan discovery` for WebSearch-only discovery, or `/career-ops scan` for all three levels combined.
+> **Note:** This mode executes Levels 1+2 for all referral companies. It also runs **Level 3 WebSearch only** for referral companies with `scan_method: websearch` and a `scan_query`.
 
 ## Recommended Execution
 
@@ -18,7 +18,7 @@ Agent(
 )
 ```
 
-**CRITICAL: LEVELS 1 + 2 MUST EXECUTE.** Level 1 (Playwright) is mandatory. Do NOT skip either level.
+**CRITICAL: LEVELS 1 + 2 MUST EXECUTE.** Level 1 (Playwright) is mandatory. Level 3 executes for configured websearch referral targets.
 
 ## Configuration
 
@@ -39,7 +39,7 @@ Read `portals.yml` which contains:
 - `referral_companies`: Specific companies with `careers_url` for direct navigation (high-priority targets)
 - `title_filter`: Positive/negative/seniority_boost keywords for title filtering
 
-## Discovery Strategy (Levels 1 + 2 Only)
+## Discovery Strategy (Levels 1 + 2 + Conditional Level 3)
 
 ### Level 1 — Direct Playwright (PRIMARY — MANDATORY)
 
@@ -79,9 +79,13 @@ For companies with public API or structured feed, use the JSON/XML response as a
 - `teamtailor`: RSS items → `title`, `link`
 - `workday`: `jobPostings[]`/`jobPostings` (per tenant) → `title`, `externalPath` or URL built from host
 
-### Level 3 (SKIPPED in this mode)
+### Level 3 — Conditional WebSearch for referral targets
 
-WebSearch discovery is intentionally skipped. Use `/career-ops scan discovery` for WebSearch-only discovery, or `/career-ops scan` for comprehensive scanning with all three levels.
+Run WebSearch only for referral companies where:
+- `scan_method: websearch`
+- `scan_query` is present
+
+This covers referral targets that are difficult to crawl directly while still keeping referral mode focused. This is not the same as discovery mode's broad global query sweep.
 
 ## Workflow
 
@@ -124,18 +128,25 @@ WebSearch discovery is intentionally skipped. Use `/career-ops scan discovery` f
    f. For each job extract and normalize: `{title, url, company, posted_date}`
    g. Accumulate in candidate list (dedup with Level 1 results)
 
-6. **Filter by title** using `title_filter` from `portals.yml`:
+6. **STEP 6: Level 3 — Conditional WebSearch for referral targets**:
+   
+   For each referral company with `scan_method: websearch` and `scan_query`:
+   a. Execute WebSearch with that company's `scan_query`
+   b. Extract `{title, url, company}`
+   c. Accumulate in candidate list and dedup with Levels 1+2
+
+7. **Filter by title** using `title_filter` from `portals.yml`:
    - At least 1 keyword from `positive` must appear in title (case-insensitive)
    - 0 keywords from `negative` must appear
    - `seniority_boost` keywords give priority but are not required
 
-7. **Deduplicate** against 4 sources:
+8. **Deduplicate** against 4 sources:
    - `scan-history.tsv` → exact URL already seen
    - `applications.md` → normalized company + role already evaluated
    - `pipeline.md` → exact URL already pending or processed in discovery queue
    - `pipeline-referral.md` → exact URL already pending or processed in referral queue
 
-8. **Strict title validation** (BEFORE adding to pipeline):
+9. **Strict title validation** (BEFORE adding to pipeline):
    
    **MANDATORY:** Reject any title containing seniority keywords:
    - "Sr" or "Sr." (followed by space or end of string)
@@ -149,15 +160,15 @@ WebSearch discovery is intentionally skipped. Use `/career-ops scan discovery` f
    
    If rejected: record in `scan-history.tsv` with status `skipped_title_validation` and DO NOT add to pipeline.
 
-9. **For each job that passes ALL filters** (title + seniority + age + experience + dedup + validation):
+10. **For each job that passes ALL filters** (title + seniority + age + experience + dedup + validation):
    a. Add to `pipeline-referral.md` "Pending" section: `- [ ] {posted_date} | {url} | {company} | {title}`
    b. Record in `scan-history.tsv`: `{url}\t{date}\t{query_name}\t{title}\t{company}\tadded`
    
    **Note**: `{posted_date}` (YYYY-MM-DD) comes from each portal's API (Greenhouse `created_at`, Ashby `publishedDate`, Lever `createdAt`). This allows filtering by age and avoiding expired jobs.
 
-10. **Jobs filtered by title (portals.yml)**: record in `scan-history.tsv` with status `skipped_title`
-11. **Jobs failing strict validation (seniority keywords)**: record with status `skipped_title_validation`
-12. **Duplicate jobs**: record with status `skipped_dup`
+11. **Jobs filtered by title (portals.yml)**: record in `scan-history.tsv` with status `skipped_title`
+12. **Jobs failing strict validation (seniority keywords)**: record with status `skipped_title_validation`
+13. **Duplicate jobs**: record with status `skipped_dup`
 
 ## Scan History
 
@@ -188,17 +199,19 @@ New added to pipeline-referral.md: N
 → Run /career-ops score referral to score the new jobs.
 ```
 
-## ENFORCEMENT: Levels 1 + 2 Required
+## ENFORCEMENT: Levels 1 + 2 Required, Level 3 Conditional
 
 **If you are an agent executing this mode:**
 
 1. **Do NOT skip Level 1.** Playwright careers page scraping is mandatory.
 2. **Do NOT prioritize Level 2 over Level 1.** APIs are complementary, not primary.
-3. **This mode intentionally skips Level 3 (WebSearch).** Use `/career-ops scan discovery` or `/career-ops scan` if you need broad discovery.
+3. **Run Level 3 for referral companies configured with `scan_method: websearch`.**
+4. **Do not run global discovery queries in referral mode.** Use `/career-ops scan discovery` for broad discovery.
 
 **Expected output from scan execution:**
 - Level 1 results: N jobs from M companies (Playwright)
 - Level 2 results: N jobs from M companies (APIs)
+- Level 3 results: N jobs from K referral companies (WebSearch configured targets only)
 - Total: X new jobs added to pipeline after filtering/dedup
 - Failed companies: list with reason
 

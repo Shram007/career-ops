@@ -17,6 +17,7 @@ const parseYaml = yaml.load;
 const PORTALS_PATH = 'portals.yml';
 const SCAN_HISTORY_PATH = 'data/scan-history.tsv';
 const PIPELINE_PATH = 'data/pipeline.md';
+const REFERRAL_PIPELINE_PATH = 'data/pipeline-referral.md';
 const APPLICATIONS_PATH = 'data/applications.md';
 
 mkdirSync('data', { recursive: true });
@@ -26,6 +27,7 @@ function parseArgs(argv) {
   const out = {
     dryRun: false,
     companyFilter: null,
+    referralMode: false,
     timeoutMs: 15000,
     maxLinksPerCompany: 150,
   };
@@ -45,6 +47,11 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === '--referral') {
+      out.referralMode = true;
+      continue;
+    }
+
     if (arg === '--timeout') {
       const v = Number(args[++i]);
       if (!Number.isFinite(v) || v <= 0) throw new Error('Invalid --timeout value');
@@ -61,7 +68,7 @@ function parseArgs(argv) {
 
     if (arg === '-h' || arg === '--help') {
       console.log('Usage:');
-      console.log('  node scan-playwright.mjs [--dry-run] [--company <name>] [--timeout <ms>] [--max-links <n>]');
+      console.log('  node scan-playwright.mjs [--dry-run] [--referral] [--company <name>] [--timeout <ms>] [--max-links <n>]');
       process.exit(0);
     }
   }
@@ -85,7 +92,7 @@ function readTextOrEmpty(path) {
   return existsSync(path) ? readFileSync(path, 'utf8') : '';
 }
 
-function loadSeenUrls() {
+function loadSeenUrls(pipelinePaths) {
   const seen = new Set();
 
   if (existsSync(SCAN_HISTORY_PATH)) {
@@ -97,9 +104,11 @@ function loadSeenUrls() {
     }
   }
 
-  const pipelineText = readTextOrEmpty(PIPELINE_PATH);
-  for (const match of pipelineText.matchAll(/https?:\/\/[^\s|)]+/g)) {
-    seen.add(match[0]);
+  for (const path of pipelinePaths) {
+    const pipelineText = readTextOrEmpty(path);
+    for (const match of pipelineText.matchAll(/https?:\/\/[^\s|)]+/g)) {
+      seen.add(match[0]);
+    }
   }
 
   const applicationsText = readTextOrEmpty(APPLICATIONS_PATH);
@@ -131,15 +140,15 @@ function ensureScanHistoryHeader() {
   }
 }
 
-function appendToPipeline(jobs) {
+function appendToPipeline(jobs, pipelinePath) {
   if (jobs.length === 0) return;
 
-  let text = readTextOrEmpty(PIPELINE_PATH);
+  let text = readTextOrEmpty(pipelinePath);
   if (!text) {
-    text = '# Pipeline\n\n## Pendientes\n\n## Procesadas\n';
+    text = '## Pending\n\n## Processed\n';
   }
 
-  const marker = '## Pendientes';
+  const marker = text.includes('## Pending') ? '## Pending' : '## Pendientes';
   const markerIndex = text.indexOf(marker);
   const nextSection = text.indexOf('\n## ', markerIndex + marker.length);
   const insertAt = nextSection === -1 ? text.length : nextSection;
@@ -149,10 +158,10 @@ function appendToPipeline(jobs) {
   ).join('\n') + '\n';
 
   const out = markerIndex === -1
-    ? `${text.trimEnd()}\n\n## Pendientes\n${block}\n`
+    ? `${text.trimEnd()}\n\n## Pending\n${block}\n`
     : text.slice(0, insertAt) + block + text.slice(insertAt);
 
-  writeFileSync(PIPELINE_PATH, out, 'utf8');
+  writeFileSync(pipelinePath, out, 'utf8');
 }
 
 function appendToScanHistory(jobs, date) {
@@ -305,7 +314,7 @@ function buildHostProbeUrls(fallbackUrl) {
 }
 
 async function main() {
-  const { dryRun, companyFilter, timeoutMs, maxLinksPerCompany } = parseArgs(process.argv);
+  const { dryRun, companyFilter, referralMode, timeoutMs, maxLinksPerCompany } = parseArgs(process.argv);
 
   if (!existsSync(PORTALS_PATH)) {
     throw new Error('portals.yml not found.');
@@ -314,7 +323,9 @@ async function main() {
   const config = parseYaml(readFileSync(PORTALS_PATH, 'utf8'));
   const referralCompanies = config?.referral_companies || [];
   const trackedCompanies = config?.tracked_companies || [];
-  const companies = [...referralCompanies, ...trackedCompanies];
+  const companies = referralMode ? referralCompanies : [...referralCompanies, ...trackedCompanies];
+  const pipelinePath = referralMode ? REFERRAL_PIPELINE_PATH : PIPELINE_PATH;
+  const dedupQueuePaths = [PIPELINE_PATH, REFERRAL_PIPELINE_PATH];
   const titleFilter = buildTitleFilter(config?.title_filter);
 
   const targets = companies
@@ -333,7 +344,7 @@ async function main() {
     return;
   }
 
-  const seenUrls = loadSeenUrls();
+  const seenUrls = loadSeenUrls(dedupQueuePaths);
   const seenCompanyRoles = loadSeenCompanyRoles();
 
   const browser = await chromium.launch({ headless: true });
@@ -436,7 +447,7 @@ async function main() {
   await browser.close();
 
   if (!dryRun && newJobs.length > 0) {
-    appendToPipeline(newJobs);
+    appendToPipeline(newJobs, pipelinePath);
     appendToScanHistory(newJobs, date);
   }
 

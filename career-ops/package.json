@@ -24,6 +24,7 @@
     "scan:dedup-websearch": "node scripts/deduplicate-websearch.mjs",
     "scan:refresh-after": "node refresh-search-query-dates.mjs --days 14",
     "scan": "node scan-with-instrumentation.mjs",
+    "scan:referral": "node scan-with-instrumentation.mjs --referral",
     "gemini:eval": "node gemini-eval.mjs"
   },
   "keywords": [
@@ -44,6 +45,7 @@
     "@google/generative-ai": "^0.24.1",
     "dotenv": "^16.4.5",
     "js-yaml": "^4.1.1",
-    "playwright": "^1.58.1"
+    "playwright": "^1.58.1",
+    "yaml": "^2.9.0"
   }
 }
