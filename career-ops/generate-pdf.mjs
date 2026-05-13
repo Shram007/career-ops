@@ -170,18 +170,15 @@ async function generatePDF() {
     await page.evaluate(() => document.fonts.ready);
 
     // Autoscale: dynamic fill to eliminate bottom whitespace
-    const scaleInfo = await page.evaluate(async () => {
+    const scaleInfo = await page.evaluate(async (pageFormat) => {
       const body = document.body;
-      const container = document.documentElement;
 
-      // Letter page @ 96 DPI: 11in height = 1056px
-      // Minus 0.2in margins (top+bottom = 0.4in total) = 38.4px
-      // Usable: 1056 - 38 = 1018px
-      const LETTER_HEIGHT_PX = 1056;
-      const MARGIN_PX = Math.round(0.2 * 96); // 0.2in in pixels
-      const USABLE_HEIGHT = LETTER_HEIGHT_PX - (2 * MARGIN_PX);
-      const MAX_SCALE = 1.05; // Cap at 1.05x to avoid text too large
-      const WHITESPACE_THRESHOLD = 30; // Significant whitespace = >30px
+      // Page dimensions at 96 CSS px/in — must match PDF margin option below
+      const PAGE_HEIGHT_PX = pageFormat === 'letter' ? 1056 : 1122.52; // a4 = 297mm/25.4*96
+      const MARGIN_PX = 0.2 * 96; // 0.2in — same as margin option passed to page.pdf()
+      const USABLE_HEIGHT = Math.floor(PAGE_HEIGHT_PX - 2 * MARGIN_PX);
+      const MAX_SCALE = 1.15; // allow up to 15% scale-up; no extra safety margin (cap handles it)
+      const WHITESPACE_THRESHOLD = 30; // px — ignore trivial gaps
 
       const initialHeight = body.offsetHeight;
 
@@ -235,9 +232,9 @@ async function generatePDF() {
       let bestScale = 1.0;
 
       if (remainingSpace > WHITESPACE_THRESHOLD) {
-        // Scale up to fill remaining whitespace
+        // Scale up to fill remaining whitespace — no extra safety margin, MAX_SCALE is the cap
         const scaleToFill = USABLE_HEIGHT / initialHeight;
-        bestScale = Math.min(scaleToFill * 0.98, MAX_SCALE); // 2% safety + 1.05x cap
+        bestScale = Math.min(scaleToFill, MAX_SCALE);
       }
 
       // Apply final scale
@@ -259,7 +256,7 @@ async function generatePDF() {
         method: 'dynamic fill → eliminate whitespace',
         usableHeight: USABLE_HEIGHT,
       };
-    });
+    }, format);
 
     if (scaleInfo.scaled) {
       const method = scaleInfo.overflow ? 'fit 1 page' : 'fill whitespace';
