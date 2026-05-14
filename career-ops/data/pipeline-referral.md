@@ -13,59 +13,66 @@
 - [~] 2026-05-13 | https://careers.salesforce.com/en/jobs/?page=2#results | Salesforce | (from Playwright) — skip:not-a-job
 - [~] 2026-05-13 | https://careers.salesforce.com/en/jobs/?page=3#results | Salesforce | (from Playwright) — skip:not-a-job
 - [~] 2026-05-13 | https://careers.salesforce.com/en/jobs/?page=71#results | Salesforce | (from Playwright) — skip:not-a-job
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr339282/lead-solution-engineer-service-cloud/ | Salesforce | (from Playwright)
+- [~] 2026-05-13 | https://www.linkedin.com/company/salesforce/jobs/ | Salesforce | (from Playwright) — skip:not-a-job
+- [~] 2026-05-13 | https://careers.salesforce.com/en/jobs/#onetrust-pc-sdk | Salesforce | (from Playwright) — skip:not-a-job
+
+- [!] 2026-05-11 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/120479753218990790-software-engineer-full-stack-gup-engineering?q=software%20engineer | Google | 120479753218990790 software engineer full stack gup engineering — inaccessible (dynamic portal)
+- [!] 2026-05-11 | https://apply.careers.microsoft.com/careers/job/1970393556863744 | Microsoft | Software Engineer Canada — inaccessible (dynamic portal)
+- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/119716248828158662-software-engineer-gce-control-plane-early-careers-phd?q=software%20engineer | Google | 119716248828158662 software engineer gce control plane early careers phd — inaccessible (dynamic portal)
+- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/114738878203470534-security-software-engineer-emerging-onprem-ai-infrastructure?q=software%20engineer | Google | 114738878203470534 security software engineer emerging onprem ai infrastructure — inaccessible (dynamic portal)
+- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/99326551270531782-software-engineer-iii-technical-infrastructure?q=software%20engineer | Google | 99326551270531782 software engineer iii technical infrastructure — inaccessible (dynamic portal)
+- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/128553246984676038-software-engineer-site-reliability-engineer-g1?q=software%20engineer | Google | 128553246984676038 software engineer site reliability engineer g1 — inaccessible (dynamic portal)
+- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/81389984547775174-software-engineer-compiling-quantum-ai?q=software%20engineer | Google | 81389984547775174 software engineer compiling quantum ai — inaccessible (dynamic portal)
+- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/96112286329905862-software-engineer-future-of-git?q=software%20engineer | Google | 96112286329905862 software engineer future of git — inaccessible (dynamic portal)
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/1436181490732782/ | Meta | Software Engineer, Machine LearningSunnyvale, CA + 12 locations — inaccessible (page load)
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/677160418622314 | Meta | Software Engineer, InfrastructureSunnyvale, CA +8 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering — inaccessible (page load)
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/998357492128826 | Meta | Software Engineer, Machine LearningSunnyvale, CA +11 locations⋅Software Engineering⋅Machine LearningMultiple LocationsSoftware EngineeringMachine Learning — inaccessible (page load)
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/9657291271065759 | Meta | Software Engineer, ProductBellevue, WA +5 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering — inaccessible (page load)
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/2486789151677735 | Meta | Software Engineer, InfrastructureSunnyvale, CA +7 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering — inaccessible (page load)
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/1770681236847041 | Meta | Software Engineer, InfrastructureSunnyvale, CA +5 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering — inaccessible (page load)
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/727671609895617 | Meta | Software Engineer, ProductBellevue, WA +3 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering — inaccessible (page load)
+
+
+
+- [!] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556749568 | Microsoft | Software Engineer 2 — inaccessible (dynamic portal)
+
+
+
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr339282/lead-solution-engineer-service-cloud/ | Salesforce | n/a | hold | sales-role
 - [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341794/field-marketing-lead-middle-east-commercial-business/ | Salesforce | Field Marketing Lead | n/a | hold | exp:7yr
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341625/commercial-account-executive/ | Salesforce | (from Playwright)
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr342259/partner-account-senior-manager-vietnam/ | Salesforce | (from Playwright)
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr332152/cloud-account-executive/ | Salesforce | (from Playwright)
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341625/commercial-account-executive/ | Salesforce | n/a | hold | sales-role
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr342259/partner-account-senior-manager-vietnam/ | Salesforce | n/a | hold | sales-role
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr332152/cloud-account-executive/ | Salesforce | n/a | hold | sales-role
 - [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr334809/lead-account-se-higher-education/ | Salesforce | Lead Account SE | n/a | hold | exp:7yr
 - [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr339139/forward-deployed-engineering-lead-data-science-integration/ | Salesforce | FDE Lead Data Science | n/a | hold | exp:8yr,remote:onsite
 - [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr340256/engagement-director-strategic-transformation-customer-success-leader/ | Salesforce | Engagement Director | n/a | hold | exp:8yr
 - [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr325990/lead-backend-software-engineer/ | Salesforce | Lead Backend SWE | n/a | hold | exp:7yr
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr338243/chief-customer-officer-global-life-sciences/ | Salesforce | (from Playwright)
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr340791/software-engineering-smts/ | Salesforce | (from Playwright) | exp:3yr
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr342191/business-development-rep/ | Salesforce | (from Playwright)
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr338243/chief-customer-officer-global-life-sciences/ | Salesforce | n/a | hold | sales-role
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr340791/software-engineering-smts/ | Salesforce | n/a | exp:3yr | hold | sales-role
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr342191/business-development-rep/ | Salesforce | n/a | hold | sales-role
 - [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr322979/senior-success-guide-commerce-cloud/ | Salesforce | Senior Success Guide | n/a | hold | exp:5yr
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341981/named-account-executive-mid-market-singapore/ | Salesforce | (from Playwright)
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341586/account-executive-tth-travel-transport-and-hospitality/ | Salesforce | (from Playwright)
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr321330/salesforce-support-engineer-industries-revenue-cloud/ | Salesforce | (from Playwright) | exp:2yr
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr333705/technical-support-engineer/ | Salesforce | (from Playwright) | exp:2yr
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341981/named-account-executive-mid-market-singapore/ | Salesforce | n/a | hold | sales-role
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341586/account-executive-tth-travel-transport-and-hospitality/ | Salesforce | n/a | hold | sales-role
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr321330/salesforce-support-engineer-industries-revenue-cloud/ | Salesforce | n/a | exp:2yr | hold | sales-role
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr333705/technical-support-engineer/ | Salesforce | n/a | exp:2yr | hold | sales-role
 - [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr341126/director-technical-program-management/ | Salesforce | Director TPM | n/a | hold | exp:10yr,location:Indianapolis
 - [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr340582/senior-director-global-rewards-business-partner/ | Salesforce | Senior Director Rewards | n/a | hold | exp:12yr
-- [ ] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr339485/%E3%83%91%E3%83%BC%E3%83%88%E3%83%8A%E3%83%BC%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0-%E3%82%AA%E3%83%9A%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%B9%E3%83%9A%E3%82%B7%E3%83%A3%E3%83%AA%E3%82%B9%E3%83%88-%E9%9A%9C%E5%AE%B3%E8%80%85%E6%8E%A1%E7%94%A8/ | Salesforce | (from Playwright)
-- [~] 2026-05-13 | https://www.linkedin.com/company/salesforce/jobs/ | Salesforce | (from Playwright) — skip:not-a-job
-- [ ] 2026-05-13 | https://careers.salesforce.com/se/jobb/ | Salesforce | (from Playwright)
-- [~] 2026-05-13 | https://careers.salesforce.com/en/jobs/#onetrust-pc-sdk | Salesforce | (from Playwright) — skip:not-a-job
-
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr339485/%E3%83%91%E3%83%BC%E3%83%88%E3%83%8A%E3%83%BC%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0-%E3%82%AA%E3%83%9A%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%B9%E3%83%9A%E3%82%B7%E3%83%A3%E3%83%AA%E3%82%B9%E3%83%88-%E9%9A%9C%E5%AE%B3%E8%80%85%E6%8E%A1%E7%94%A8/ | Salesforce | n/a | hold | sales-role
+- [x] 2026-05-13 | https://careers.salesforce.com/se/jobb/ | Salesforce | n/a | hold | sales-role
 - [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/3093439/software-engineer | Amazon | Software Engineer (BITS) | 3.7/5 | hold | location:Seattle,exp:1yr,fit:consumer-facing
 - [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/3141336/software-engineer-i | Amazon | Software Engineer I (Twitch) | 3.8/5 | advance | exp:1yr,location:SF/Seattle,comp:strong
-- [ ] 2026-05-11 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/120479753218990790-software-engineer-full-stack-gup-engineering?q=software%20engineer | Google | 120479753218990790 software engineer full stack gup engineering
-- [ ] 2026-05-11 | https://apply.careers.microsoft.com/careers/job/1970393556863744 | Microsoft | Software EngineerCanada, British Columbia, VancouverPosted an hour ago | remote:onsite
 - [x] 2026-05-13 | https://www.uber.com/careers/list/156790 | Uber | Software Engineer (Staff) | 3.1/5 | hold | level:staff-overkill,location:Sunnyvale,exp:5yr-expected
 - [x] 2026-05-13 | https://jobs.lever.co/zoox/fe3ec246-6f0a-4405-9ae8-10e322ac6799 | Zoox | AI Developer Productivity Engineer | 4.3/5 | advance | fit:ai-devtools,location:Foster-City,exp:3yr,stack:python-cpp
 - [x] 2026-05-11 | https://jobs.lever.co/zoox/78320bf3-5c38-4583-a16b-e67b676cc1f8 | Zoox | AV Safety SWE | n/a | hold | exp:4yr
 - [x] 2026-05-10 | https://careers.adobe.com/us/en/job/R164609/Backend-Software-Engineer | Adobe | Backend SWE | n/a | hold | exp:5yr
 - [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/3092179/software-engineer | Amazon | Software Engineer (Discovery/ML) | 4.0/5 | advance | fit:ml-systems,location:SF,exp:1yr,comp:strong
 - [x] 2026-05-10 | https://www.amazon.jobs/en/jobs/10414752/software-engineer-ring | Amazon | SWE Ring | n/a | hold | location:GBR-Cambridge
-- [ ] 2026-05-10 | https://www.amazon.jobs/en/jobs/3155750/software-engineer-i | Amazon | Software Engineer I | exp:2yr | loc:US-WA-Seattle
+- [x] 2026-05-10 | https://www.amazon.jobs/en/jobs/3155750/software-engineer-i | Amazon | Software Engineer I | 4.0/5 | advance | fit:consumer-commerce,location:Seattle-SF,exp:1-2yr,comp:strong
 - [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10390629/software-engineer-safety | Amazon | Software Engineer, Safety | 3.7/5 | hold | location:SF,exp:1yr,fit:moderation-safety
 - [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/122948486462087878-software-engineer-crossplatform-material | Google | Software Engineer, Cross-Platform Material | 3.2/5 | hold | fit:graphics,exp:3+yr
-- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/119716248828158662-software-engineer-gce-control-plane-early-careers-phd?q=software%20engineer | Google | 119716248828158662 software engineer gce control plane early careers phd
-- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/114738878203470534-security-software-engineer-emerging-onprem-ai-infrastructure?q=software%20engineer | Google | 114738878203470534 security software engineer emerging onprem ai infrastructure
-- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/99326551270531782-software-engineer-iii-technical-infrastructure?q=software%20engineer | Google | 99326551270531782 software engineer iii technical infrastructure
-- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/128553246984676038-software-engineer-site-reliability-engineer-g1?q=software%20engineer | Google | 128553246984676038 software engineer site reliability engineer g1
-- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/81389984547775174-software-engineer-compiling-quantum-ai?q=software%20engineer | Google | 81389984547775174 software engineer compiling quantum ai
-- [ ] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/96112286329905862-software-engineer-future-of-git?q=software%20engineer | Google | 96112286329905862 software engineer future of git
 - [x] 2026-05-13 | https://www.metacareers.com/profile/job_details/1436181490732782 | Meta | Software Engineer, Machine Learning | 4.2/5 | advance | fit:ml,exp:2yr,location:Sunnyvale,comp:strong
 - [x] 2026-05-13 | https://www.metacareers.com/profile/job_details/677160418622314 | Meta | Software Engineer, Infrastructure | 3.9/5 | advance | fit:infrastructure,location:Sunnyvale,exp:2yr
-- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/1436181490732782/ | Meta | Software Engineer, Machine LearningSunnyvale, CA + 12 locations
-- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/677160418622314 | Meta | Software Engineer, InfrastructureSunnyvale, CA +8 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering
 - [x] 2026-05-13 | https://www.metacareers.com/profile/job_details/1368969190886166 | Meta | Software Engineer, Machine Learning (Sausalito) | 4.1/5 | advance | fit:ml-research,location:Sausalito,exp:2yr
-- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/998357492128826 | Meta | Software Engineer, Machine LearningSunnyvale, CA +11 locations⋅Software Engineering⋅Machine LearningMultiple LocationsSoftware EngineeringMachine Learning
-- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/9657291271065759 | Meta | Software Engineer, ProductBellevue, WA +5 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering
-- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/2486789151677735 | Meta | Software Engineer, InfrastructureSunnyvale, CA +7 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering
-- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/1770681236847041 | Meta | Software Engineer, InfrastructureSunnyvale, CA +5 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering
-- [ ] 2026-05-10 | https://www.metacareers.com/profile/job_details/727671609895617 | Meta | Software Engineer, ProductBellevue, WA +3 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering
 - [x] 2026-05-13 | https://www.uber.com/careers/list/156794 | Uber | Software Engineer | 4.0/5 | advance | fit:ml,location:SF,comp:excellent,exp:2-3yr
 - [x] 2026-05-08 | https://jobs.ashbyhq.com/Commure/aff8345e-e6c8-4710-b822-8bb1039a9b90 | Commure | SWE EHR India | n/a | hold | location:Gurugram
 - [x] 2026-05-13 | https://jobs.ashbyhq.com/Commure/4f90cc05-3978-40c7-8f39-80aab6d134c2 | Commure | Backend Engineer, RCM Core | 3.6/5 | hold | fit:backend,location:M.V./SF,exp:3yr
@@ -80,17 +87,74 @@
 - [x] 2026-05-08 | https://jobs.ashbyhq.com/claylabs/18a42bd0-5bff-4c8e-a403-fb79aad2c57b | Clay | SWE Frontend | n/a | hold | exp:4yr
 - [x] 2026-05-08 | https://jobs.ashbyhq.com/claylabs/3940ea40-4c11-40f5-b710-d770c88d0f1b | Clay | SWE Infrastructure | n/a | hold | exp:5yr
 - [x] 2026-05-13 | https://jobs.ashbyhq.com/claylabs/26c9a251-b616-49f7-a489-4d393a02ea5f | Clay | Forward Deployed GTME | 3.4/5 | hold | fit:gtme-sales,location:NYC/SF,exp:2-3yr,comp:low
-
 - [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10386857/software-engineer | Amazon | SWE Sydney | n/a | hold | location:AUS-NSW-Sydney
 - [x] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556866550 | Microsoft | SWE II AUS | n/a | hold | location:Australia
-- [ ] 2026-05-13 | https://www.uber.com/careers/list/157472 | Uber | Software Engineer | loc:San-Francisco | remote:onsite
+- [x] 2026-05-13 | https://www.uber.com/careers/list/157472 | Uber | Software Engineer | 2.8/5 | hold | location:SF-onsite,exp:entry-expected,no-remote
 - [x] 2026-05-13 | https://www.uber.com/careers/list/154824 | Uber | SWE II | n/a | hold | location:Santiago
-
 - [x] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556833884 | Microsoft | SWE II IND | n/a | hold | location:India
 - [x] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556864867 | Microsoft | SWE 2 IND | n/a | hold | location:India
-- [ ] 2026-05-13 | https://www.uber.com/careers/list/158366 | Uber | Software Engineer
-- [ ] 2026-05-13 | https://www.uber.com/careers/list/155311 | Uber | Sr Software Engineer
-
+- [x] 2026-05-13 | https://www.uber.com/careers/list/158366 | Uber | Software Engineer | 3.3/5 | hold | level:overqualified,location:Sunnyvale,exp:4yr-required
+- [x] 2026-05-13 | https://www.uber.com/careers/list/155311 | Uber | Sr Software Engineer | n/a | hold | location:Bangalore
+- [x] 2026-05-13 | https://careers.salesforce.com/en/jobs/jr338173/software-engineer-smts/ | Salesforce | Software Engineer SMTS | n/a | hold | sales-role
+- [x] 2026-05-13 | https://www.uber.com/careers/list/156714 | Uber | Software Engineer II | n/a | hold | location:Bangalore
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10417172/software-engineer-ai-security | Amazon | Software Engineer, AI Security | 3.8/5 | hold | fit:partial,domain:ai-security,comp:strong
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10407236/systems-development-engineer-aws-generative-ai-ml-servers-aws-hw-engineering | Amazon | Systems Development Engineer (AWS Generative AI & ML Servers) | 2.1/5 | hold | exp:7yr-required,domain:hardware
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10416638/machine-learning-engineer-ad-response-prediction | Amazon | Machine Learning Engineer, Ad Response Prediction | 4.2/5 | advance | fit:ml-systems,domain:ads-ranking,comp:strong
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10418953/machine-learning-compiler-engineer-ii-annapurna-labs | Amazon | Machine Learning - Compiler Engineer II, Annapurna Labs | 2.8/5 | hold | domain:compiler,fit:minimal
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10401870/machine-learning-engineer-data-machine-learning-dml | Amazon | Machine Learning Engineer, DML | 1.5/5 | hold | visa-blocker:us-citizenship-clearance
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10403356/software-development-engineer-machine-learning-prime-video-recommendations-prime-video-personalization-and-discovery | Amazon | SDE ML, Prime Video Recommendations | 4.4/5 | advance | fit:ml-platform,domain:recommendations,comp:excellent
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10402545/machine-learning-software-development-engineer-ii-amazon-robotics-ar-scanless-technologies | Amazon | ML SDE II, Amazon Robotics | 3.2/5 | hold | domain:robotics,fit:partial
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10394713/machine-learning-engineer-data-machine-learning-dml | Amazon | ML Engineer, DML | 1.5/5 | hold | visa-blocker:us-citizenship-clearance
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10394051/machine-learning-engineer-wwps-proserve-delivery-team | Amazon | ML Engineer, WWPS ProServe | 1.4/5 | hold | visa-blocker:ts-sci-clearance
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10396342/software-development-engineer-applied-ai-solutions | Amazon | SDE, Applied AI Solutions | 4.0/5 | advance | fit:applied-ai,domain:3d-visualization,comp:excellent
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/122948486462087878-software-engineer-crossplatform-material?q=software+engineer | Google | SWE, Cross-Platform Material | 3.1/5 | hold | domain:graphics,fit:minimal
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/119716248828158662-software-engineer-gce-control-plane-early-careers-phd?q=software+engineer | Google | SWE, GCE Control Plane (PhD) | 2.5/5 | hold | level:phd-preferred,fit:minimal
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/114738878203470534-security-software-engineer-emerging-onprem-ai-infrastructure?q=software+engineer | Google | Security SWE, On-Prem AI | 3.4/5 | hold | domain:security-infra,fit:partial
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/99326551270531782-software-engineer-iii-technical-infrastructure?q=software+engineer | Google | SWE III, Technical Infrastructure | 2.8/5 | hold | level:sde3-required,exp:gap
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/128553246984676038-software-engineer-site-reliability-engineer-g1?q=software+engineer | Google | SWE, Site Reliability | 3.0/5 | hold | domain:sre,fit:partial
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/81389984547775174-software-engineer-compiling-quantum-ai?q=software+engineer | Google | SWE, Quantum AI Compiler | 2.2/5 | hold | domain:quantum,fit:minimal
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/134139403856421574-ai-engineer-advanced-solutions-lab-google-cloud?q=AI+engineer | Google | AI Engineer, Advanced Solutions Lab | 4.1/5 | advance | fit:ai-solutions,domain:gcp-ai
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/127767200323773126-cloud-data-and-ai-engineer-professional-services?q=AI+engineer | Google | Cloud Data & AI Engineer, PS | 3.9/5 | advance | fit:cloud-ai,domain:gcp-ps
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/104482908080612038-ai-engineer-google-cloud-consulting-english-french?q=AI+engineer | Google | AI Engineer, GCP Consulting | 3.7/5 | hold | fit:ai-consultant,language:french-req
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/110142054700327622-cloud-ai-engineer?q=AI+engineer | Google | Cloud AI Engineer | 3.8/5 | advance | fit:cloud-ai,domain:gcp-platform
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/123985301231018694-aiml-engineer-national-security-google-public-sector?q=AI+engineer | Google | AI/ML Engineer, National Security | 2.5/5 | hold | domain:government,clearance-likely
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/97664839697998534-software-engineer-aiml-networking?q=AI+engineer | Google | SWE, AI/ML Networking | 3.6/5 | hold | domain:networking-ml,fit:partial
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/87626702263329478-forward-deployed-engineer-iv-applied-ai-google-cloud?q=AI+engineer | Google | FDE IV, Applied AI | 4.3/5 | advance | fit:fde-applied-ai,domain:gcp-solutions
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/106233870684168902-forward-deployed-engineer-ii-applied-ai-cloud?q=AI+engineer | Google | FDE II, Applied AI Cloud | 4.2/5 | advance | fit:fde-applied-ai,domain:gcp-solutions
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/142249195464467142-machine-learning-engineer-xls-compiler?q=machine+learning+engineer | Google | ML Engineer, XLS Compiler | 2.3/5 | hold | domain:compiler,fit:minimal
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/136392199028777670-software-engineer-machine-learning?q=machine+learning+engineer | Google | SWE, Machine Learning | 3.9/5 | advance | fit:ml-engineer,domain:gcp-ml
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/119883926364660422-machine-learning-design-engineer-silicon?q=machine+learning+engineer | Google | ML Design Engineer, Silicon | 2.4/5 | hold | domain:silicon-ml,fit:minimal
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/118370928571622086-photonic-engineer-machine-learning-systems-platforms?q=machine+learning+engineer | Google | Photonic Engineer, ML Systems | 1.9/5 | hold | domain:photonics,fit:minimal
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/122258040807137990-software-engineer-phd-early-career-aimachine-learning-2026-start?q=machine+learning+engineer | Google | SWE PhD, Early Career AI/ML | 2.1/5 | hold | requirement:phd,exp:gap
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/135098089949012678-technical-solutions-engineer-artificial-intelligencemachine-learning?q=machine+learning+engineer | Google | TSE, AI/Machine Learning | 3.8/5 | hold | fit:tse-ai,domain:gcp-solutions
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/122119136867164870-rtl-design-engineer-machine-learning-accelerators?q=machine+learning+engineer | Google | RTL Design Engineer, ML Accelerators | 2.0/5 | hold | domain:chip-design,fit:minimal
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/111565227547337414-software-engineer-iii-backend?q=backend+engineer | Google | SWE III, Backend | 3.2/5 | hold | level:sde3,exp:gap
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/96821205041849030-software-engineer-web-platforms-for-smart-manufacturing?q=backend+engineer | Google | SWE, Web Platforms IoT | 3.1/5 | hold | domain:web-iot,fit:minimal
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/122375686001173190-full-stack-software-engineer-observability?q=full+stack+engineer | Google | Full-Stack SWE, Observability | 4.0/5 | advance | fit:platform-observability,domain:observability
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/91984526405706438-full-stack-software-engineer-frontrow-database-observability?q=full+stack+engineer | Google | Full-Stack SWE, FrontRow DB Observability | 3.9/5 | advance | fit:database-observability,domain:observability-db
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/120479753218990790-software-engineer-full-stack-gup-engineering?q=full+stack+engineer | Google | Full-Stack SWE, GUP Engineering | 3.5/5 | hold | fit:partial,domain:gup-platform
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/76448332615951046-software-engineer-iii-full-stack?q=full+stack+engineer | Google | SWE III, Full-Stack | 3.3/5 | hold | level:sde3,exp:gap
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/132449139878175430-software-engineer-iii-full-stack?q=full+stack+engineer | Google | SWE III, Full-Stack | 3.3/5 | hold | level:sde3,exp:gap
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/90586316982362822-software-engineer-iii-full-stack?q=full+stack+engineer | Google | SWE III, Full-Stack | 3.3/5 | hold | level:sde3,exp:gap
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/75065125513372358-software-engineer-iii-full-stack-global-business?q=full+stack+engineer | Google | SWE III, Full-Stack Global Business | 3.3/5 | hold | level:sde3,exp:gap
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/135418083266175686-software-engineer-iii-full-stack-cloud-ai-developer-tools?q=full+stack+engineer | Google | SWE III, Full-Stack Cloud AI DevTools | 4.1/5 | advance | fit:ai-devtools,domain:gcp-ai
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/128931197664273094-software-engineer-full-stack-notebooklm?q=full+stack+engineer | Google | Full-Stack SWE, NotebookLM | 4.2/5 | advance | fit:ai-application,domain:genai-product
+- [x] 2026-05-13 | https://www.metacareers.com/profile/job_details/3414246448833665 | Meta | SWE, Systems ML | 4.0/5 | advance | fit:ml-infra,domain:meta-systems-ml
+- [x] 2026-05-13 | https://www.metacareers.com/profile/job_details/1233209308873998 | Meta | Partner Engineer, Generative AI | 3.2/5 | hold | fit:partner-eng,domain:genai-partnerships
+- [x] 2026-05-13 | https://www.metacareers.com/profile/job_details/4243756242537821 | Meta | Business Engineer, Business AI (São Paulo) | 2.0/5 | hold | location:Brazil,fit:minimal
+- [x] 2026-05-13 | https://www.metacareers.com/profile/job_details/857382750648491 | Meta | Business Engineer, Business AI (São Paulo) | 2.0/5 | hold | location:Brazil,fit:minimal
+- [x] 2026-05-13 | https://www.metacareers.com/profile/job_details/1445438187630465 | Meta | Business Engineer, Business AI (Menlo Park) | 3.1/5 | hold | fit:business-eng,domain:meta-business-ai
+- [x] 2026-05-13 | https://www.metacareers.com/profile/job_details/1079158160340219 | Meta | SWE, Product | 3.7/5 | hold | fit:product-eng,domain:meta-product
+- [x] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556859034 | Microsoft | Back-End SWE II | 3.6/5 | hold | fit:backend-platform,domain:microsoft-backend
+- [x] 2026-05-13 | https://www.uber.com/careers/list/158659 | Uber | SWE II | 4.0/5 | advance | fit:ml-backend,domain:uber-systems
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10394708/machine-learning-engineer-data-machine-learning-dml | Amazon | ML Engineer, DML | 1.5/5 | hold | visa-blocker:ts-sci-clearance,citizenship-required
+- [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10394704/machine-learning-engineer-data-machine-learning-dml | Amazon | ML Engineer, DML | 1.5/5 | hold | visa-blocker:ts-sci-clearance,citizenship-required
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/114738878203470534-security-software-engineer-emerging-onprem-ai-infrastructure?q=AI+engineer | Google | Security SWE, On-Prem AI | 2.2/5 | hold | domain:security-infra,clearance-blocker
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/119716248828158662-software-engineer-gce-control-plane-early-careers-phd?q=backend+engineer | Google | SWE, GCE Control Plane (PhD) | 2.5/5 | hold | level:phd-required,no-match
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/122948486462087878-software-engineer-crossplatform-material?q=backend+engineer | Google | SWE, Cross-Platform Material | 2.1/5 | hold | domain:graphics-shaders,fit:minimal
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/99326551270531782-software-engineer-iii-technical-infrastructure?q=backend+engineer | Google | SWE III, Technical Infrastructure | 2.8/5 | hold | level:sde3-required,exp:gap
+- [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/128553246984676038-software-engineer-site-reliability-engineer-g1?q=backend+engineer | Google | SWE, Site Reliability (G1) | 3.0/5 | hold | domain:sre,fit:partial
+- [x] 2026-05-13 | https://www.uber.com/careers/list/157483 | Uber | Software Engineer | 4.0/5 | advance | fit:backend-platform,location:sunnyvale,exp:2-3yr,comp:excellent
 ## Processed
 
 - [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10386857/software-engineer | Amazon | Software Engineer (AWS Infrastructure) | 3.2/5 | hold
