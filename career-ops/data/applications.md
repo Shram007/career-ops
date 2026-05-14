@@ -62,3 +62,5 @@
 | 88 | 2026-05-13 | Meta | SWE, Systems ML | 4/5 | Scored | ❌ | - | fit:ml-infra,domain:meta-systems-ml | From referral scan |
 | 89 | 2026-05-13 | Uber | SWE II | 4/5 | Scored | ❌ | - | fit:ml-backend,domain:uber-systems | From referral scan |
 | 90 | 2026-05-13 | Uber | Software Engineer | 4/5 | Scored | ❌ | - | fit:backend-platform,location:sunnyvale,exp:2-3yr,comp:excellent | From referral scan |
+| 91 | 2026-05-14 | Microsoft | Software Engineer II - CoreAI | 4.2/5 | Scored | ❌ | - | fit:ai-platform,domain:genai-services,comp:excellent | GenAI services + agent observability. CoreAI alignment with RAG pipeline + multi-agent systems. Redmond WA. $131.4K-$215.4K. STRONG APPLY |
+| 92 | 2026-05-14 | Microsoft | Software Engineer Edge | 3.1/5 | Scored | ❌ | - | fit:partial,domain:edge-platform,ambiguity:jd-incomplete | Edge AI/ML platform. Portal unclear (Azure Edge vs browser V8). Incomplete JD. Redmond WA. HOLD pending clarity. |
