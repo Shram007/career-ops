@@ -74,6 +74,10 @@ temp-*.html
 
 # Editor backup files
 *.~~
+*~~
+
+# Temp analysis output
+keyword-analysis.txt
 run-level*.mjs
 validate-ingest.mjs
 dashboard/career-dashboard.exe
