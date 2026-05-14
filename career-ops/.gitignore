@@ -48,6 +48,10 @@ cv-candidate-*.html
 tmp/cv-candidate-*.html
 tmp/ingest-urls.txt
 tmp/jd-cache/
+tmp/jd-reeval-*.txt
+tmp/*.mjs
+tmp/*.txt
+data/applications.md.bak
 run-level*.mjs
 validate-ingest.mjs
 dashboard/career-dashboard.exe
