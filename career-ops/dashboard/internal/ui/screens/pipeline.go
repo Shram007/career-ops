@@ -99,6 +99,7 @@ const (
 	filterSkip      = "skip"
 	filterRejected  = "rejected"
 	filterDiscarded = "discarded"
+	filterInactive  = "inactive"
 	filterTop       = "top"
 )
 
@@ -118,14 +119,15 @@ var pipelineTabs = []pipelineTab{
 	{filterSkip, "SKIP"},
 	{filterRejected, "REJECTED"},
 	{filterDiscarded, "DISCARDED"},
+	{filterInactive, "INACTIVE"},
 }
 
 var sortCycle = []string{sortScore, sortDate, sortCompany, sortStatus}
 
-var statusOptions = []string{"Evaluated", "Scored", "PDF'd", "Applied", "Responded", "Interview", "Offer", "Rejected", "Discarded", "SKIP"}
+var statusOptions = []string{"Evaluated", "Scored", "PDF'd", "Applied", "Responded", "Interview", "Offer", "Rejected", "Discarded", "Inactive", "SKIP"}
 
 // statusGroupOrder defines display order for grouped view.
-var statusGroupOrder = []string{"interview", "offer", "responded", "applied", "pdf", "evaluated", "scored", "skip", "rejected", "discarded"}
+var statusGroupOrder = []string{"interview", "offer", "responded", "applied", "pdf", "evaluated", "scored", "skip", "rejected", "discarded", "inactive"}
 
 // PipelineModel implements the career pipeline dashboard screen.
 type PipelineModel struct {
@@ -1060,6 +1062,7 @@ func (m PipelineModel) statusColorMap() map[string]lipgloss.Color {
 		"skip":      m.theme.Red,
 		"rejected":  m.theme.Subtext,
 		"discarded": m.theme.Subtext,
+		"inactive":  m.theme.Subtext,
 	}
 }
 

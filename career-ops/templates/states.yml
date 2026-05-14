@@ -55,6 +55,12 @@ states:
     description: Discarded by candidate or offer closed
     dashboard_group: discarded
 
+  - id: inactive
+    label: Inactive
+    aliases: [inactive, expired, closed, dead]
+    description: Job posting is no longer active (URL dead or role filled)
+    dashboard_group: inactive
+
   - id: skip
     label: SKIP
     aliases: [no_aplicar, no aplicar, skip, monitor]

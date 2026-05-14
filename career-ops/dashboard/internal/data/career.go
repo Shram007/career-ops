@@ -605,6 +605,8 @@ func NormalizeStatus(raw string) string {
 	case strings.Contains(s, "discarded") || strings.Contains(s, "descartado") || s == "descartada" || s == "cerrada" || s == "cancelada" ||
 		strings.HasPrefix(s, "duplicado") || strings.HasPrefix(s, "dup"):
 		return "discarded"
+	case s == "inactive" || s == "expired" || s == "closed" || s == "dead":
+		return "inactive"
 	case strings.Contains(s, "evaluated") || strings.Contains(s, "evaluada") || s == "condicional" || s == "hold" || s == "monitor" || s == "evaluar" || s == "verificar":
 		return "evaluated"
 	default:
@@ -729,8 +731,10 @@ func StatusPriority(status string) int {
 		return 8
 	case "discarded":
 		return 9
-	default:
+	case "inactive":
 		return 10
+	default:
+		return 11
 	}
 }
 
