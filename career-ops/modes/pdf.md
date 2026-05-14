@@ -38,7 +38,8 @@ If the user provides an applications tracker number (for example: "generate PDF 
 15. **Validate HTML before rendering PDF:**
     - Run: `node validate-resume-html.mjs tmp/Shram_Kadia_{Company}_{Role}.html`
     - If validation fails, fix all reported issues and re-run until clean:
-      - **Projects title format**: must use `project-header` + `project-title` + `project-tech` div structure — e.g. `<div class="project-header"><div class="project-title"><a href="...">Name</a></div><div class="project-tech">Node.js, PostgreSQL</div></div>`. **NEVER use inline `| Stack:` text inside the title**.
+      - **Projects title format**: must use `project-header` + `project-title` + `project-tech` div structure — e.g. `<div class="project-header"><div class="project-title"><a href="...">Name</a></div><div class="project-tech">Node.js, PostgreSQL</div></div>`. The `·` separator is injected by CSS — do NOT put it in the text. **NEVER use inline `| Stack:` text inside the title**.
+      - **Experience role + location**: must use `<div class="job-meta"><span class="job-role">Title</span><span class="job-location">City, ST</span></div>` — the `|` separator is CSS-injected, do NOT add it manually.
       - **Projects bullets**: must use `<ul><li>` with 2-3 `<li>` items per project — **never** `<div class="project-desc">`
       - **Skills**: max 3-4 groups; each group must be ≤ 85 chars total (split or trim if longer)
     - Do not proceed to PDF generation until validation passes.
@@ -151,9 +152,9 @@ Use the template in `cv-template.html`. Replace `{{...}}` placeholders with pers
 | `{{SECTION_SUMMARY}}` | Professional Summary / Resumen Profesional |
 | `{{SUMMARY_TEXT}}` | Personalized summary with keywords |
 | `{{SECTION_EXPERIENCE}}` | Work Experience / Experiencia Laboral |
-| `{{EXPERIENCE}}` | HTML of each job with reordered bullets |
+| `{{EXPERIENCE}}` | HTML of each job. Required structure: `<div class="job"><div class="job-header"><span class="job-company">Company</span><span class="job-period">Jan 2024 – Present</span></div><div class="job-meta"><span class="job-role">Job Title</span><span class="job-location">City, ST</span></div><ul><li>bullet</li></ul></div>`. The `·` separator between role and location is injected by CSS — do NOT add it manually. |
 | `{{SECTION_PROJECTS}}` | Projects / Proyectos |
-| `{{PROJECTS}}` | HTML of top 3-4 projects. Link titles to GitHub URLs from `config/profile.yml` proof_points. Required structure per project: `<div class="project"><div class="project-header"><div class="project-title"><a href="github-url">Project Name</a></div><div class="project-tech">Tech · More</div></div><ul><li>impact bullet</li><li>impact bullet</li></ul></div>`. **Never use `| Stack:` inline in the title.** (each project MUST have `<ul>` with 2-3 `<li>` bullets, each 1 line max) |
+| `{{PROJECTS}}` | HTML of top 3-4 projects. Link titles to GitHub URLs from `config/profile.yml` proof_points. Required structure per project: `<div class="project"><div class="project-header"><div class="project-title"><a href="github-url">Project Name</a></div><div class="project-tech">Tech, More</div></div><ul><li>impact bullet</li><li>impact bullet</li></ul></div>`. The `·` separator between title and tech is injected by CSS — do NOT add it in the text. **Never use `| Stack:` inline.** (each project MUST have `<ul>` with 2-3 `<li>` bullets, each 1 line max) |
 | `{{SECTION_EDUCATION}}` | Education / Formación |
 | `{{EDUCATION}}` | HTML of education |
 | `{{SECTION_CERTIFICATIONS}}` | Certifications / Certificaciones |
