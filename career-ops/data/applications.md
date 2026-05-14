@@ -2,6 +2,7 @@
 
 | # | Date | Company | Role | Score | Status | PDF | Report | Notes |
 |---|------|---------|------|-------|--------|-----|--------|-------|
+| 97 | 2026-05-14 | Microsoft | Software Engineer 2 - Responsible AI | 3.8/5 | Scored | ❌ | - | fit:ai-platform,domain:responsible-ai,remote:hybrid-relocation | CoreAI Responsible AI team. Eval/monitoring infra + agent governance. 3d/wk hybrid Redmond. $131.4K-$215.4K. Missing Azure/C# exp. |
 | 41 | 2026-05-11 | ElevenLabs | Full-Stack Engineer (Back-End Leaning) | 4.3/5 | Scored | ❌ | - | Strong Python + backend match. AI expertise bonus. Missing Stripe + explicit K8s. NEXT[pdf=pending;custom_resume=pending;cv_changes=pending;interview_prep=pending] |
 | 42 | 2026-05-11 | Runpod | Software Engineer, Full-Stack | 4.5/5 | Scored | ❌ | - | Full-stack match: Python, TypeScript, React, FastAPI, Docker all covered. No Go (preferred). Recent grad + 4 shipped AI systems strong offset. NEXT[pdf=pending;custom_resume=pending;cv_changes=pending;interview_prep=pending] |
 | 1 | 2026-05-09 | Arize AI | AI Solutions Engineer, EMEA | 3.7/5 | Evaluated | ✅ | [001](reports/001-arizeai-2026-05-09.md) | Observability platform. Solutions-focused (less hands-on). Remote EMEA. |

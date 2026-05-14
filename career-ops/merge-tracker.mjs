@@ -84,6 +84,9 @@ const ROLE_STOPWORDS = new Set([
   'fulltime', 'parttime', 'permanent', 'temporary', 'intern', 'internship',
   // generic job words
   'role', 'position', 'opportunity', 'team', 'based',
+  // universal job-title words that appear in nearly every role — zero dedup signal
+  'software', 'engineer', 'engineering', 'developer', 'development', 'manager',
+  'analyst', 'scientist', 'architect', 'consultant', 'specialist', 'director',
   // very common locations (extend in portals.yml later if needed)
   'bangalore', 'bengaluru', 'mumbai', 'delhi', 'hyderabad', 'pune', 'chennai',
   'london', 'berlin', 'paris', 'madrid', 'barcelona', 'amsterdam', 'dublin',

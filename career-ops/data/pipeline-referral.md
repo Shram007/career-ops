@@ -19,7 +19,9 @@
 
 
 
+
 ## Processed
+- [x] 2026-05-14 | https://apply.careers.microsoft.com/careers/job/1970393556866801 | Microsoft | Software Engineer 2 - Responsible AI | 3.8/5 | advance | fit:ai-platform,domain:responsible-ai,remote:hybrid-relocation
 - [~] 2026-05-13 | https://www.amazon.jobs/en/job_categories | Amazon | (from Playwright) — skip:not-a-job
 - [~] 2026-05-13 | https://www.amazon.jobs/content/en/job-categories | Amazon | (from Playwright) — skip:not-a-job
 - [~] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results | Google | (from Playwright) — skip:not-a-job
