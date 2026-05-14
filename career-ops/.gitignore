@@ -58,6 +58,22 @@ add-referral-to-tracker.mjs
 check-score-decision-consistency.mjs
 reorganize-pipeline-referral.mjs
 score-referral-batch.mjs
+analyze-meta.mjs
+analyze-scoring.mjs
+fetch-batch.mjs
+fetch-jd.mjs
+fix-inaccessible.mjs
+test-inaccessible.mjs
+
+# Transient JD scratch files (root-level, created during score runs)
+jd-*.txt
+raw-jd-*.txt
+
+# Temp CV/HTML files
+temp-*.html
+
+# Editor backup files
+*.~~
 run-level*.mjs
 validate-ingest.mjs
 dashboard/career-dashboard.exe
