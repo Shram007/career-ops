@@ -34,7 +34,7 @@ If the user provides an applications tracker number (for example: "generate PDF 
 10. Injects keywords naturally into existing achievements (NEVER invents)
 11. Generates full HTML from template + personalized content
 12. Build the file stem: `Shram_Kadia_{Company}_{Role}` where `{Company}` = company name with spaces/special-chars replaced by underscores (e.g. "Scale AI" → "Scale_AI"), `{Role}` = role title with spaces replaced by underscores, slashes/parens removed (e.g. "Software Engineer II (Backend)" → "Software_Engineer_II_Backend")
-14. Writes HTML to `tmp/Shram_Kadia_{Company}_{Role}.html`
+13. Writes HTML to `tmp/Shram_Kadia_{Company}_{Role}.html`
 15. **Validate HTML before rendering PDF:**
     - Run: `node validate-resume-html.mjs tmp/Shram_Kadia_{Company}_{Role}.html`
     - If validation fails, fix all reported issues and re-run until clean:
@@ -42,25 +42,33 @@ If the user provides an applications tracker number (for example: "generate PDF 
       - **Projects bullets**: must use `<ul><li>` with 2-3 `<li>` items per project — **never** `<div class="project-desc">`
       - **Skills**: max 3-4 groups; each group must be ≤ 85 chars total (split or trim if longer)
     - Do not proceed to PDF generation until validation passes.
-16. Executes: `node generate-pdf.mjs tmp/Shram_Kadia_{Company}_{Role}.html output/Shram_Kadia_{Company}_{Role}.pdf --format={letter|a4}`
-17. **Auto-open preview:** Run `start output/Shram_Kadia_{Company}_{Role}.pdf` (Windows) so the PDF opens immediately without any user action.
-18. **Output a compact "What Changed" block** (not a full manifest — just enough to scan in 5 seconds):
+15. Executes: `node generate-pdf.mjs tmp/Shram_Kadia_{Company}_{Role}.html output/Shram_Kadia_{Company}_{Role}.pdf --format={letter|a4}`
+
+**⚠ Steps 16-18 are REQUIRED. The pipeline is NOT complete until the user says "done" in step 18. Do not stop after generating the PDF.**
+
+16. **[REQUIRED] Auto-open the PDF now.** Run this command immediately after PDF generation succeeds:
+    ```
+    start output/Shram_Kadia_{Company}_{Role}.pdf
+    ```
+    Do not skip this. Do not ask the user to open it themselves.
+
+17. **[REQUIRED] Output this exact "What Changed" block** — fill in the real values from the run:
     ```
     ── What Changed ────────────────────────────────────────────
-    Summary      rewritten (JD keywords: RAG pipelines, MLOps, LLM orchestration)
-    Bullets      3 rewrites across Hightouch + Viasat (metrics preserved)
-    Skills       AI/ML · Backend · Tools  (3 groups)
-    Projects     ATLAS, RAG Pipeline, Observability dashboard  (in this order)
-    Keywords     14/18 covered
+    Summary      rewritten (JD keywords: {top 3 injected keywords})
+    Bullets      {N} rewrites across {role names} (metrics preserved)
+    Skills       {group names}  ({N} groups)
+    Projects     {project 1}, {project 2}, {project 3}  (in this order)
+    Keywords     {K}/{total} covered
     ────────────────────────────────────────────────────────────
-    Any corrections? Describe a change or say "done".
     ```
-    Keep this block to 6 lines max. Do NOT list every bullet — only counts and section names.
+    Keep to 6 lines max. Only counts and names — do NOT list individual bullets.
 
-19. **Patch loop:** Wait for user response.
-    - **"done"** → finalize. Report: `output/Shram_Kadia_{Company}_{Role}.pdf · {N} page(s)`.
-    - **Any correction** (e.g. "swap project 2 for X", "rewrite summary more concisely", "add Docker to skills") → apply the targeted change only to the HTML, re-run validate + generate-pdf, re-open the PDF with `start`, show an updated "What Changed" block, and repeat step 19.
-    - **Patch scope rule:** A patch touches only the explicitly named section/bullet/item. Everything else in the HTML stays byte-for-byte identical. Never re-generate content outside the patch scope.
+18. **[REQUIRED] Ask exactly this question and wait for the answer:**
+    > Any corrections? Describe a change (e.g. "rewrite summary shorter", "swap project 2 for X", "add Docker to skills") — or say **done** to finalize.
+
+    - **"done"** → pipeline complete. Report: `output/Shram_Kadia_{Company}_{Role}.pdf · {N} page(s)`.
+    - **Any correction** → apply as a **targeted patch** — touch only the explicitly named section/bullet/item, leave everything else byte-for-byte identical. Re-run validate → generate-pdf → `start` to reopen → re-output step 17 block → repeat step 18. Maximum 2 patch rounds.
 
 ## ATS Rules (Clean Parsing)
 
