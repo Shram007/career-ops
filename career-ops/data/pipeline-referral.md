@@ -16,25 +16,25 @@
 - [~] 2026-05-13 | https://www.linkedin.com/company/salesforce/jobs/ | Salesforce | (from Playwright) — skip:not-a-job
 - [~] 2026-05-13 | https://careers.salesforce.com/en/jobs/#onetrust-pc-sdk | Salesforce | (from Playwright) — skip:not-a-job
 
-- [!] 2026-05-11 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/120479753218990790-software-engineer-full-stack-gup-engineering?q=software%20engineer | Google | 120479753218990790 software engineer full stack gup engineering — inaccessible (dynamic portal)
-- [!] 2026-05-11 | https://apply.careers.microsoft.com/careers/job/1970393556863744 | Microsoft | Software Engineer Canada — inaccessible (dynamic portal)
-- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/119716248828158662-software-engineer-gce-control-plane-early-careers-phd?q=software%20engineer | Google | 119716248828158662 software engineer gce control plane early careers phd — inaccessible (dynamic portal)
-- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/114738878203470534-security-software-engineer-emerging-onprem-ai-infrastructure?q=software%20engineer | Google | 114738878203470534 security software engineer emerging onprem ai infrastructure — inaccessible (dynamic portal)
-- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/99326551270531782-software-engineer-iii-technical-infrastructure?q=software%20engineer | Google | 99326551270531782 software engineer iii technical infrastructure — inaccessible (dynamic portal)
-- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/128553246984676038-software-engineer-site-reliability-engineer-g1?q=software%20engineer | Google | 128553246984676038 software engineer site reliability engineer g1 — inaccessible (dynamic portal)
-- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/81389984547775174-software-engineer-compiling-quantum-ai?q=software%20engineer | Google | 81389984547775174 software engineer compiling quantum ai — inaccessible (dynamic portal)
-- [!] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/96112286329905862-software-engineer-future-of-git?q=software%20engineer | Google | 96112286329905862 software engineer future of git — inaccessible (dynamic portal)
-- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/1436181490732782/ | Meta | Software Engineer, Machine LearningSunnyvale, CA + 12 locations — inaccessible (page load)
-- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/677160418622314 | Meta | Software Engineer, InfrastructureSunnyvale, CA +8 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering — inaccessible (page load)
-- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/998357492128826 | Meta | Software Engineer, Machine LearningSunnyvale, CA +11 locations⋅Software Engineering⋅Machine LearningMultiple LocationsSoftware EngineeringMachine Learning — inaccessible (page load)
-- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/9657291271065759 | Meta | Software Engineer, ProductBellevue, WA +5 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering — inaccessible (page load)
-- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/2486789151677735 | Meta | Software Engineer, InfrastructureSunnyvale, CA +7 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering — inaccessible (page load)
-- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/1770681236847041 | Meta | Software Engineer, InfrastructureSunnyvale, CA +5 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering — inaccessible (page load)
-- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/727671609895617 | Meta | Software Engineer, ProductBellevue, WA +3 locations⋅Software Engineering⋅EngineeringMultiple LocationsSoftware EngineeringEngineering — inaccessible (page load)
+- [~] 2026-05-11 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/120479753218990790-software-engineer-full-stack-gup-engineering?q=software%20engineer | Google | 120479753218990790 software engineer full stack gup engineering — skip:url-404
+- [x] 2026-05-11 | https://apply.careers.microsoft.com/careers/job/1970393556863744 | Microsoft | Software Engineer | n/a | hold | location:Canada
+- [~] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/119716248828158662-software-engineer-gce-control-plane-early-careers-phd?q=software%20engineer | Google | 119716248828158662 software engineer gce control plane early careers phd — skip:url-404
+- [~] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/114738878203470534-security-software-engineer-emerging-onprem-ai-infrastructure?q=software%20engineer | Google | 114738878203470534 security software engineer emerging onprem ai infrastructure — skip:url-404
+- [~] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/99326551270531782-software-engineer-iii-technical-infrastructure?q=software%20engineer | Google | 99326551270531782 software engineer iii technical infrastructure — skip:url-404
+- [~] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/128553246984676038-software-engineer-site-reliability-engineer-g1?q=software%20engineer | Google | 128553246984676038 software engineer site reliability engineer g1 — skip:url-404
+- [~] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/81389984547775174-software-engineer-compiling-quantum-ai?q=software%20engineer | Google | 81389984547775174 software engineer compiling quantum ai — skip:url-404
+- [~] 2026-05-10 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/96112286329905862-software-engineer-future-of-git?q=software%20engineer | Google | 96112286329905862 software engineer future of git — skip:url-404
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/1436181490732782/ | Meta | Software Engineer, Machine Learning — Error: no JSON in output
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/677160418622314 | Meta | Software Engineer, Infrastructure — Error: no JSON in output
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/998357492128826 | Meta | Software Engineer, Machine Learning — Error: no JSON in output
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/9657291271065759 | Meta | Software Engineer, Product — Error: no JSON in output
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/2486789151677735 | Meta | Software Engineer, Infrastructure — Error: no JSON in output
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/1770681236847041 | Meta | Software Engineer, Infrastructure — Error: no JSON in output
+- [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/727671609895617 | Meta | Software Engineer, Product — Error: no JSON in output
 
 
 
-- [!] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556749568 | Microsoft | Software Engineer 2 — inaccessible (dynamic portal)
+- [!] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556749568 | Microsoft | Software Engineer 2 — Error: no JSON in output
 
 
 
@@ -155,13 +155,54 @@
 - [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/99326551270531782-software-engineer-iii-technical-infrastructure?q=backend+engineer | Google | SWE III, Technical Infrastructure | 2.8/5 | hold | level:sde3-required,exp:gap
 - [x] 2026-05-13 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/128553246984676038-software-engineer-site-reliability-engineer-g1?q=backend+engineer | Google | SWE, Site Reliability (G1) | 3.0/5 | hold | domain:sre,fit:partial
 - [x] 2026-05-13 | https://www.uber.com/careers/list/157483 | Uber | Software Engineer | 4.0/5 | advance | fit:backend-platform,location:sunnyvale,exp:2-3yr,comp:excellent
+
+- [!] 2026-05-14 | https://www.uber.com/careers/list/153611 | Uber | Software Engineer II — Error: no JSON in output
+
+- [!] 2026-05-14 | https://www.uber.com/careers/list/153611 | Uber | Software Engineer II — Error: no JSON in output
+
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/122948486462087878-software-engineer-crossplatform-material?q=software+engineer | Google | 122948486462087878 software engineer crossplatform material — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/119716248828158662-software-engineer-gce-control-plane-early-careers-phd?q=software+engineer | Google | 119716248828158662 software engineer gce control plane early careers phd — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/114738878203470534-security-software-engineer-emerging-onprem-ai-infrastructure?q=software+engineer | Google | 114738878203470534 security software engineer emerging onprem ai infrastructure — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/99326551270531782-software-engineer-iii-technical-infrastructure?q=software+engineer | Google | 99326551270531782 software engineer iii technical infrastructure — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/128553246984676038-software-engineer-site-reliability-engineer-g1?q=software+engineer | Google | 128553246984676038 software engineer site reliability engineer g1 — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/81389984547775174-software-engineer-compiling-quantum-ai?q=software+engineer | Google | 81389984547775174 software engineer compiling quantum ai — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/134139403856421574-ai-engineer-advanced-solutions-lab-google-cloud?q=AI+engineer | Google | 134139403856421574 ai engineer advanced solutions lab google cloud — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/127767200323773126-cloud-data-and-ai-engineer-professional-services?q=AI+engineer | Google | 127767200323773126 cloud data and ai engineer professional services — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/104482908080612038-ai-engineer-google-cloud-consulting-english-french?q=AI+engineer | Google | 104482908080612038 ai engineer google cloud consulting english french — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/110142054700327622-cloud-ai-engineer?q=AI+engineer | Google | 110142054700327622 cloud ai engineer — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/123985301231018694-aiml-engineer-national-security-google-public-sector?q=AI+engineer | Google | 123985301231018694 aiml engineer national security google public sector — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/97664839697998534-software-engineer-aiml-networking?q=AI+engineer | Google | 97664839697998534 software engineer aiml networking — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/87626702263329478-forward-deployed-engineer-iv-applied-ai-google-cloud?q=AI+engineer | Google | 87626702263329478 forward deployed engineer iv applied ai google cloud — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/106233870684168902-forward-deployed-engineer-ii-applied-ai-cloud?q=AI+engineer | Google | 106233870684168902 forward deployed engineer ii applied ai cloud — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/142249195464467142-machine-learning-engineer-xls-compiler?q=machine+learning+engineer | Google | 142249195464467142 machine learning engineer xls compiler — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/136392199028777670-software-engineer-machine-learning?q=machine+learning+engineer | Google | 136392199028777670 software engineer machine learning — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/119883926364660422-machine-learning-design-engineer-silicon?q=machine+learning+engineer | Google | 119883926364660422 machine learning design engineer silicon — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/118370928571622086-photonic-engineer-machine-learning-systems-platforms?q=machine+learning+engineer | Google | 118370928571622086 photonic engineer machine learning systems platforms — Error: no JSON in output
+- [x] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/122258040807137990-software-engineer-phd-early-career-aimachine-learning-2026-start?q=machine+learning+engineer | Google | 122258040807137990 software engineer phd early career aimachine learning 2026 start | ?/5 | hold | (none)
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/135098089949012678-technical-solutions-engineer-artificial-intelligencemachine-learning?q=machine+learning+engineer | Google | 135098089949012678 technical solutions engineer artificial intelligencemachine learning — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/122119136867164870-rtl-design-engineer-machine-learning-accelerators?q=machine+learning+engineer | Google | 122119136867164870 rtl design engineer machine learning accelerators — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/111565227547337414-software-engineer-iii-backend?q=backend+engineer | Google | 111565227547337414 software engineer iii backend — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/96821205041849030-software-engineer-web-platforms-for-smart-manufacturing?q=backend+engineer | Google | 96821205041849030 software engineer web platforms for smart manufacturing — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/122375686001173190-full-stack-software-engineer-observability?q=full+stack+engineer | Google | 122375686001173190 full stack software engineer observability — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/91984526405706438-full-stack-software-engineer-frontrow-database-observability?q=full+stack+engineer | Google | 91984526405706438 full stack software engineer frontrow database observability — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/120479753218990790-software-engineer-full-stack-gup-engineering?q=full+stack+engineer | Google | 120479753218990790 software engineer full stack gup engineering — Error: no JSON in output
+- [x] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/76448332615951046-software-engineer-iii-full-stack?q=full+stack+engineer | Google | 76448332615951046 software engineer iii full stack | ?/5 | hold | (none)
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/132449139878175430-software-engineer-iii-full-stack?q=full+stack+engineer | Google | 132449139878175430 software engineer iii full stack — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/90586316982362822-software-engineer-iii-full-stack?q=full+stack+engineer | Google | 90586316982362822 software engineer iii full stack — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/75065125513372358-software-engineer-iii-full-stack-global-business?q=full+stack+engineer | Google | 75065125513372358 software engineer iii full stack global business — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/135418083266175686-software-engineer-iii-full-stack-cloud-ai-developer-tools?q=full+stack+engineer | Google | 135418083266175686 software engineer iii full stack cloud ai developer tools — Error: no JSON in output
+- [!] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/128931197664273094-software-engineer-full-stack-notebooklm?q=full+stack+engineer | Google | 128931197664273094 software engineer full stack notebooklm — Error: no JSON in output
+
 ## Processed
 
+- [x] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/jobs/results/114738878203470534-security-software-engineer-emerging-onprem-ai-infrastructure?q=backend+engineer | Google | Security SWE, On-Prem AI | 2.2/5 | hold | domain:security-hardware,fit:minimal
+- [x] 2026-05-14 | https://apply.careers.microsoft.com/careers/job/1970393556863227 | Microsoft | Software Engineer II - CoreAI | 4.2/5 | advance | fit:ai-platform,domain:genai-services,comp:excellent
+- [x] 2026-05-14 | https://apply.careers.microsoft.com/careers/job/1970393556866571 | Microsoft | Software Engineer Edge | 3.1/5 | hold | fit:partial,domain:edge-platform,ambiguity:jd-incomplete
 - [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/10386857/software-engineer | Amazon | Software Engineer (AWS Infrastructure) | 3.2/5 | hold
 - [x] 2026-05-13 | https://www.amazon.jobs/en/jobs/3049568/software-engineer-i | Amazon | Software Engineer I (Twitch Ads) | 3.7/5 | advance
-- [!] 2026-05-13 | https://careers.cisco.com/global/en/job/1447765/Partner-Solutions-Engineer | Cisco | Partner Solutions Engineer — closed (not accepting new applications)
-- [!] 2026-05-13 | https://www.metacareers.com/profile/job_details/1483667029488801 | Meta | Infrastructure Engineer (Robotics) — inaccessible (requires auth)
-- [!] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556756098 | Microsoft | Software Engineer II - BIC Foundations — inaccessible (dynamic portal)
-- [!] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556863443 | Microsoft | Software Engineer II — inaccessible (dynamic portal)
+- [!] 2026-05-13 | https://careers.cisco.com/global/en/job/1447765/Partner-Solutions-Engineer | Cisco | Partner Solutions Engineer — Error: no JSON in output
+- [!] 2026-05-13 | https://www.metacareers.com/profile/job_details/1483667029488801 | Meta | Infrastructure Engineer (Robotics) — Error: no JSON in output
+- [!] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556756098 | Microsoft | Software Engineer II - BIC Foundations — Error: no JSON in output
+- [!] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556863443 | Microsoft | Software Engineer II — Error: no JSON in output
 - [x] 2026-05-13 | https://www.uber.com/careers/list/157138 | Uber | Software Engineer | 2.5/5 | hold
 - [x] 2026-05-13 | https://www.uber.com/careers/list/157476 | Uber | Software Engineer I | 3.4/5 | hold

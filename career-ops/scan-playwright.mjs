@@ -270,6 +270,8 @@ async function extractJobLinks(page, careersUrl, maxLinks) {
     let absolute = '';
     try {
       absolute = new URL(href, page.url()).href;
+      // Fix Google double-segment bug: /jobs/results/jobs/results/ → /jobs/results/
+      absolute = absolute.replace(/\/jobs\/results\/jobs\/results\//i, '/jobs/results/');
     } catch {
       continue;
     }

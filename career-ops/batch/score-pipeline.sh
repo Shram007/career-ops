@@ -242,6 +242,7 @@ run_worker() {
 
   local exit_code=0
   claude -p \
+    --bare \
     --dangerously-skip-permissions \
     --append-system-prompt-file "$resolved" \
     "Score this job URL against the candidate CV. Output ONLY the JSON block." \
@@ -464,12 +465,12 @@ print_summary() {
   local score_sum="0" score_count=0
   local -a qualified=()
 
-  for f in "$STATE_DIR"/*.prescreen 2>/dev/null; do
+  for f in "$STATE_DIR"/*.prescreen; do
     [[ -f "$f" ]] || break
     n_prescreen=$(( n_prescreen + 1 ))
   done
 
-  for f in "$STATE_DIR"/*.result 2>/dev/null; do
+  for f in "$STATE_DIR"/*.result; do
     [[ -f "$f" ]] || break
     local idx status score
     idx=$(basename "$f" .result)
@@ -600,8 +601,7 @@ main() {
     local -a batch=("${to_fetch[@]:$b:$(( end - b ))}")
     local batch_count=${#batch[@]}
 
-    printf '--- Batch %d: entries %d-%d of %d ---\n' \
-      "$batch_num" "$(( b+1 ))" "$end" "$total_fetch"
+    echo "--- Batch ${batch_num}: entries $(( b+1 ))-${end} of ${total_fetch} ---"
 
     # Launch parallel workers, cap at PARALLEL
     local -a pids=()
