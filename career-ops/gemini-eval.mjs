@@ -87,7 +87,7 @@ if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
 
 // Parse flags
 let jdText = '';
-let modelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+let modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 let saveReport = true;
 
 for (let i = 0; i < args.length; i++) {
@@ -218,8 +218,8 @@ const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({
   model: modelName,
   generationConfig: {
-    temperature: 0.4,      // deterministic enough for structured evaluation
-    maxOutputTokens: 8192, // full 7-block evaluation
+    temperature: 0.4,       // deterministic enough for structured evaluation
+    maxOutputTokens: 65536, // full 7-block evaluation (gemini-2.5-flash supports up to 65536)
   },
 });
 
@@ -272,6 +272,19 @@ if (summaryMatch) {
   score      = extract('SCORE');
   archetype  = extract('ARCHETYPE');
   legitimacy = extract('LEGITIMACY');
+} else {
+  // Fallback: parse from inline markdown header that Gemini sometimes generates
+  // e.g. "**Score:** 4.3/5"  "**Archetype:** LLMOps"
+  const fb = (key, pattern) => {
+    const m = evaluationText.match(pattern);
+    return m ? m[1].trim() : 'unknown';
+  };
+  const titleMatch = evaluationText.match(/^#\s*Evaluation[:\s]+(.+?)\s*[—–-]\s*(.+)/m);
+  if (titleMatch) { company = titleMatch[1].trim(); role = titleMatch[2].trim(); }
+  const scoreRaw = fb('score', /\*\*Score:\*\*\s*([\d.]+)/);
+  score      = scoreRaw !== 'unknown' ? scoreRaw : fb('score', /SCORE[:\s]+([\d.]+)/);
+  archetype  = fb('archetype', /\*\*Archetype:\*\*\s*([^\n*]+)/);
+  legitimacy = fb('legitimacy', /\*\*Legitimacy:\*\*\s*([^\n*]+)/);
 }
 
 // ---------------------------------------------------------------------------
@@ -289,19 +302,16 @@ if (saveReport) {
     const filename    = `${num}-${companySlug}-${today}.md`;
     const reportPath  = join(PATHS.reports, filename);
 
-    const reportContent = `# Evaluation: ${company} — ${role}
+    // Strip machine-readable summary block if present
+    const cleanBody = evaluationText
+      .replace(/---SCORE_SUMMARY---[\s\S]*?---END_SUMMARY---/, '')
+      .trim();
 
-**Date:** ${today}
-**Archetype:** ${archetype}
-**Score:** ${score}/5
-**Legitimacy:** ${legitimacy}
-**PDF:** pending
-**Tool:** Gemini (${modelName})
-
----
-
-${evaluationText.replace(/---SCORE_SUMMARY---[\s\S]*?---END_SUMMARY---/, '').trim()}
-`;
+    // If Gemini already generated a report header, use as-is; otherwise wrap it
+    const hasHeader = /^#\s*(Evaluation|Job Eval)/i.test(cleanBody);
+    const reportContent = hasHeader
+      ? cleanBody
+      : `# Evaluation: ${company} — ${role}\n\n**Date:** ${today}\n**Archetype:** ${archetype}\n**Score:** ${score}/5\n**Legitimacy:** ${legitimacy}\n**PDF:** pending\n**Tool:** Gemini (${modelName})\n\n---\n\n${cleanBody}`;
 
     writeFileSync(reportPath, reportContent, 'utf-8');
     console.log(`\n✅  Report saved: reports/${filename}`);
