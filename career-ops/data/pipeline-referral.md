@@ -1,26 +1,27 @@
 ## Pending
 
+## In Progress
+<!-- Entries moved here at batch start; moved to Processed at batch end.
+     If non-empty after an interrupted run → move entries back to Pending before re-running. -->
 
+## Processed
 - [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/1436181490732782/ | Meta | Software Engineer, Machine Learning — Error: no JSON in output
 - [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/998357492128826 | Meta | Software Engineer, Machine Learning — Error: no JSON in output
 - [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/9657291271065759 | Meta | Software Engineer, Product — Error: no JSON in output
 - [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/2486789151677735 | Meta | Software Engineer, Infrastructure — Error: no JSON in output
 - [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/1770681236847041 | Meta | Software Engineer, Infrastructure — Error: no JSON in output
 - [!] 2026-05-10 | https://www.metacareers.com/profile/job_details/727671609895617 | Meta | Software Engineer, Product — Error: no JSON in output
-
-
-
 - [!] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556749568 | Microsoft | Software Engineer 2 — Error: no JSON in output
-
-
-
-
 - [!] 2026-05-14 | https://www.uber.com/careers/list/153611 | Uber | Software Engineer II — Error: no JSON in output
-
-
-
-
-## Processed
+- [x] 2026-05-14 | https://careers.cisco.com/global/en/job/1450880/Solutions-Engineer-Cloud-and-AI-Service-Provider | Cisco | Solutions Engineer - Cloud and AI Service Provider | n/a | hold | location:Indonesia,role-closed
+- [x] 2026-05-14 | https://www.google.com/about/careers/applications/jobs/results/102030440952406726-rtl-design-engineer-machine-learning?q=machine+learning+engineer | Google | RTL Design Engineer, Machine Learning | n/a | hold | exp:8yr,domain:chip-design,fit:minimal
+- [x] 2026-05-14 | https://www.metacareers.com/profile/job_details/877951731747100 | Meta | Software Engineer, AI Native (Bellevue) | 4.2/5 | advance | fit:ai-native,exp:2yr,location:ca-friendly
+- [x] 2026-05-14 | https://www.metacareers.com/profile/job_details/4369903346590060 | Meta | Software Engineer, AI Native (Bellevue) | 4.2/5 | advance | fit:ai-native,exp:2yr,location:ca-friendly
+- [x] 2026-05-14 | https://www.metacareers.com/profile/job_details/860406887033740 | Meta | Software Engineer, AI Native (Menlo Park) | 4.2/5 | advance | fit:ai-native,exp:2yr,location:ca-friendly
+- [x] 2026-05-14 | https://careers.salesforce.com/en/jobs/jr342639/software-engineer-new-graduate-full-stack/ | Salesforce | Software Engineer — New Graduate, Full-Stack | n/a | hold | location:Israel,no-match
+- [x] 2026-05-14 | https://careers.salesforce.com/en/jobs/jr340791/software-engineering-smts-llm-gateway/ | Salesforce | Software Engineering SMTS - LLM Gateway | n/a | hold | exp:5yr,domain:backend-platform,seniority:staff
+- [x] 2026-05-14 | https://careers.salesforce.com/en/jobs/jr338174/software-engineering-lmts/ | Salesforce | Software Engineering LMTS | n/a | hold | location:India,exp:8yr
+- [x] 2026-05-14 | https://www.uber.com/careers/list/158077 | Uber | Software Engineer I | 3.5/5 | advance | decision-corrected:hold→advance,fit:partial,domain:matching-systems,location:SF-preference,comp:mid
 - [x] 2026-05-14 | https://apply.careers.microsoft.com/careers/job/1970393556866801 | Microsoft | Software Engineer 2 - Responsible AI | 3.8/5 | advance | fit:ai-platform,domain:responsible-ai,remote:hybrid-relocation
 - [~] 2026-05-13 | https://www.amazon.jobs/en/job_categories | Amazon | (from Playwright) — skip:not-a-job
 - [~] 2026-05-13 | https://www.amazon.jobs/content/en/job-categories | Amazon | (from Playwright) — skip:not-a-job
@@ -207,3 +208,5 @@
 - [!] 2026-05-13 | https://apply.careers.microsoft.com/careers/job/1970393556863443 | Microsoft | Software Engineer II — Error: no JSON in output
 - [x] 2026-05-13 | https://www.uber.com/careers/list/157138 | Uber | Software Engineer | 2.5/5 | hold
 - [x] 2026-05-13 | https://www.uber.com/careers/list/157476 | Uber | Software Engineer I | 3.4/5 | hold
+- [x] 2026-05-14 | https://careers.oracle.com/en/sites/jobsearch/job/332863/?keyword=software+engineer+AI&location=United+States | Oracle | AI Expert Software Engineer – Healthcare Analytics IC5 | 2.8/5 | hold | exp,stack,seniority
+- [x] 2026-05-14 | https://careers.oracle.com/en/sites/jobsearch/job/330319/?keyword=software+engineer+AI&location=United+States | Oracle | Software Engineer / Architect — AI JSON/MongoDB | 2.5/5 | hold | exp,stack,domain

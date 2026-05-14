@@ -28,23 +28,35 @@ If invoked as `/career-ops score` without scope, ask the user to choose `discove
    - Parse `- [ ]` entries under `## Pending`
 
 3. **For each pending URL**
-   a. Extract JD text using this order: Playwright → WebFetch → WebSearch
-   b. If inaccessible, mark item as `- [!]` with reason and continue
-   c. Score CV against JD only (no full A-G writeup)
-   d. Produce compact scoring output:
+   a. **Pre-flight dedup check:** Scan all sections of the queue file (`## Processed` and `## In Progress`) for an existing entry whose URL matches this one. If found → skip silently and continue to the next URL. This prevents double-scoring after interrupted or replayed runs.
+   b. **Fetch JD text.** Known SPA domains require Playwright — do NOT fall back to WebFetch/WebSearch for these:
+
+      | Domain pattern | Required fetcher |
+      |---|---|
+      | `metacareers.com` | Playwright only |
+      | `uber.com/careers` | Playwright only |
+      | `apply.careers.microsoft.com` | Playwright only |
+      | `careers.cisco.com` | Playwright only |
+
+      For all other domains use fallback order: Playwright → WebFetch → WebSearch.
+      If Playwright fails on a known SPA domain → immediately mark `- [!]`; do NOT try fallbacks.
+   c. If inaccessible for any other reason, mark item as `- [!]` with reason and continue
+   d. Score CV against JD only (no full A-G writeup)
+   e. Produce compact scoring output:
       - Overall score `/5`
       - Top strengths (3 bullets)
       - Top gaps (3 bullets)
       - **Decision: AUTOMATIC. If score >= 3.0 → `advance`. If score < 3.0 → `hold`. No exceptions.**
       - Reason tags: 1-3 comma-separated tags explaining context (see Reason Tag Vocabulary below). **Tags are EXPLANATORY ONLY — they DO NOT override the numeric threshold.**
-   e. Move item to `## Processed` in the same queue:
+   f. **MOVE item to `## Processed`:** Delete the `- [ ]` line from `## Pending` and append a new line at the bottom of `## Processed`. ⚠️ Never update the marker in-place while leaving the line in `## Pending`.
       - `- [x] {date} | {url} | {company} | {role} | {score}/5 | {decision} | {reason_tags}`
-   f. **MANDATORY: If score >= 3.0, append to `data/applications.md` immediately with status `Scored`**
+   g. **MANDATORY: If score >= 3.0, append to `data/applications.md` immediately with status `Scored`**
       - Format: `| {next_id} | {date} | {company} | {role} | {score}/5 | Scored | ❌ | - | {reason_tags} | {notes} |`
       - Prepend reason tags to Notes column: `{reason_tags} | {any other notes}`
       - Do not create report links at this stage
       - Set PDF as `❌` until user runs PDF stage
       - **If append fails (IO error, validation error), stop and report error. Do not silently skip.**
+   h. **Pre-write gate:** Before writing any result, assert: if `score >= 3.0` and `decision == "hold"` → override to `advance` and log `[gate] {url}: hold → advance (score {score} >= 3.0 threshold)`. This catches cases where reason tags were incorrectly used to veto a qualifying score.
       
    **⚠️ CRITICAL:** Reason tags like `domain:backend` or `fit:partial` are CONTEXT. They do NOT veto a high score. If score >= 3.0, decision is always `advance` and entry goes to tracker. Do NOT mark as `hold` because tags suggest "not AI-focused" or "less hands-on." Score is ground truth.
 
@@ -61,8 +73,10 @@ If invoked as `/career-ops score` without scope, ask the user to choose `discove
      - If the role says "EMEA team" but explicitly states global remote or async-first → do NOT block; flag with `remote:timezone-risk` tag instead.
      - Candidate is in **San Jose, CA, USA**. Target market is **US + global remote only**.
    - Group remaining URLs into **batches of 5**
+   - **At batch start:** MOVE all batch entries from `## Pending` to `## In Progress` in the queue file before fetching
    - Within each batch: launch parallel sub-agents (one per URL)
-   - After each batch completes: write all results to the queue file and tracker before starting the next batch
+   - **At batch end:** MOVE all batch entries from `## In Progress` to `## Processed` and write tracker entries, then start the next batch
+   - **If interrupted:** entries remaining in `## In Progress` are crash-recovery markers — move them back to `## Pending` before re-running
    - Log progress: `Batch N/total complete (X/total processed)`
 
 5. **Summary output**
@@ -77,9 +91,13 @@ If invoked as `/career-ops score` without scope, ask the user to choose `discove
 ```markdown
 ## Pending
 - [ ] 2026-05-12 | https://jobs.example.com/123 | Acme | Software Engineer
-- [!] 2026-05-11 | https://private.example.com/role — Error: login required
+
+## In Progress
+<!-- Entries moved here at batch start; moved to Processed at batch end.
+     If non-empty after an interrupted run → move entries back to Pending before re-running. -->
 
 ## Processed
+- [!] 2026-05-11 | https://private.example.com/role — Error: login required
 - [x] 2026-05-12 | https://jobs.example.com/123 | Acme | Software Engineer | 3.8/5 | advance | fit:strong,remote:global
 - [x] 2026-05-12 | https://jobs.example.com/999 | OldCo | Senior SWE | 2.7/5 | hold | seniority:senior,location:US-only
 ```
