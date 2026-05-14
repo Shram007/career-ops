@@ -22,6 +22,22 @@ const APPLICATIONS_PATH = 'data/applications.md';
 
 mkdirSync('data', { recursive: true });
 
+function normalizeUrl(url) {
+  return String(url || '').replace(/\/jobs\/results\/jobs\/results\//gi, '/jobs/results/');
+}
+
+// Strip query params + hash so the same job seen via different search queries dedupes correctly.
+function dedupeKey(url) {
+  try {
+    const u = new URL(normalizeUrl(url));
+    u.search = '';
+    u.hash = '';
+    return u.href;
+  } catch {
+    return normalizeUrl(url);
+  }
+}
+
 function parseArgs(argv) {
   const args = argv.slice(2);
   const out = {
@@ -143,20 +159,20 @@ function loadSeenUrls(pipelinePaths) {
     for (const line of lines) {
       if (!line.trim()) continue;
       const url = line.split('\t')[0]?.trim();
-      if (url) seen.add(url);
+      if (url) seen.add(dedupeKey(url));
     }
   }
 
   for (const path of pipelinePaths) {
     const pipelineText = readTextOrEmpty(path);
     for (const match of pipelineText.matchAll(/https?:\/\/[^\s|)]+/g)) {
-      seen.add(match[0]);
+      seen.add(dedupeKey(match[0]));
     }
   }
 
   const applicationsText = readTextOrEmpty(APPLICATIONS_PATH);
   for (const match of applicationsText.matchAll(/https?:\/\/[^\s|)]+/g)) {
-    seen.add(match[0]);
+    seen.add(dedupeKey(match[0]));
   }
 
   return seen;
@@ -197,7 +213,7 @@ function appendToPipeline(jobs, pipelinePath) {
   const insertAt = nextSection === -1 ? text.length : nextSection;
 
   const block = '\n' + jobs.map(job =>
-    `- [ ] ${job.posted_date} | ${job.url} | ${job.company} | ${job.title}`
+    `- [ ] ${job.posted_date} | ${normalizeUrl(job.url)} | ${job.company} | ${job.title}`
   ).join('\n') + '\n';
 
   const out = markerIndex === -1
@@ -212,7 +228,7 @@ function appendToScanHistory(jobs, date) {
   ensureScanHistoryHeader();
 
   const lines = jobs.map(job =>
-    `${job.url}\t${date}\t${job.source}\t${job.title}\t${job.company}\tadded`
+    `${normalizeUrl(job.url)}\t${date}\t${job.source}\t${job.title}\t${job.company}\tadded`
   ).join('\n') + '\n';
 
   appendFileSync(SCAN_HISTORY_PATH, lines, 'utf8');
@@ -269,9 +285,7 @@ async function extractJobLinks(page, careersUrl, maxLinks) {
 
     let absolute = '';
     try {
-      absolute = new URL(href, page.url()).href;
-      // Fix Google double-segment bug: /jobs/results/jobs/results/ → /jobs/results/
-      absolute = absolute.replace(/\/jobs\/results\/jobs\/results\//i, '/jobs/results/');
+      absolute = normalizeUrl(new URL(href, page.url()).href);
     } catch {
       continue;
     }
@@ -521,7 +535,7 @@ async function main() {
           continue;
         }
 
-        if (seenUrls.has(link.url)) {
+        if (seenUrls.has(dedupeKey(link.url))) {
           duplicates += 1;
           continue;
         }
@@ -532,7 +546,7 @@ async function main() {
           continue;
         }
 
-        seenUrls.add(link.url);
+        seenUrls.add(dedupeKey(link.url));
         seenCompanyRoles.add(roleKey);
         newJobs.push({
           url: link.url,

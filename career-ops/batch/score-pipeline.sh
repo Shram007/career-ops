@@ -653,15 +653,15 @@ main() {
         "${ENTRY_COMPANIES[$done_idx]}" "${ENTRY_ROLES[$done_idx]}"
     done
 
-    # Write batch results to pipeline file
-    printf '%s\n' "${batch[@]}" > "$STATE_DIR/batch-${batch_num}-indices.txt"
-    echo "  Writing batch $batch_num to pipeline file..."
-    apply_to_pipeline "$STATE_DIR/batch-${batch_num}-indices.txt" "batch-${batch_num}"
-
-    # Queue tracker entries for qualified offers
+    # Queue tracker TSV FIRST — ensures advances persist even if pipeline rewrite crashes
     for idx in "${batch[@]}"; do
       enqueue_qualified "$idx"
     done
+
+    # Write batch results to pipeline file (after TSV is safe)
+    printf '%s\n' "${batch[@]}" > "$STATE_DIR/batch-${batch_num}-indices.txt"
+    echo "  Writing batch $batch_num to pipeline file..."
+    apply_to_pipeline "$STATE_DIR/batch-${batch_num}-indices.txt" "batch-${batch_num}"
 
     echo "  Batch $batch_num complete."
     echo ""
