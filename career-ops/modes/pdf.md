@@ -43,7 +43,24 @@ If the user provides an applications tracker number (for example: "generate PDF 
       - **Skills**: max 3-4 groups; each group must be ≤ 85 chars total (split or trim if longer)
     - Do not proceed to PDF generation until validation passes.
 16. Executes: `node generate-pdf.mjs tmp/Shram_Kadia_{Company}_{Role}.html output/Shram_Kadia_{Company}_{Role}.pdf --format={letter|a4}`
-17. Reports: PDF path, number of pages, % keyword coverage
+17. **Auto-open preview:** Run `start output/Shram_Kadia_{Company}_{Role}.pdf` (Windows) so the PDF opens immediately without any user action.
+18. **Output a compact "What Changed" block** (not a full manifest — just enough to scan in 5 seconds):
+    ```
+    ── What Changed ────────────────────────────────────────────
+    Summary      rewritten (JD keywords: RAG pipelines, MLOps, LLM orchestration)
+    Bullets      3 rewrites across Hightouch + Viasat (metrics preserved)
+    Skills       AI/ML · Backend · Tools  (3 groups)
+    Projects     ATLAS, RAG Pipeline, Observability dashboard  (in this order)
+    Keywords     14/18 covered
+    ────────────────────────────────────────────────────────────
+    Any corrections? Describe a change or say "done".
+    ```
+    Keep this block to 6 lines max. Do NOT list every bullet — only counts and section names.
+
+19. **Patch loop:** Wait for user response.
+    - **"done"** → finalize. Report: `output/Shram_Kadia_{Company}_{Role}.pdf · {N} page(s)`.
+    - **Any correction** (e.g. "swap project 2 for X", "rewrite summary more concisely", "add Docker to skills") → apply the targeted change only to the HTML, re-run validate + generate-pdf, re-open the PDF with `start`, show an updated "What Changed" block, and repeat step 19.
+    - **Patch scope rule:** A patch touches only the explicitly named section/bullet/item. Everything else in the HTML stays byte-for-byte identical. Never re-generate content outside the patch scope.
 
 ## ATS Rules (Clean Parsing)
 
