@@ -18,7 +18,7 @@ set -euo pipefail
 #   --parallel N      Workers to run at once per batch (default: 3)
 #   --batch-size N    Entries per batch before writing results (default: 5)
 #   --dry-run         Print plan without fetching or writing
-#   --min-score N     Minimum score to add to tracker (default: 3.5)
+#   --min-score N     Minimum score to add to tracker (default: 3.0)
 #   --max-exp N       Pre-screen hold if exp:{N}yr > N, 0=off (default: 0)
 #   --no-prescreen    Disable all tag-based pre-screening
 #   -h, --help        Show this help
@@ -39,10 +39,10 @@ PIPELINE_FILE="$PROJECT_DIR/data/pipeline-referral.md"
 PARALLEL=3
 BATCH_SIZE=5
 DRY_RUN=false
-MIN_SCORE=3.5
+MIN_SCORE=3.0
 MAX_EXP=0
 NO_PRESCREEN=false
-FOLLOWUP_THRESHOLD=3.5
+FOLLOWUP_THRESHOLD=3.0
 
 usage() {
   cat <<'USAGE'
@@ -57,7 +57,7 @@ Options:
   --parallel N      Workers at once per batch (default: 3)
   --batch-size N    Entries per batch (default: 5)
   --dry-run         Show plan without executing
-  --min-score N     Tracker threshold (default: 3.5)
+  --min-score N     Tracker threshold (default: 3.0)
   --max-exp N       Pre-screen if exp:{N}yr > N, 0=off (default: 0)
   --no-prescreen    Disable tag-based pre-screening
   -h, --help        Show this help
