@@ -14,8 +14,7 @@
 | 13 | 2026-05-09 | Hightouch | Forward Deployed Marketing Data Scientist | 4.2/5 | Evaluated | ❌ | [007](reports/007-hightouch-2026-05-09.md) | STRONG APPLY—70% technical, 30% customer. Your north star. |
 | 16 | 2026-05-09 | Hightouch | Partner Solutions Engineer | 3.6/5 | Evaluated | 🤷 | [008](reports/008-hightouch-2026-05-09.md) | 4+ yrs pre-sales. $160-230K OTE. 25% travel. Partnership-focused. |
 | 17 | 2026-05-09 | Hightouch | Software Engineer, AI Agents | 5.0/5 | Evaluated | ✅ | [009](reports/009-hightouch-2026-05-09.md) | STRONG APPLY—agentic systems match. Interview Agent Building Systems. |
-| 19 | 2026-05-09 | Hightouch | Staff AI Productivity Engineer | 4.4/5 | Evaluated | ❌ | [010](reports/010-hightouch-2026-05-09.md) | Stretch role (staff level). MCP + agent background strong. |
-| 20 | 2026-05-09 | Hightouch | Staff AI Productivity Engineer | 4.7/5 | Evaluated | ✅ | [010](reports/010-hightouch-2026-05-09.md) | Perfect MCP + agent infrastructure fit. Direct skill match. APPLY. |
+| 19 | 2026-05-09 | Hightouch | Staff AI Productivity Engineer | 4.7/5 | Inactive | ✅ | [010](reports/010-hightouch-2026-05-09.md) | Perfect MCP + agent infrastructure fit. Direct skill match. URL inactive. |
 | 21 | 2026-05-09 | Hightouch | Software Engineer, Control Plane | 4.0/5 | Evaluated | ✅ | [011](reports/011-hightouch-2026-05-09.md) | Backend + distributed systems. $180-260K. Access control + change mgmt. |
 | 22 | 2026-05-09 | Hightouch | Software Engineer, Customer Studio Backend | 4.5/5 | Evaluated | ✅ | [012](reports/012-hightouch-2026-05-09.md) | Re-eval 2026-05-09 (4.1→4.5). Strong apply. Data + AI integration. $250K midpoint. |
 | 23 | 2026-05-09 | Hightouch | Software Engineer, Distributed Systems | 4.5/5 | Evaluated | ✅ | [013](reports/013-hightouch-2026-05-09.md) | Re-eval 2026-05-09 (4.2→4.5). Strong apply. Performance + ownership. $250K. |

@@ -271,7 +271,16 @@ async function extractJobLinks(page, careersUrl, maxLinks) {
     const nodes = Array.from(document.querySelectorAll('a[href]'));
     return nodes.map(a => {
       const href = a.getAttribute('href') || '';
-      const text = (a.textContent || '').replace(/\s+/g, ' ').trim();
+      let text = (a.textContent || '').replace(/\s+/g, ' ').trim();
+      // When <a> has no text (title in sibling element — e.g. Oracle), walk up to
+      // nearest li/article/div card and grab the first heading or [class*=title] text.
+      if (!text) {
+        const card = a.closest('li, article, [class*="card"], [class*="result"], [class*="job-item"]');
+        if (card) {
+          const heading = card.querySelector('h1,h2,h3,h4,[class*="title"],[class*="Title"]');
+          if (heading) text = (heading.textContent || '').replace(/\s+/g, ' ').trim();
+        }
+      }
       return { href, text };
     });
   });
