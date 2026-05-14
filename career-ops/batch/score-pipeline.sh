@@ -458,6 +458,32 @@ enqueue_qualified() {
   fi
 }
 
+# ── Move processed entries out of Pending section ─────────────────────────────
+
+# Moves all [x] and [~] lines from ## Pending into ## Processed.
+# Keeps [ ] and [!] lines in Pending. Creates ## Processed section if missing.
+promote_processed() {
+  local tmp="$PIPELINE_FILE.promote-tmp"
+  awk '
+    BEGIN { in_pending=0; found_processed=0; promoted="" }
+    /^## Pending/   { in_pending=1; print; next }
+    /^## Processed/ {
+      in_pending=0; found_processed=1
+      print
+      if (promoted != "") { printf "%s", promoted; promoted="" }
+      next
+    }
+    in_pending && /^- \[[x~]\]/ { promoted = promoted $0 "\n"; next }
+    { print }
+    END {
+      if (!found_processed && promoted != "") {
+        print "\n## Processed"
+        printf "%s", promoted
+      }
+    }
+  ' "$PIPELINE_FILE" > "$tmp" && mv "$tmp" "$PIPELINE_FILE"
+}
+
 # ── Summary ───────────────────────────────────────────────────────────────────
 
 print_summary() {
@@ -674,6 +700,11 @@ main() {
     apply_to_pipeline "$STATE_DIR/prescreen-indices.txt" "prescreen"
     echo ""
   fi
+
+  # Move all [x] and [~] entries from ## Pending to ## Processed
+  echo "--- Promoting processed entries to ## Processed ---"
+  promote_processed
+  echo ""
 
   # Merge tracker additions into applications.md
   local tsv_count

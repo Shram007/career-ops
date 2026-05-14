@@ -16,7 +16,7 @@ If invoked as `/career-ops score` without scope, ask the user to choose `discove
 
 - Score CV vs JD quickly (1.0-5.0)
 - Keep queue hygiene (`Pending` → `Processed`)
-- Add only strong matches to tracker (`score >= 3.0`)
+- Add only strong matches to tracker (`score >= 3.5`)
 
 ## Workflow
 
@@ -35,18 +35,18 @@ If invoked as `/career-ops score` without scope, ask the user to choose `discove
       - Overall score `/5`
       - Top strengths (3 bullets)
       - Top gaps (3 bullets)
-      - **Decision: AUTOMATIC. If score >= 3.0 → `advance`. If score < 3.0 → `hold`. No exceptions.**
+      - **Decision: AUTOMATIC. If score >= 3.5 → `advance`. If score < 3.5 → `hold`. No exceptions.**
       - Reason tags: 1-3 comma-separated tags explaining context (see Reason Tag Vocabulary below). **Tags are EXPLANATORY ONLY — they DO NOT override the numeric threshold.**
    e. Move item to `## Processed` in the same queue:
       - `- [x] {date} | {url} | {company} | {role} | {score}/5 | {decision} | {reason_tags}`
-   f. **MANDATORY: If score >= 3.0, append to `data/applications.md` immediately with status `Scored`**
+   f. **MANDATORY: If score >= 3.5, append to `data/applications.md` immediately with status `Scored`**
       - Format: `| {next_id} | {date} | {company} | {role} | {score}/5 | Scored | ❌ | - | {reason_tags} | {notes} |`
       - Prepend reason tags to Notes column: `{reason_tags} | {any other notes}`
       - Do not create report links at this stage
       - Set PDF as `❌` until user runs PDF stage
       - **If append fails (IO error, validation error), stop and report error. Do not silently skip.**
       
-   **⚠️ CRITICAL:** Reason tags like `domain:backend` or `fit:partial` are CONTEXT. They do NOT veto a high score. If score >= 3.0, decision is always `advance` and entry goes to tracker. Do NOT mark as `hold` because tags suggest "not AI-focused" or "less hands-on." Score is ground truth.
+   **⚠️ CRITICAL:** Reason tags like `domain:backend` or `fit:partial` are CONTEXT. They do NOT veto a high score. If score >= 3.5, decision is always `advance` and entry goes to tracker. Do NOT mark as `hold` because tags suggest "not AI-focused" or "less hands-on." Score is ground truth.
 
 4. **Parallelism & Batching**
    - Skip `- [~]` entries entirely (junk URLs marked by `enrich-pipeline.mjs`)
@@ -131,5 +131,5 @@ If validation fails, user intervention required. Do NOT proceed to other stages.
 
 - No report generation in this stage
 - No PDF generation in this stage
-- Tracker write threshold is strict: only `score >= 3.0`
+- Tracker write threshold is strict: only `score >= 3.5`
 - Keep scoring language concise and evidence-based
