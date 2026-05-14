@@ -39,10 +39,12 @@ If invoked as `/career-ops score` without scope, ask the user to choose `discove
       - Reason tags: 1-3 comma-separated tags explaining context (see Reason Tag Vocabulary below). **Tags are EXPLANATORY ONLY — they DO NOT override the numeric threshold.**
    e. Move item to `## Processed` in the same queue:
       - `- [x] {date} | {url} | {company} | {role} | {score}/5 | {decision} | {reason_tags}`
-   f. If score >= 3.0, append to `data/applications.md` with status `Scored`
-      - Prepend reason tags to the Notes column: `{reason_tags} | {any other notes}`
+   f. **MANDATORY: If score >= 3.0, append to `data/applications.md` immediately with status `Scored`**
+      - Format: `| {next_id} | {date} | {company} | {role} | {score}/5 | Scored | ❌ | - | {reason_tags} | {notes} |`
+      - Prepend reason tags to Notes column: `{reason_tags} | {any other notes}`
       - Do not create report links at this stage
       - Set PDF as `❌` until user runs PDF stage
+      - **If append fails (IO error, validation error), stop and report error. Do not silently skip.**
       
    **⚠️ CRITICAL:** Reason tags like `domain:backend` or `fit:partial` are CONTEXT. They do NOT veto a high score. If score >= 3.0, decision is always `advance` and entry goes to tracker. Do NOT mark as `hold` because tags suggest "not AI-focused" or "less hands-on." Score is ground truth.
 
@@ -103,6 +105,27 @@ Examples:
 - `location:AU,exp:3yr` — Australia role requiring 3+ years
 - `stack:java,domain:finance` — Java-first fintech role
 - `fit:strong,remote:global` — Strong match, fully remote
+
+## Post-Score Validation (CRITICAL)
+
+After all entries are processed, validate that no advances were orphaned:
+
+1. **Check for orphaned advances in pipeline files:**
+   - Scan pipeline.md and pipeline-referral.md for entries marked `| advance |`
+   - If found: **FAIL with error message** listing the orphaned entries
+   - These should have been appended to applications.md — their presence indicates a bug
+
+2. **Run consistency check:**
+   - `node check-score-decision-consistency.mjs` must pass (0 inconsistencies)
+   - If fails: report which entries have score/status mismatch and halt
+
+3. **Report summary:**
+   - Total processed
+   - Total advanced (appended to tracker)
+   - Total on hold
+   - Total inaccessible
+
+If validation fails, user intervention required. Do NOT proceed to other stages.
 
 ## Rules
 
