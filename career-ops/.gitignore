@@ -52,6 +52,12 @@ tmp/jd-reeval-*.txt
 tmp/*.mjs
 tmp/*.txt
 data/applications.md.bak
+
+# One-off maintenance scripts (ephemeral, not part of the pipeline)
+add-referral-to-tracker.mjs
+check-score-decision-consistency.mjs
+reorganize-pipeline-referral.mjs
+score-referral-batch.mjs
 run-level*.mjs
 validate-ingest.mjs
 dashboard/career-dashboard.exe
