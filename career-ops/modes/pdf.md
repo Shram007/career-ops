@@ -33,16 +33,16 @@ If the user provides an applications tracker number (for example: "generate PDF 
 9. Reorders experience bullets within each role by JD relevance (optional; preserve role structure)
 10. Injects keywords naturally into existing achievements (NEVER invents)
 11. Generates full HTML from template + personalized content
-12. Reads `name` from `config/profile.yml` → normalizes to kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
-14. Writes HTML to `/tmp/cv-{candidate}-{company}.html`
+12. Build the file stem: `Shram_Kadia_{Company}_{Role}` where `{Company}` = company name with spaces/special-chars replaced by underscores (e.g. "Scale AI" → "Scale_AI"), `{Role}` = role title with spaces replaced by underscores, slashes/parens removed (e.g. "Software Engineer II (Backend)" → "Software_Engineer_II_Backend")
+14. Writes HTML to `tmp/Shram_Kadia_{Company}_{Role}.html`
 15. **Validate HTML before rendering PDF:**
-    - Run: `node validate-resume-html.mjs /tmp/cv-{candidate}-{company}.html`
+    - Run: `node validate-resume-html.mjs tmp/Shram_Kadia_{Company}_{Role}.html`
     - If validation fails, fix all reported issues and re-run until clean:
       - **Projects title format**: must use `project-header` + `project-title` + `project-tech` div structure — e.g. `<div class="project-header"><div class="project-title"><a href="...">Name</a></div><div class="project-tech">Node.js, PostgreSQL</div></div>`. **NEVER use inline `| Stack:` text inside the title**.
       - **Projects bullets**: must use `<ul><li>` with 2-3 `<li>` items per project — **never** `<div class="project-desc">`
       - **Skills**: max 3-4 groups; each group must be ≤ 85 chars total (split or trim if longer)
     - Do not proceed to PDF generation until validation passes.
-16. Executes: `node generate-pdf.mjs /tmp/cv-{candidate}-{company}.html output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4}`
+16. Executes: `node generate-pdf.mjs tmp/Shram_Kadia_{Company}_{Role}.html output/Shram_Kadia_{Company}_{Role}.pdf --format={letter|a4}`
 17. Reports: PDF path, number of pages, % keyword coverage
 
 ## ATS Rules (Clean Parsing)
