@@ -16,7 +16,7 @@ If invoked as `/career-ops score` without scope, ask the user to choose `discove
 
 - Score CV vs JD quickly (1.0-5.0)
 - Keep queue hygiene (`Pending` → `Processed`)
-- Add only strong matches to tracker (`score >= 3.5`)
+- Add only strong matches to tracker (`score >= 3.0`)
 
 ## Workflow
 
@@ -35,20 +35,29 @@ If invoked as `/career-ops score` without scope, ask the user to choose `discove
       - Overall score `/5`
       - Top strengths (3 bullets)
       - Top gaps (3 bullets)
-      - Decision: `advance` when score >= 3.5, else `hold`
-      - Reason tags: 1-3 comma-separated tags explaining the key decision driver (see Reason Tag Vocabulary below)
+      - **Decision: AUTOMATIC. If score >= 3.0 → `advance`. If score < 3.0 → `hold`. No exceptions.**
+      - Reason tags: 1-3 comma-separated tags explaining context (see Reason Tag Vocabulary below). **Tags are EXPLANATORY ONLY — they DO NOT override the numeric threshold.**
    e. Move item to `## Processed` in the same queue:
       - `- [x] {date} | {url} | {company} | {role} | {score}/5 | {decision} | {reason_tags}`
-   f. If score >= 3.5, append to `data/applications.md` with status `Scored`
+   f. If score >= 3.0, append to `data/applications.md` with status `Scored`
       - Prepend reason tags to the Notes column: `{reason_tags} | {any other notes}`
       - Do not create report links at this stage
       - Set PDF as `❌` until user runs PDF stage
+      
+   **⚠️ CRITICAL:** Reason tags like `domain:backend` or `fit:partial` are CONTEXT. They do NOT veto a high score. If score >= 3.0, decision is always `advance` and entry goes to tracker. Do NOT mark as `hold` because tags suggest "not AI-focused" or "less hands-on." Score is ground truth.
 
 4. **Parallelism & Batching**
    - Skip `- [~]` entries entirely (junk URLs marked by `enrich-pipeline.mjs`)
    - **Pre-screen** entries that already have enrichment tags — no JD fetch needed:
      - If `loc:{non-US/non-remote}` is set (e.g. `loc:Sydney-AU`, `loc:Singapore-SG`) → mark `hold | location:{value}` without fetching
      - If `exp:{X}yr` where X > 3 → mark `hold | exp:{X}yr` without fetching
+   - **Hard location block — FETCH THE JD, then check immediately:**
+     For every entry, after fetching the JD text, scan for location signals **before** scoring:
+     - **EMEA / non-US geo keywords** in the JD or role title (case-insensitive):
+       - `EMEA`, `Europe`, `UK`, `United Kingdom`, `Germany`, `France`, `Netherlands`, `Spain`, `Italy`, `Sweden`, `Poland`, `India`, `APAC`, `Asia Pacific`, `Singapore`, `Australia`, `Canada` (if onsite/hybrid), `Latin America`, `LATAM`, `Dubai`, `UAE`, `Middle East`
+     - **Trigger rule:** If ANY of these terms appear AND the JD does NOT also say `remote`, `remote-first`, `remote OK`, `work from anywhere`, or `global remote` → **immediately mark `hold | location:EMEA` (or the specific region) without scoring**. Do NOT compute blocks A-F.
+     - If the role says "EMEA team" but explicitly states global remote or async-first → do NOT block; flag with `remote:timezone-risk` tag instead.
+     - Candidate is in **San Jose, CA, USA**. Target market is **US + global remote only**.
    - Group remaining URLs into **batches of 5**
    - Within each batch: launch parallel sub-agents (one per URL)
    - After each batch completes: write all results to the queue file and tracker before starting the next batch
@@ -99,5 +108,5 @@ Examples:
 
 - No report generation in this stage
 - No PDF generation in this stage
-- Tracker write threshold is strict: only `score >= 3.5`
+- Tracker write threshold is strict: only `score >= 3.0`
 - Keep scoring language concise and evidence-based

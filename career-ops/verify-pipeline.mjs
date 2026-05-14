@@ -34,12 +34,13 @@ mkdirSync(join(CAREER_OPS, 'data'), { recursive: true });
 mkdirSync(REPORTS_DIR, { recursive: true });
 
 const CANONICAL_STATUSES = [
-  'evaluated', 'applied', 'responded', 'interview',
+  'evaluated', 'scored', 'applied', 'responded', 'interview',
   'offer', 'rejected', 'discarded', 'skip',
 ];
 
 const ALIASES = {
   'evaluada': 'evaluated', 'condicional': 'evaluated', 'hold': 'evaluated', 'evaluar': 'evaluated', 'verificar': 'evaluated',
+  'score': 'scored', 'pipeline_score': 'scored',
   'aplicado': 'applied', 'enviada': 'applied', 'aplicada': 'applied', 'applied': 'applied', 'sent': 'applied',
   'respondido': 'responded',
   'entrevista': 'interview',

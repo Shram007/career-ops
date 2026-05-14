@@ -13,6 +13,12 @@ states:
     description: Offer evaluated with report, pending decision
     dashboard_group: evaluated
 
+  - id: scored
+    label: Scored
+    aliases: [score, pipeline_score]
+    description: CV scored (no full report generated)
+    dashboard_group: evaluated
+
   - id: applied
     label: Applied
     aliases: [aplicado, enviada, aplicada, sent]
