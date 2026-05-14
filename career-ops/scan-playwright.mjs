@@ -28,7 +28,7 @@ function parseArgs(argv) {
     dryRun: false,
     companyFilter: null,
     referralMode: false,
-    timeoutMs: 15000,
+    timeoutMs: 30000,
     maxLinksPerCompany: 150,
     directUrl: null,   // --url <url>  ad-hoc single-URL scan
   };
@@ -244,7 +244,7 @@ function normalizeTitle(rawTitle, href) {
 }
 
 async function extractJobLinks(page, careersUrl, maxLinks) {
-  await page.goto(careersUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
+  await page.goto(careersUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForTimeout(2500);
 
   // Trigger lazy rendering on SPAs.
