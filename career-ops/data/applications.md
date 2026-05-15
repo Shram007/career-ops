@@ -48,6 +48,7 @@
 | 59 | 2026-05-13 | Meta | Software Engineer, Infrastructure | 3.9/5 | Scored | ❌ | - | Large-scale distributed systems. Infrastructure focus (not AI/ML). Sunnyvale ideal. 2+ yrs. Observability knowledge transfers. $70.67/hr-$208K range. ADVANCE |
 | 60 | 2026-05-13 | Microsoft | Back-End SWE II | 3.6/5 | Scored | ❌ | — | fit:backend-platform,domain:microsoft-backend | Backend platform engineering. Azure + C# ecosystem. Distributed systems fit. Score overridden from hold to scored (agent logic error). |
 | 61 | 2026-05-13 | Uber | Software Engineer | 4.0/5 | Scored | ❌ | — | fit:backend-platform,location:sunnyvale,comp:excellent | Backend platform engineering. C++/Python/Java distributed systems. $187K-$225K. Sunnyvale on-site. Strong culture fit. |
+| 62 | 2026-05-15 | Whoop | Software Engineer I (Quality) | 3.1/5 | Scored | ❌ | - | location:Boston,domain:QA,fit:partial | Boston-based SDET role. QA/test automation focus. Early-career level. $105K-$145K + equity. Not direct AI platform path but infrastructure-building potential. |
 | 62 | 2026-05-13 | Amazon | Software Engineer I (Twitch) | 3.8/5 | Scored | ❌ | - | exp:1yr,location:SF/Seattle,comp:strong | From referral scan |
 | 64 | 2026-05-13 | Amazon | Software Engineer (Discovery/ML) | 4/5 | Scored | ❌ | - | fit:ml-systems,location:SF,exp:1yr,comp:strong | From referral scan |
 | 65 | 2026-05-10 | Amazon | Software Engineer I | 4/5 | Scored | ❌ | - | fit:consumer-commerce,location:Seattle-SF,exp:1-2yr,comp:strong | From referral scan |
