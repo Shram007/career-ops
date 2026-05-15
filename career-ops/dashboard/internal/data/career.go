@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -354,6 +355,36 @@ func enrichFromScanHistory(careerOpsPath string, apps []model.CareerApplication)
 	}
 }
 
+// extractCompanyFromURL derives a normalized company slug from known ATS URL patterns.
+// Returns "" if the URL is not a recognized ATS or doesn't contain a company path segment.
+// This covers cases where pipeline entries were ingested with a generic hostname (e.g. "jobs")
+// instead of the real company name.
+func extractCompanyFromURL(rawURL string) string {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return ""
+	}
+	host := strings.ToLower(u.Host)
+	parts := strings.Split(strings.Trim(u.Path, "/"), "/")
+	if len(parts) == 0 {
+		return ""
+	}
+	switch {
+	case strings.Contains(host, "lever.co"),
+		strings.Contains(host, "ashbyhq.com"),
+		strings.Contains(host, "greenhouse.io"):
+		// jobs.lever.co/<company>/<id>
+		// jobs.ashbyhq.com/<company>/<id>
+		// boards.greenhouse.io/<company>/jobs/<id>
+		// job-boards.greenhouse.io/<company>/jobs/<id>
+		slug := strings.TrimSpace(parts[0])
+		if slug != "" && !strings.EqualFold(slug, "jobs") {
+			return slug
+		}
+	}
+	return ""
+}
+
 // normalizeCompany strips common suffixes and lowercases a company name.
 func normalizeCompany(name string) string {
 	s := strings.ToLower(strings.TrimSpace(name))
@@ -413,8 +444,27 @@ func enrichFromPipelineFiles(careerOpsPath string, apps []model.CareerApplicatio
 				company: strings.TrimSpace(m[2]),
 				title:   strings.TrimSpace(m[3]),
 			}
+			// Index by stored company name.
 			for _, k := range companyKeys(e.company) {
 				byCompany[k] = append(byCompany[k], e)
+			}
+			// Also index by company slug extracted from the ATS URL.
+			// This handles entries where an ingest script stored a generic hostname
+			// (e.g. "jobs" from jobs.lever.co) instead of the real company name.
+			if urlSlug := extractCompanyFromURL(e.url); urlSlug != "" {
+				for _, k := range companyKeys(urlSlug) {
+					// Avoid duplicate entries under the same key.
+					exists := false
+					for _, existing := range byCompany[k] {
+						if existing.url == e.url {
+							exists = true
+							break
+						}
+					}
+					if !exists {
+						byCompany[k] = append(byCompany[k], e)
+					}
+				}
 			}
 		}
 	}
