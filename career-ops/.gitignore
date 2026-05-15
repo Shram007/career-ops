@@ -2,6 +2,7 @@
 cv.md
 data/applications.md
 data/pipeline.md
+data/pipeline-referral.md
 data/scan-history.tsv
 data/ingest-extraction-*.csv
 reports/*.md
@@ -51,6 +52,9 @@ tmp/jd-cache/
 tmp/jd-reeval-*.txt
 tmp/*.mjs
 tmp/*.txt
+tmp/*.html
+tmp/*.tex
+tmp/*.pdf
 data/applications.md.bak
 
 # One-off maintenance scripts (ephemeral, not part of the pipeline)
