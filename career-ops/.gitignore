@@ -66,8 +66,10 @@ analyze-meta.mjs
 analyze-scoring.mjs
 fetch-batch.mjs
 fetch-jd.mjs
+fetch_referral.mjs
 fix-inaccessible.mjs
 test-inaccessible.mjs
+test-ashby-latency.mjs
 
 # Transient JD scratch files (root-level, created during score runs)
 jd-*.txt

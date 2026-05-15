@@ -33,7 +33,7 @@ const APPLICATIONS_PATH = 'data/applications.md';
 mkdirSync('data', { recursive: true });
 
 const CONCURRENCY = 10;
-const FETCH_TIMEOUT_MS = 10_000;
+const FETCH_TIMEOUT_MS = 15_000;  // Ashby API can take 10-11s; P95 observed at 10.5s
 
 // ── API detection ───────────────────────────────────────────────────
 
@@ -359,6 +359,7 @@ async function main() {
   const targets = companies
     .filter(c => c.enabled !== false)
     .filter(c => !filterCompany || c.name.toLowerCase().includes(filterCompany))
+    .filter(c => c.scan_method !== 'playwright' && c.scan_method !== 'websearch')
     .map(c => ({ ...c, _api: detectApi(c) }))
     .filter(c => c._api !== null);
 
