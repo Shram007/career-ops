@@ -4,10 +4,11 @@
  * scan-single-url.mjs
  *
  * Accept a single URL and route to appropriate scanner:
- * - API endpoints → scan.mjs (zero-cost API)
- * - SPA domains → scan-playwright.mjs (required)
- * - Listing pages → scan-playwright.mjs
- * - Single jobs → WebFetch + fallback to Playwright
+ * - Explicit API URLs (api.lever.co, api.greenhouse.io, etc.) → scan.mjs
+ * - Known SPA domains → scan-playwright.mjs
+ * - Single job detail pages → scan-playwright.mjs (Playwright has special
+ *   Lever/Greenhouse/Ashby title extraction for UUID-style job pages)
+ * - Listing/search pages → scan-playwright.mjs
  */
 
 import { spawnSync } from 'child_process';
@@ -73,6 +74,15 @@ function detectUrlType() {
       return 'job_detail';
     }
   }
+
+  // ATS single-job UUID patterns — must be checked BEFORE listingPatterns
+  // because those patterns also match the same domains for listing pages.
+  // Lever:      jobs.lever.co/{company}/{uuid}
+  // Ashby:      jobs.ashbyhq.com/{company}/{uuid}
+  // Greenhouse: boards.greenhouse.io/{company}/jobs/{numeric-id}
+  if (/jobs\.lever\.co\/[^/?#]+\/[0-9a-f]{8}-[0-9a-f]{4}/i.test(lowerUrl)) return 'job_detail';
+  if (/jobs\.ashbyhq\.com\/[^/?#]+\/[0-9a-f]{8}-[0-9a-f]{4}/i.test(lowerUrl)) return 'job_detail';
+  if (/boards\.greenhouse\.io\/[^/?#]+\/jobs\/\d+/i.test(lowerUrl)) return 'job_detail';
 
   // Listing pages (search/results/jobs)
   const listingPatterns = [
