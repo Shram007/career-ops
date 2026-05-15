@@ -102,10 +102,11 @@ After determining the mode, load the necessary files before executing:
 
 ### Scan modes — run directly, no subagent:
 
-For `scan`, `scan-referral`, `scan-discovery`, and `score-pipeline`, **do not launch a subagent**. Run the pre-built script directly and report the terminal output to the user.
+For `scan`, `scan-single-url`, `scan-referral`, `scan-discovery`, and `score-pipeline`, **do not launch a subagent**. Run the pre-built script directly and report the terminal output to the user.
 
 | Mode | Command |
 |------|---------|
+| `scan-single-url <url>` | `node scan-single-url.mjs <url>` |
 | `scan` | `node scan-with-instrumentation.mjs` |
 | `scan referral` | `node scan-with-instrumentation.mjs --referral` |
 | `scan discovery` | `node scan-with-instrumentation.mjs --skip-level1 --skip-level2` |
