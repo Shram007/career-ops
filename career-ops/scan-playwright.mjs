@@ -259,6 +259,38 @@ function normalizeTitle(rawTitle, href) {
   }
 }
 
+async function extractJobTitleFromLeverDetail(page, leverUrl) {
+  // For Lever single job detail/apply pages, extract the job title from page content
+  try {
+    await page.goto(leverUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    const title = await page.evaluate(() => {
+      // Try various selectors for Lever job title
+      const selectors = [
+        'h1',
+        '[class*="title"]',
+        '[class*="Title"]',
+        '[class*="heading"]',
+      ];
+      for (const selector of selectors) {
+        const el = document.querySelector(selector);
+        if (el) {
+          const text = (el.textContent || '').replace(/\s+/g, ' ').trim();
+          if (text && text.length > 5 && text.length < 200) {
+            return text;
+          }
+        }
+      }
+      return document.title || '';
+    });
+    if (title && title.length > 5) {
+      return [{ url: leverUrl, title }];
+    }
+  } catch {
+    // Fallback to generic extraction
+  }
+  return [];
+}
+
 async function extractJobLinks(page, careersUrl, maxLinks) {
   await page.goto(careersUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForTimeout(2500);
@@ -281,7 +313,7 @@ async function extractJobLinks(page, careersUrl, maxLinks) {
           if (heading) text = (heading.textContent || '').replace(/\s+/g, ' ').trim();
         }
       }
-      return { href, text };
+      return { href, text, pageTitle: document.title };
     });
   });
 
@@ -401,8 +433,19 @@ async function main() {
   // --url mode: bypass portals.yml and scan a single ad-hoc URL
   let targets;
   if (directUrl) {
-    const domainMatch = directUrl.match(/^https?:\/\/(?:www\.)?([^/]+)/);
-    const name = domainMatch ? domainMatch[1].split('.')[0] : 'ad-hoc';
+    // Extract company name from URL
+    let name = 'ad-hoc';
+
+    // Lever: extract company slug from path (jobs.lever.co/{company}/...)
+    const leverMatch = directUrl.match(/jobs\.lever\.co\/([^/?#]+)/);
+    if (leverMatch) {
+      name = leverMatch[1];
+    } else {
+      // Fallback: use domain name
+      const domainMatch = directUrl.match(/^https?:\/\/(?:www\.)?([^/]+)/);
+      name = domainMatch ? domainMatch[1].split('.')[0] : 'ad-hoc';
+    }
+
     targets = [{
       name,
       careers_url: directUrl,
@@ -461,7 +504,10 @@ async function main() {
     try {
       let links = [];
 
-      if (t.search_urls && t.search_urls.length > 0) {
+      // Special handling for Lever single job URLs
+      if (directUrl && t.careers_url.includes('jobs.lever.co')) {
+        links = await extractJobTitleFromLeverDetail(page, t.careers_url);
+      } else if (t.search_urls && t.search_urls.length > 0) {
         // Multi-query mode: visit every search URL and merge results
         const seen = new Set();
         for (const searchUrl of t.search_urls) {
@@ -525,6 +571,7 @@ async function main() {
         if (!titleFilter(link.title)) {
           filteredOut += 1;
           filteredByTitle += 1;
+          if (dryRun || directUrl) console.log(`    [TITLE-FILTER] extracted="${link.title}" url=${link.url}`);
           continue;
         }
 

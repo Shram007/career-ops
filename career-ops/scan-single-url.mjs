@@ -57,6 +57,23 @@ function detectUrlType() {
     }
   }
 
+  // Single job detail page (CHECK BEFORE listing — more specific patterns)
+  const jobDetailPatterns = [
+    '/job_details/',
+    '/careers/job/',
+    '/jobs/view/',
+    '/apply?',
+    '/apply#',
+    'gh_jid=',
+    'jobid=',
+    '/profile/job_details/',
+  ];
+  for (const pattern of jobDetailPatterns) {
+    if (lowerUrl.includes(pattern)) {
+      return 'job_detail';
+    }
+  }
+
   // Listing pages (search/results/jobs)
   const listingPatterns = [
     '/search',
@@ -75,21 +92,6 @@ function detectUrlType() {
   for (const pattern of listingPatterns) {
     if (lowerUrl.includes(pattern)) {
       return 'listing';
-    }
-  }
-
-  // Single job detail page
-  const jobDetailPatterns = [
-    '/job_details/',
-    '/careers/job/',
-    '/jobs/view/',
-    'gh_jid=',
-    'jobid=',
-    '/profile/job_details/',
-  ];
-  for (const pattern of jobDetailPatterns) {
-    if (lowerUrl.includes(pattern)) {
-      return 'job_detail';
     }
   }
 
