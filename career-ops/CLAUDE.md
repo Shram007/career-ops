@@ -103,7 +103,9 @@ When using [OpenCode](https://opencode.ai), the following slash commands are ava
 | `/career-ops-tracker` | `/career-ops tracker` | Application status overview |
 | `/career-ops-apply` | `/career-ops apply` | Live application assistant |
 | `/career-ops-scan` | `/career-ops scan` | Scan all sources (Playwright + APIs + WebSearch) |
+| `/career-ops-scan <url>` | `/career-ops scan <url>` | Scan single URL (auto-detects API/SPA/listing) |
 | `/career-ops-scan-referral` | `/career-ops scan referral` | Scan referral companies (Playwright + APIs + conditional WebSearch) |
+| `/career-ops-scan-referral <url>` | `/career-ops scan referral <url>` | Scan single referral URL (auto-detect + referral context) |
 | `/career-ops-scan-discovery` | `/career-ops scan discovery` | Scan via WebSearch discovery queries only |
 | `/career-ops-batch` | `/career-ops batch` | Batch processing with parallel workers |
 | `/career-ops-patterns` | `/career-ops patterns` | Analyze rejection patterns and improve targeting |
@@ -135,7 +137,9 @@ When using the [Gemini CLI](https://github.com/google-gemini/gemini-cli), the fo
 | `/career-ops-tracker` | `/career-ops tracker` | Application status overview |
 | `/career-ops-apply` | `/career-ops apply` | Live application assistant |
 | `/career-ops-scan` | `/career-ops scan` | Scan all sources (Playwright + APIs + WebSearch) |
+| `/career-ops-scan <url>` | `/career-ops scan <url>` | Scan single URL (auto-detects API/SPA/listing) |
 | `/career-ops-scan-referral` | `/career-ops scan referral` | Scan referral companies (Playwright + APIs + conditional WebSearch) |
+| `/career-ops-scan-referral <url>` | `/career-ops scan referral <url>` | Scan single referral URL (auto-detect + referral context) |
 | `/career-ops-scan-discovery` | `/career-ops scan discovery` | Scan via WebSearch discovery queries only |
 | `/career-ops-batch` | `/career-ops batch` | Batch processing with parallel workers |
 | `/career-ops-patterns` | `/career-ops patterns` | Analyze rejection patterns and improve targeting |

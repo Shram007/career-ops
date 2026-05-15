@@ -34,6 +34,8 @@ Determine the mode from `{{mode}}`:
 | `score pipeline discovery` | `score-pipeline` (`--discovery` flag) |
 | `pipeline` | `score` (legacy alias for `score discovery`) |
 | `apply` | `apply` |
+| `scan <url>` | `scan-single-url` (auto-detect: API → cost 0, SPA/listing → Playwright) |
+| `scan referral <url>` | `scan-single-url` (with referral context) |
 | `scan` | `scan` (all sources: Playwright + APIs + WebSearch) |
 | `scan referral` | `scan-referral` (Playwright + APIs + conditional WebSearch for referral companies) |
 | `scan discovery` | `scan-discovery` (WebSearch discovery queries only) |
@@ -41,6 +43,11 @@ Determine the mode from `{{mode}}`:
 | `patterns` | `patterns` |
 | `followup` | `followup` |
 | `interview-prep` | `interview-prep` |
+
+**URL detection for scan:** If `{{mode}}` starts with `scan` and contains a URL (`https://...`):
+- Extract URL and detect type (API, SPA domain, listing, single job)
+- Route to `scan-single-url.mjs` with detected URL
+- `scan referral <url>` → scan-single-url with referral flag
 
 **Auto-pipeline detection:** If `{{mode}}` is not a known sub-command AND contains JD text (keywords: "responsibilities", "requirements", "qualifications", "about the role", "we're looking for", company name + role) or a URL to a JD, execute `auto-pipeline`.
 
