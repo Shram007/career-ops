@@ -26,9 +26,9 @@ Determine the mode from `{{mode}}`:
 | `training` | `training` |
 | `project` | `project` |
 | `tracker` | `tracker` |
-| `score` | `score` |
-| `score referral` | `score` (reads only `data/pipeline-referral.md`) |
-| `score discovery` | `score` (reads only `data/pipeline.md`) |
+| `score` | `score-pipeline` (auto-detects pipeline.md vs pipeline-referral.md) |
+| `score referral` | `score-pipeline` (reads only `data/pipeline-referral.md`) |
+| `score discovery` | `score-pipeline` (reads only `data/pipeline.md`) |
 | `score pipeline` | `score-pipeline` (parallel `claude -p` workers via `batch/score-pipeline.sh`) |
 | `score pipeline referral` | `score-pipeline` (`--referral` flag) |
 | `score pipeline discovery` | `score-pipeline` (`--discovery` flag) |
@@ -110,6 +110,9 @@ For `scan`, `scan-single-url`, `scan-referral`, `scan-discovery`, and `score-pip
 | `scan` | `node scan-with-instrumentation.mjs` |
 | `scan referral` | `node scan-with-instrumentation.mjs --referral` |
 | `scan discovery` | `node scan-with-instrumentation.mjs --skip-level1 --skip-level2` |
+| `score` | `node score-pipeline.mjs --referral` (default to referral) |
+| `score referral` | `node score-pipeline.mjs --referral` |
+| `score discovery` | `node score-pipeline.mjs --discovery` |
 | `score pipeline` | `bash batch/score-pipeline.sh --referral` |
 | `score pipeline referral` | `bash batch/score-pipeline.sh --referral` |
 | `score pipeline discovery` | `bash batch/score-pipeline.sh --discovery` |
@@ -119,7 +122,7 @@ Do not read `modes/scan*.md` or `modes/score.md` before running score-pipeline. 
 ### Modes that require `_shared.md` + their mode file:
 Read `modes/_shared.md` + `modes/{mode}.md`
 
-Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `contacto`, `apply`, `score`, `batch`
+Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `contacto`, `apply`, `batch`
 
 ### Standalone modes (only their mode file):
 Read `modes/{mode}.md`
@@ -127,7 +130,7 @@ Read `modes/{mode}.md`
 Applies to: `tracker`, `deep`, `training`, `project`, `patterns`, `followup`, `interview-prep`
 
 ### Modes delegated to subagent:
-For `apply` (with Playwright) and `score` (3+ URLs): launch as Agent with the content of `_shared.md` + `modes/{mode}.md` injected into the subagent prompt.
+For `apply` (with Playwright): launch as Agent with the content of `_shared.md` + `modes/{mode}.md` injected into the subagent prompt.
 
 ```
 Agent(
