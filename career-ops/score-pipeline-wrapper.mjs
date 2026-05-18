@@ -18,6 +18,12 @@ function hasBash() {
   return out.status === 0;
 }
 
+function hasClaude() {
+  const whichCmd = process.platform === 'win32' ? 'where' : 'which';
+  const out = spawnSync(whichCmd, ['claude'], { encoding: 'utf8' });
+  return out.status === 0;
+}
+
 function run(command, commandArgs) {
   return spawnSync(command, commandArgs, {
     cwd: __dirname,
@@ -34,6 +40,9 @@ let result;
 if (engine === 'primary-batch') {
   if (!hasBash()) {
     console.warn('[scorer] bash unavailable; falling back to legacy deterministic scorer');
+    engine = 'legacy-deterministic';
+  } else if (!hasClaude()) {
+    console.warn('[scorer] claude CLI unavailable; falling back to legacy deterministic scorer');
     engine = 'legacy-deterministic';
   } else {
     const batchArgs = ['batch/score-pipeline.sh', scope === 'discovery' ? '--discovery' : '--referral'];

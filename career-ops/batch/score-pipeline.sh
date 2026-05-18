@@ -572,7 +572,6 @@ print_summary() {
 main() {
   [[ ! -f "$PIPELINE_FILE" ]] && { echo "ERROR: Pipeline file not found: $PIPELINE_FILE"; exit 1; }
   [[ ! -f "$PROMPT_TEMPLATE" ]] && { echo "ERROR: Worker prompt not found: $PROMPT_TEMPLATE"; exit 1; }
-  command -v claude &>/dev/null || { echo "ERROR: 'claude' CLI not found in PATH"; exit 1; }
 
   mkdir -p "$LOGS_DIR" "$TRACKER_ADDITIONS_DIR" "$STATE_DIR"
 
@@ -623,6 +622,8 @@ main() {
     done
     exit 0
   fi
+
+  command -v claude &>/dev/null || { echo "ERROR: 'claude' CLI not found in PATH"; exit 1; }
 
   echo "Pre-screened: ${#prescreen_indices[@]} | To fetch: ${#to_fetch[@]}"
   echo ""
