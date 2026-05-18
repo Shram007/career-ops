@@ -3,7 +3,7 @@ name: career-ops
 description: AI job search command center -- evaluate jobs, generate CVs, scan portals, track applications
 user_invocable: true
 args: mode
-argument-hint: "[scan | scan referral | scan discovery | score | score referral | score discovery | deep | pdf | pdf queue | pdf id <num> | oferta | ofertas | apply | batch | tracker | contacto | training | project | interview-prep | update]"
+argument-hint: "[scan | scan referral | scan discovery | score | score referral | score discovery | score legacy referral | score legacy discovery | deep | pdf | pdf queue | pdf id <num> | oferta | ofertas | apply | batch | tracker | contacto | training | project | interview-prep | update]"
 ---
 
 # career-ops -- Router
@@ -26,12 +26,15 @@ Determine the mode from `{{mode}}`:
 | `training` | `training` |
 | `project` | `project` |
 | `tracker` | `tracker` |
-| `score` | `score-pipeline` (auto-detects pipeline.md vs pipeline-referral.md) |
-| `score referral` | `score-pipeline` (reads only `data/pipeline-referral.md`) |
-| `score discovery` | `score-pipeline` (reads only `data/pipeline.md`) |
+| `score` | `score-pipeline` (primary scorer via `batch/score-pipeline.sh`, defaults to referral) |
+| `score referral` | `score-pipeline` (primary scorer for `data/pipeline-referral.md`) |
+| `score discovery` | `score-pipeline` (primary scorer for `data/pipeline.md`) |
 | `score pipeline` | `score-pipeline` (parallel `claude -p` workers via `batch/score-pipeline.sh`) |
 | `score pipeline referral` | `score-pipeline` (`--referral` flag) |
 | `score pipeline discovery` | `score-pipeline` (`--discovery` flag) |
+| `score legacy` | `score-legacy` (deterministic fallback scorer via `score-pipeline.mjs`) |
+| `score legacy referral` | `score-legacy` (`--referral` flag) |
+| `score legacy discovery` | `score-legacy` (`--discovery` flag) |
 | `pipeline` | `score` (legacy alias for `score discovery`) |
 | `apply` | `apply` |
 | `scan <url>` | `scan-single-url` (auto-detect: API → cost 0, SPA/listing → Playwright) |
@@ -66,6 +69,8 @@ Available commands:
   /career-ops {JD}      → AUTO-PIPELINE: evaluate + report + PDF + tracker (paste text or URL)
   /career-ops score discovery  → Score CV vs JD for discovery queue (data/pipeline.md)
   /career-ops score referral   → Score CV vs JD for referral queue (data/pipeline-referral.md)
+  /career-ops score legacy discovery  → Deterministic fallback scorer for discovery queue
+  /career-ops score legacy referral   → Deterministic fallback scorer for referral queue
   /career-ops pipeline         → Legacy alias of score discovery
   /career-ops oferta    → Evaluation only A-F (no auto PDF)
   /career-ops ofertas   → Compare and rank multiple jobs
@@ -110,12 +115,15 @@ For `scan`, `scan-single-url`, `scan-referral`, `scan-discovery`, and `score-pip
 | `scan` | `node scan-with-instrumentation.mjs` |
 | `scan referral` | `node scan-with-instrumentation.mjs --referral` |
 | `scan discovery` | `node scan-with-instrumentation.mjs --skip-level1 --skip-level2` |
-| `score` | `node score-pipeline.mjs --referral` (default to referral) |
-| `score referral` | `node score-pipeline.mjs --referral` |
-| `score discovery` | `node score-pipeline.mjs --discovery` |
+| `score` | `bash batch/score-pipeline.sh --referral` (primary scorer, default referral) |
+| `score referral` | `bash batch/score-pipeline.sh --referral` |
+| `score discovery` | `bash batch/score-pipeline.sh --discovery` |
 | `score pipeline` | `bash batch/score-pipeline.sh --referral` |
 | `score pipeline referral` | `bash batch/score-pipeline.sh --referral` |
 | `score pipeline discovery` | `bash batch/score-pipeline.sh --discovery` |
+| `score legacy` | `node score-pipeline.mjs --referral` |
+| `score legacy referral` | `node score-pipeline.mjs --referral` |
+| `score legacy discovery` | `node score-pipeline.mjs --discovery` |
 
 Do not read `modes/scan*.md` or `modes/score.md` before running score-pipeline. Do not implement any scoring logic manually. Run the command, wait for it to finish, and show the output.
 
