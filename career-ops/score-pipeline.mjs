@@ -12,6 +12,8 @@
  * Usage:
  *   node score-pipeline.mjs --referral
  *   node score-pipeline.mjs --discovery
+ *   node score-pipeline.mjs --legacy-referral
+ *   node score-pipeline.mjs --legacy-discovery
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
@@ -19,8 +21,8 @@ import { chromium } from 'playwright';
 import yaml from 'js-yaml';
 
 const args = process.argv.slice(2);
-const isReferral = args.includes('--referral');
-const isDiscovery = args.includes('--discovery');
+const isReferral = args.includes('--referral') || args.includes('--legacy-referral');
+const isDiscovery = args.includes('--discovery') || args.includes('--legacy-discovery');
 
 if (!isReferral && !isDiscovery) {
   console.error('Usage: node score-pipeline.mjs --referral|--discovery');
@@ -31,6 +33,7 @@ const pipelineFile = isReferral ? 'data/pipeline-referral.md' : 'data/pipeline.m
 const mode = isReferral ? 'referral' : 'discovery';
 
 console.log(`\n🚀 Scoring ${mode} pipeline: ${pipelineFile}\n`);
+console.log(`[scorer] engine=legacy-deterministic scope=${mode} file=${pipelineFile}`);
 
 // ============================================================================
 // Load context

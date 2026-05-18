@@ -6,11 +6,14 @@ Scores CV fit against queued job descriptions and updates tracker only for high-
 
 Use explicit scope:
 
+- `/career-ops score` → process referral queue using the primary scorer (`batch/score-pipeline.sh --referral`)
 - `/career-ops score discovery` → process `data/pipeline.md`
 - `/career-ops score referral` → process `data/pipeline-referral.md`
+- `/career-ops score legacy discovery` → deterministic fallback scorer (`node score-pipeline.mjs --legacy-discovery`)
+- `/career-ops score legacy referral` → deterministic fallback scorer (`node score-pipeline.mjs --legacy-referral`)
 - `/career-ops pipeline` → legacy alias of `score discovery`
 
-If invoked as `/career-ops score` without scope, ask the user to choose `discovery` or `referral` before processing.
+Wave 2 routing default: `/career-ops score` runs referral scope via the primary scorer for consistent behavior.
 
 ## Goal
 

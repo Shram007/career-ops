@@ -90,6 +90,18 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+SCOPE="referral"
+if [[ "$PIPELINE_FILE" == *"pipeline.md" ]]; then
+  SCOPE="discovery"
+fi
+
+echo ""
+echo "[scorer] engine=primary-batch scope=${SCOPE} file=${PIPELINE_FILE} run_id=${RUN_ID}"
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo "[scorer] mode=dry-run"
+fi
+echo ""
+
 # ── Lock ──────────────────────────────────────────────────────────────────────
 
 acquire_lock() {
