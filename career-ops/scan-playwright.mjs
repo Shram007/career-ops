@@ -10,6 +10,7 @@
 
 import { chromium } from 'playwright';
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from 'fs';
+import { pathToFileURL } from 'url';
 import yaml from 'js-yaml';
 
 const parseYaml = yaml.load;
@@ -259,35 +260,136 @@ function normalizeTitle(rawTitle, href) {
   }
 }
 
-async function extractJobTitleFromLeverDetail(page, leverUrl) {
-  // For Lever single job detail/apply pages, extract the job title from page content
+function slugToTitle(slug) {
+  return String(slug || '')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, ch => ch.toUpperCase())
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function isLikelyJobDetailUrl(url) {
   try {
-    await page.goto(leverUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    const title = await page.evaluate(() => {
-      // Try various selectors for Lever job title
-      const selectors = [
-        'h1',
-        '[class*="title"]',
-        '[class*="Title"]',
-        '[class*="heading"]',
-      ];
-      for (const selector of selectors) {
-        const el = document.querySelector(selector);
-        if (el) {
-          const text = (el.textContent || '').replace(/\s+/g, ' ').trim();
-          if (text && text.length > 5 && text.length < 200) {
-            return text;
-          }
+    const u = new URL(url);
+    const lower = u.href.toLowerCase();
+    if (/(gh_jid=|jobid=|job_details|\/jobs\/view\/|\/careers\/job\/|\/apply(?:\?|#|$)|\/job\/\d+)/i.test(lower)) {
+      return true;
+    }
+    if (/jobs\.lever\.co\/[a-z0-9_-]+\/[a-z0-9-]{8,}/i.test(lower)) return true;
+    if (/jobs\.ashbyhq\.com\/[a-z0-9_-]+\/[a-z0-9-]{8,}/i.test(lower)) return true;
+    if (/boards?\.greenhouse\.io\/[a-z0-9_-]+\/jobs\/\d+/i.test(lower)) return true;
+    if (/myworkdayjobs\.com\/.+\/job\//i.test(lower)) return true;
+    if (/\/jobs\/results\/\d+-[a-z0-9-]+/i.test(lower)) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+function isLikelyFeedUrl(url) {
+  const lower = String(url || '').toLowerCase();
+  return lower.includes('rss=true') || /\.(xml|rss)(?:$|\?)/i.test(lower) || /\/rss(?:$|\?)/i.test(lower);
+}
+
+function isMeaningfulDetailTitle(title) {
+  const t = String(title || '').replace(/\s+/g, ' ').trim();
+  if (t.length < 6 || t.length > 200) return false;
+  if (!/[a-z]/i.test(t)) return false;
+  if (/^(job opening|careers?|apply|job details?)$/i.test(t)) return false;
+  return true;
+}
+
+function normalizeTitleCandidates(candidates) {
+  const seen = new Set();
+  const out = [];
+  for (const raw of candidates) {
+    const t = String(raw || '').replace(/\s+/g, ' ').trim();
+    if (!isMeaningfulDetailTitle(t)) continue;
+    const key = t.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(t);
+  }
+  return out;
+}
+
+async function extractJobTitleFromDetail(page, detailUrl) {
+  try {
+    const u = new URL(detailUrl);
+    const candidates = [];
+
+    for (const key of ['title', 'jobTitle', 'job_title', 'requisitionTitle', 'position']) {
+      const v = u.searchParams.get(key);
+      if (v) {
+        try {
+          candidates.push(decodeURIComponent(v).replace(/\+/g, ' ').trim());
+        } catch {
+          candidates.push(v.trim());
         }
       }
-      return document.title || '';
+    }
+
+    const slugMatch = u.pathname.match(/\/(?:jobs\/results\/\d+-)?([a-z][a-z0-9_-]{6,})$/i);
+    if (slugMatch?.[1]) {
+      const slugTitle = slugToTitle(slugMatch[1]);
+      if (slugTitle) candidates.push(slugTitle);
+    }
+
+    const seeded = normalizeTitleCandidates(candidates);
+    if (seeded.length > 0) {
+      return [{ url: detailUrl, title: seeded[0] }];
+    }
+
+    await page.goto(detailUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(1800);
+
+    const pageCandidates = await page.evaluate(() => {
+      const out = [];
+      const push = (v) => {
+        const t = String(v || '').replace(/\s+/g, ' ').trim();
+        if (t) out.push(t);
+      };
+
+      const metaSelectors = [
+        'meta[property="og:title"]',
+        'meta[name="twitter:title"]',
+        'meta[name="title"]',
+      ];
+      for (const selector of metaSelectors) {
+        const el = document.querySelector(selector);
+        if (el) push(el.getAttribute('content'));
+      }
+
+      push(document.title || '');
+
+      const selectors = [
+        'h1',
+        'h2',
+        '[role="heading"]',
+        '[class*="job-title"]',
+        '[class*="jobTitle"]',
+        '[class*="title"]',
+      ];
+      for (const selector of selectors) {
+        const nodes = Array.from(document.querySelectorAll(selector)).slice(0, 6);
+        for (const node of nodes) {
+          push(node?.textContent || '');
+        }
+      }
+
+      return out;
     });
-    if (title && title.length > 5) {
-      return [{ url: leverUrl, title }];
+
+    const normalized = normalizeTitleCandidates(pageCandidates)
+      .filter(t => !/(job details|back to|all jobs|careers? at)/i.test(t));
+
+    if (normalized.length > 0) {
+      return [{ url: detailUrl, title: normalized[0] }];
     }
   } catch {
-    // Fallback to generic extraction
+    // Ignore and fall through
   }
+
   return [];
 }
 
@@ -399,6 +501,22 @@ async function fetchSalesforceRss(rssUrl, maxLinks) {
   }
 }
 
+async function fetchFeedLinks(feedUrl, maxLinks) {
+  try {
+    const res = await fetch(feedUrl, {
+      headers: {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      },
+    });
+    if (!res.ok) return [];
+    const body = await res.text();
+    if (!/<(rss|feed|item|job)\b/i.test(body)) return [];
+    return parseRssItems(body, maxLinks);
+  } catch {
+    return [];
+  }
+}
+
 async function fetchUberListRoute(page, maxLinks) {
   const probeUrl = 'https://www.uber.com/us/en/careers/list/?query=software%20engineer';
   try {
@@ -411,6 +529,72 @@ async function fetchUberListRoute(page, maxLinks) {
 function buildHostProbeUrls(fallbackUrl) {
   if (!fallbackUrl) return [];
   return [fallbackUrl];
+}
+
+async function extractFromUrlWithFallback(page, url, maxLinks) {
+  if (isLikelyFeedUrl(url)) {
+    const feedLinks = await fetchFeedLinks(url, maxLinks);
+    if (feedLinks.length > 0) return feedLinks;
+  }
+
+  try {
+    const links = await extractJobLinks(page, url, maxLinks);
+    if (links.length > 0) return links;
+  } catch {
+    // Continue to feed fallback below.
+  }
+
+  // Some listing URLs redirect or expose XML feed behind alternate endpoints.
+  if (/salesforce\.com/i.test(url)) {
+    return fetchSalesforceRss(url, maxLinks);
+  }
+
+  return [];
+}
+
+async function resolveTargetLinks(page, target, maxLinksPerCompany, isDirectUrlScan) {
+  const links = [];
+  const seen = new Set();
+
+  const pushUnique = (items) => {
+    for (const item of items) {
+      if (seen.has(item.url)) continue;
+      seen.add(item.url);
+      links.push(item);
+      if (links.length >= maxLinksPerCompany) break;
+    }
+  };
+
+  if (isDirectUrlScan && isLikelyJobDetailUrl(target.careers_url)) {
+    return extractJobTitleFromDetail(page, target.careers_url);
+  }
+
+  if (target.search_urls && target.search_urls.length > 0) {
+    for (const searchUrl of target.search_urls) {
+      const extra = await extractFromUrlWithFallback(page, searchUrl, maxLinksPerCompany);
+      pushUnique(extra);
+      if (links.length >= maxLinksPerCompany) break;
+    }
+  } else {
+    const primary = await extractFromUrlWithFallback(page, target.careers_url, maxLinksPerCompany);
+    pushUnique(primary);
+  }
+
+  const probeUrls = buildHostProbeUrls(target.fallback_url);
+  if (!target.search_urls && links.length < 20 && probeUrls.length > 0) {
+    for (const probeUrl of probeUrls) {
+      let extra = [];
+      if (probeUrl.includes('uber.com/us/en/careers/list/')) {
+        extra = await fetchUberListRoute(page, maxLinksPerCompany);
+      } else {
+        extra = await extractFromUrlWithFallback(page, probeUrl, maxLinksPerCompany);
+      }
+      pushUnique(extra);
+      if (links.length >= maxLinksPerCompany) break;
+    }
+  }
+
+  return links;
 }
 
 async function main() {
@@ -502,68 +686,7 @@ async function main() {
 
   for (const t of targets) {
     try {
-      let links = [];
-
-      // Special handling for Lever single job URLs
-      if (directUrl && t.careers_url.includes('jobs.lever.co')) {
-        links = await extractJobTitleFromLeverDetail(page, t.careers_url);
-      } else if (t.search_urls && t.search_urls.length > 0) {
-        // Multi-query mode: visit every search URL and merge results
-        const seen = new Set();
-        for (const searchUrl of t.search_urls) {
-          let extra = [];
-          try {
-            extra = await extractJobLinks(page, searchUrl, maxLinksPerCompany);
-          } catch {
-            extra = [];
-          }
-          for (const e of extra) {
-            if (seen.has(e.url)) continue;
-            seen.add(e.url);
-            links.push(e);
-          }
-        }
-      } else {
-        links = await extractJobLinks(page, t.careers_url, maxLinksPerCompany);
-      }
-
-      const careersHost = (() => {
-        try {
-          return new URL(t.careers_url).hostname.toLowerCase();
-        } catch {
-          return '';
-        }
-      })();
-
-      const probeUrls = buildHostProbeUrls(t.fallback_url);
-      if (!t.search_urls && links.length < 20 && probeUrls.length > 0) {
-        const seen = new Set(links.map(x => x.url));
-        for (const probeUrl of probeUrls) {
-          let extra = [];
-          
-          // Special handling for RSS feeds (Salesforce)
-          if (probeUrl.includes('rss=true')) {
-            extra = await fetchSalesforceRss(probeUrl, maxLinksPerCompany);
-          } else if (probeUrl.includes('uber.com/us/en/careers/list/')) {
-            extra = await fetchUberListRoute(page, maxLinksPerCompany);
-          } else {
-            try {
-              extra = await extractJobLinks(page, probeUrl, maxLinksPerCompany);
-            } catch {
-              extra = [];
-            }
-          }
-
-          for (const e of extra) {
-            if (seen.has(e.url)) continue;
-            seen.add(e.url);
-            links.push(e);
-            if (links.length >= maxLinksPerCompany) break;
-          }
-
-          if (links.length >= maxLinksPerCompany) break;
-        }
-      }
+      const links = await resolveTargetLinks(page, t, maxLinksPerCompany, Boolean(directUrl));
 
       extractedCandidates += links.length;
 
@@ -652,7 +775,29 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  console.error(`Fatal: ${err.message}`);
-  process.exit(1);
-});
+const isMainModule = (() => {
+  try {
+    return Boolean(process.argv[1]) && import.meta.url === pathToFileURL(process.argv[1]).href;
+  } catch {
+    return false;
+  }
+})();
+
+if (isMainModule) {
+  main().catch(err => {
+    console.error(`Fatal: ${err.message}`);
+    process.exit(1);
+  });
+}
+
+export {
+  normalizeUrl,
+  dedupeKey,
+  looksLikeJobLink,
+  normalizeTitle,
+  parseRssItems,
+  isLikelyJobDetailUrl,
+  isLikelyFeedUrl,
+  normalizeTitleCandidates,
+  resolveTargetLinks,
+};

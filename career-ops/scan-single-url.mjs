@@ -12,100 +12,88 @@
  */
 
 import { spawnSync } from 'child_process';
+import { pathToFileURL } from 'url';
 
-const args = process.argv.slice(2);
-if (args.length === 0) {
-  console.error('Usage: node scan-single-url.mjs <url>');
-  process.exit(1);
+function toLower(value) {
+  return String(value || '').toLowerCase();
 }
 
-const url = args[0].trim();
-
-if (!url.toLowerCase().startsWith('http')) {
-  console.error('Error: must be a valid URL (https://...)');
-  process.exit(1);
+function safeUrl(input) {
+  try {
+    return new URL(input);
+  } catch {
+    return null;
+  }
 }
 
-const lowerUrl = url.toLowerCase();
+function isLikelyApiUrl(inputUrl) {
+  const u = safeUrl(inputUrl);
+  if (!u) return false;
 
-// Detect URL type
-function detectUrlType() {
-  // API endpoints (zero-cost)
-  const apiPatterns = [
-    '/api/',
-    '/v1/',
-    '/v2/',
-    'api.greenhouse.io',
-    'api.ashbyhq.com',
-    'api.lever.co',
-  ];
-  for (const pattern of apiPatterns) {
-    if (lowerUrl.includes(pattern)) {
-      return 'api';
-    }
+  const host = toLower(u.hostname);
+  const path = toLower(u.pathname);
+
+  if (host.startsWith('api.')) return true;
+  if (/\b(boards-api\.greenhouse\.io|api\.greenhouse\.io|api\.ashbyhq\.com|api\.lever\.co)\b/i.test(host)) return true;
+  if (/\/(api|graphql|v\d+)\//i.test(path)) return true;
+  return false;
+}
+
+function isLikelyJobDetailUrl(inputUrl) {
+  const u = safeUrl(inputUrl);
+  if (!u) return false;
+
+  const lowerHref = toLower(u.href);
+  const lowerPath = toLower(u.pathname);
+
+  if (/(gh_jid=|jobid=|job_details|\/jobs\/view\/|\/careers\/job\/|\/profile\/job_details\/|\/apply(?:\?|#|$))/i.test(lowerHref)) {
+    return true;
   }
 
-  // SPA domains requiring Playwright
-  const spaPatterns = [
-    'metacareers.com',
-    'uber.com/careers',
-    'apply.careers.microsoft.com',
-    'careers.cisco.com',
-  ];
-  for (const pattern of spaPatterns) {
-    if (lowerUrl.includes(pattern)) {
-      return 'spa';
-    }
-  }
+  if (/jobs\.lever\.co\/[a-z0-9_-]+\/[a-z0-9-]{8,}/i.test(lowerHref)) return true;
+  if (/jobs\.ashbyhq\.com\/[a-z0-9_-]+\/[a-z0-9-]{8,}/i.test(lowerHref)) return true;
+  if (/boards?\.greenhouse\.io\/[a-z0-9_-]+\/jobs\/\d+/i.test(lowerHref)) return true;
+  if (/myworkdayjobs\.com\/.+\/job\//i.test(lowerHref)) return true;
+  if (/\/jobs\/results\/\d+-[a-z0-9-]+/i.test(lowerPath)) return true;
 
-  // Single job detail page (CHECK BEFORE listing — more specific patterns)
-  const jobDetailPatterns = [
-    '/job_details/',
-    '/careers/job/',
-    '/jobs/view/',
-    '/apply?',
-    '/apply#',
-    'gh_jid=',
-    'jobid=',
-    '/profile/job_details/',
-  ];
-  for (const pattern of jobDetailPatterns) {
-    if (lowerUrl.includes(pattern)) {
-      return 'job_detail';
-    }
-  }
+  return false;
+}
 
-  // ATS single-job UUID patterns — must be checked BEFORE listingPatterns
-  // because those patterns also match the same domains for listing pages.
-  // Lever:      jobs.lever.co/{company}/{uuid}
-  // Ashby:      jobs.ashbyhq.com/{company}/{uuid}
-  // Greenhouse: boards.greenhouse.io/{company}/jobs/{numeric-id}
-  if (/jobs\.lever\.co\/[^/?#]+\/[0-9a-f]{8}-[0-9a-f]{4}/i.test(lowerUrl)) return 'job_detail';
-  if (/jobs\.ashbyhq\.com\/[^/?#]+\/[0-9a-f]{8}-[0-9a-f]{4}/i.test(lowerUrl)) return 'job_detail';
-  if (/boards\.greenhouse\.io\/[^/?#]+\/jobs\/\d+/i.test(lowerUrl)) return 'job_detail';
+function isLikelyListingUrl(inputUrl) {
+  const u = safeUrl(inputUrl);
+  if (!u) return false;
 
-  // Listing pages (search/results/jobs)
-  const listingPatterns = [
-    '/search',
-    '/results',
-    '/jobs?',
-    '/jobs/',
-    '?q=',
-    '?query=',
-    '?keywords=',
-    '/jobsearch',
-    'job-boards.greenhouse.io',
-    'boards.greenhouse.io',
-    'jobs.ashbyhq.com',
-    'jobs.lever.co',
-  ];
-  for (const pattern of listingPatterns) {
-    if (lowerUrl.includes(pattern)) {
-      return 'listing';
-    }
-  }
+  const lowerHref = toLower(u.href);
+  const lowerPath = toLower(u.pathname);
 
+  if (/(\?|&)(q|query|keywords|search|keyword)=/i.test(lowerHref)) return true;
+  if (/\/(search|results|jobsearch)(\/|$)/i.test(lowerPath)) return true;
+  if (/\/jobs?(\/|\?|$)/i.test(lowerPath)) return true;
+  if (/\/(careers?|opportunities)(\/|$)/i.test(lowerPath)) return true;
+  if (/\b(job-boards\.greenhouse\.io|boards\.greenhouse\.io|jobs\.ashbyhq\.com|jobs\.lever\.co)\b/i.test(lowerHref)) return true;
+
+  return false;
+}
+
+export function detectUrlType(inputUrl) {
+  if (isLikelyApiUrl(inputUrl)) return 'api';
+  if (isLikelyJobDetailUrl(inputUrl)) return 'job_detail';
+  if (isLikelyListingUrl(inputUrl)) return 'listing';
   return 'unknown';
+}
+
+export function resolveScannerRoute(inputUrl) {
+  const urlType = detectUrlType(inputUrl);
+  if (urlType === 'api') {
+    return { urlType, script: 'scan.mjs', scriptArgs: ['--url', inputUrl], reason: 'api endpoint' };
+  }
+  if (urlType === 'job_detail') {
+    return { urlType, script: 'scan-playwright.mjs', scriptArgs: ['--url', inputUrl], reason: 'single job detail' };
+  }
+  if (urlType === 'listing') {
+    return { urlType, script: 'scan-playwright.mjs', scriptArgs: ['--url', inputUrl], reason: 'listing/search page' };
+  }
+  return { urlType, script: 'scan-playwright.mjs', scriptArgs: ['--url', inputUrl], reason: 'unknown URL, safest fallback' };
 }
 
 function runScript(script, scriptArgs = []) {
@@ -116,47 +104,48 @@ function runScript(script, scriptArgs = []) {
   process.exit(result.status ?? 1);
 }
 
-const urlType = detectUrlType();
+function parseCliArgs(argv) {
+  const args = argv.slice(2);
+  const first = args.find(a => !a.startsWith('-')) || '';
+  return {
+    url: first.trim(),
+    routeOnly: args.includes('--route-only'),
+  };
+}
 
-console.log(`📍 URL detected: ${urlType.toUpperCase()}`);
-console.log(`🔗 ${url}`);
-console.log('');
+function main(argv = process.argv) {
+  const { url, routeOnly } = parseCliArgs(argv);
+  if (!url) {
+    console.error('Usage: node scan-single-url.mjs <url> [--route-only]');
+    process.exit(1);
+  }
 
-switch (urlType) {
-  case 'api':
-    console.log('🚀 Routing to: scan.mjs (API endpoint)');
-    console.log('💰 Cost: 0 credits (direct API call)');
-    console.log('');
-    runScript('scan.mjs', ['--url', url]);
-    break;
+  if (!url.toLowerCase().startsWith('http')) {
+    console.error('Error: must be a valid URL (https://...)');
+    process.exit(1);
+  }
 
-  case 'spa':
-    console.log('🚀 Routing to: scan-playwright.mjs (SPA domain requires Playwright)');
-    console.log('⏱️  Cost: 1-2 credits (Playwright browser automation)');
-    console.log('');
-    runScript('scan-playwright.mjs', ['--url', url]);
-    break;
+  const route = resolveScannerRoute(url);
 
-  case 'listing':
-    console.log('🚀 Routing to: scan-playwright.mjs (listing page)');
-    console.log('⏱️  Cost: 1-2 credits (Playwright browser automation)');
-    console.log('');
-    runScript('scan-playwright.mjs', ['--url', url]);
-    break;
+  console.log(`URL detected: ${route.urlType.toUpperCase()}`);
+  console.log(`URL: ${url}`);
+  console.log(`Routing to: ${route.script} (${route.reason})`);
 
-  case 'job_detail':
-    console.log('🚀 Routing to: scan-playwright.mjs (single job detail)');
-    console.log('⏱️  Cost: 1-2 credits (Playwright for dynamic content)');
-    console.log('');
-    runScript('scan-playwright.mjs', ['--url', url]);
-    break;
+  if (routeOnly) {
+    return;
+  }
 
-  case 'unknown':
-  default:
-    console.log('❓ URL type: unknown (could be API, SPA, or listing)');
-    console.log('🚀 Routing to: scan-playwright.mjs (safest option)');
-    console.log('⏱️  Cost: 1-2 credits');
-    console.log('');
-    runScript('scan-playwright.mjs', ['--url', url]);
-    break;
+  runScript(route.script, route.scriptArgs);
+}
+
+const isMainModule = (() => {
+  try {
+    return Boolean(process.argv[1]) && import.meta.url === pathToFileURL(process.argv[1]).href;
+  } catch {
+    return false;
+  }
+})();
+
+if (isMainModule) {
+  main();
 }
