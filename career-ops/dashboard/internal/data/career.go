@@ -626,12 +626,9 @@ func ComputeMetrics(apps []model.CareerApplication) model.PipelineMetrics {
 // NormalizeStatus normalizes raw status text to a canonical form.
 // Aliases match states.yml -- keep in sync with career-ops/states.yml
 func NormalizeStatus(raw string) string {
-	// Strip markdown bold and trailing dates
-	s := strings.ReplaceAll(raw, "**", "")
-	s = strings.TrimSpace(strings.ToLower(s))
-	// Strip trailing date (e.g., "aplicado 2026-03-12")
-	if idx := strings.Index(s, " 202"); idx > 0 {
-		s = strings.TrimSpace(s[:idx])
+	s := latestStatusToken(raw)
+	if s == "" {
+		return ""
 	}
 
 	switch {
@@ -662,6 +659,62 @@ func NormalizeStatus(raw string) string {
 	default:
 		return s
 	}
+}
+
+// latestStatusToken returns the most recent status token from a status history chain.
+// History entries use the format "Scored > PDF'd > Applied".
+func latestStatusToken(raw string) string {
+	s := strings.ReplaceAll(raw, "**", "")
+	s = strings.TrimSpace(strings.ToLower(s))
+
+	if s == "" {
+		return ""
+	}
+
+	// Strip trailing date (e.g., "aplicado 2026-03-12")
+	if idx := strings.Index(s, " 202"); idx > 0 {
+		s = strings.TrimSpace(s[:idx])
+	}
+
+	s = strings.ReplaceAll(s, "->", ">")
+	parts := strings.Split(s, ">")
+	for i := len(parts) - 1; i >= 0; i-- {
+		token := strings.TrimSpace(parts[i])
+		if token != "" {
+			return token
+		}
+	}
+
+	return s
+}
+
+func appendStatusHistory(currentStatus, newStatus string) string {
+	currentStatus = strings.TrimSpace(currentStatus)
+	newStatus = strings.TrimSpace(newStatus)
+
+	if newStatus == "" {
+		return currentStatus
+	}
+	if currentStatus == "" {
+		return newStatus
+	}
+
+	normalizedNew := NormalizeStatus(newStatus)
+	parts := strings.Split(strings.ReplaceAll(currentStatus, "->", ">"), ">")
+	out := make([]string, 0, len(parts)+1)
+	for _, part := range parts {
+		candidate := strings.TrimSpace(part)
+		if candidate == "" {
+			continue
+		}
+		if normalizedNew != "" && NormalizeStatus(candidate) == normalizedNew {
+			continue
+		}
+		out = append(out, candidate)
+	}
+	out = append(out, newStatus)
+
+	return strings.Join(out, " > ")
 }
 
 // LoadReportSummary extracts key fields from a report file.
@@ -723,7 +776,7 @@ func UpdateApplicationStatus(careerOpsPath string, app model.CareerApplication, 
 		}
 		// Match by report number (preferred — works for fully evaluated entries)
 		if app.ReportNumber != "" && strings.Contains(line, fmt.Sprintf("[%s]", app.ReportNumber)) {
-			lines[i] = replaceStatusInLine(line, app.Status, newStatus)
+			lines[i] = replaceStatusInLine(line, appendStatusHistory(app.Status, newStatus))
 			found = true
 			break
 		}
@@ -731,7 +784,7 @@ func UpdateApplicationStatus(careerOpsPath string, app model.CareerApplication, 
 		if app.ReportNumber == "" && app.Number > 0 {
 			parts := strings.Split(line, "|")
 			if len(parts) > 1 && strings.TrimSpace(parts[1]) == fmt.Sprintf("%d", app.Number) {
-				lines[i] = replaceStatusInLine(line, app.Status, newStatus)
+				lines[i] = replaceStatusInLine(line, appendStatusHistory(app.Status, newStatus))
 				found = true
 				break
 			}
@@ -746,9 +799,14 @@ func UpdateApplicationStatus(careerOpsPath string, app model.CareerApplication, 
 }
 
 // replaceStatusInLine replaces the old status with new status in a table line.
-func replaceStatusInLine(line, oldStatus, newStatus string) string {
-	// Case-insensitive replacement of the status field
-	return strings.Replace(line, oldStatus, newStatus, 1)
+func replaceStatusInLine(line, newStatus string) string {
+	parts := strings.Split(line, "|")
+	if len(parts) < 8 {
+		return line
+	}
+
+	parts[6] = " " + strings.TrimSpace(newStatus) + " "
+	return strings.Join(parts, "|")
 }
 
 // cleanTableCell removes trailing pipes and whitespace from a table cell value.

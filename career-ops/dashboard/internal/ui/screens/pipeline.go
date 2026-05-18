@@ -996,7 +996,7 @@ func (m PipelineModel) overlayStatusPicker(body string) string {
 		Bold(true)
 
 	var picker []string
-	picker = append(picker, padStyle.Render(borderStyle.Render("Change status:")))
+	picker = append(picker, padStyle.Render(borderStyle.Render("Add status step:")))
 
 	for i, opt := range statusOptions {
 		style := lipgloss.NewStyle().Foreground(m.theme.Text).Width(pickerWidth)
@@ -1126,7 +1126,7 @@ func buildNotesLines(app model.CareerApplication) []string {
 	lines := []string{
 		fmt.Sprintf("# %s — %s", app.Company, app.Role),
 		"",
-		fmt.Sprintf("**Score:** %s   **Status:** %s   **Date:** %s", score, app.Status, app.Date),
+		fmt.Sprintf("**Score:** %s   **Status:** %s   **Date:** %s", score, statusLabel(data.NormalizeStatus(app.Status)), app.Date),
 		"",
 	}
 

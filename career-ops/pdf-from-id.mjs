@@ -22,6 +22,11 @@ const APPS_PATH = existsSync(join(__dirname, 'data', 'applications.md'))
   : join(__dirname, 'applications.md');
 const MODE_PATH = join(__dirname, 'modes', 'pdf.md');
 const BATCH_INPUT_PATH = join(__dirname, 'batch', 'batch-input.tsv');
+const PIPELINE_PATHS = [
+  join(__dirname, 'data', 'pipeline-referral.md'),
+  join(__dirname, 'data', 'pipeline.md'),
+];
+const SCAN_HISTORY_PATH = join(__dirname, 'data', 'scan-history.tsv');
 
 function usage() {
   console.log('Usage: node pdf-from-id.mjs --id <tracker-number> [--allow-low-score] [--dry-run]');
@@ -136,6 +141,117 @@ function extractUrlFromBatchInput(batchId) {
   return '';
 }
 
+function extractUrlFromNotes(notes) {
+  const m = String(notes || '').match(/https?:\/\/[^\s|)]+/i);
+  return m ? m[0] : '';
+}
+
+function normalizeToken(s) {
+  return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function tokenizeRole(s) {
+  const stop = new Set(['software', 'engineer', 'full', 'stack', 'backend', 'front', 'end', 'the', 'and', 'for', 'with']);
+  return normalizeToken(s)
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter(t => t.length >= 3 && !stop.has(t));
+}
+
+function extractUrlFromBatchInputByCompanyRole(row) {
+  if (!existsSync(BATCH_INPUT_PATH)) return '';
+
+  const roleTokens = tokenizeRole(row.role);
+  const companyKey = normalizeToken(row.company);
+  const lines = readFileSync(BATCH_INPUT_PATH, 'utf8').split(/\r?\n/);
+
+  for (const line of lines) {
+    const cols = line.split('\t');
+    if (cols.length < 4 || cols[0] === 'id') continue;
+
+    const urlCol = (cols[1] || '').trim();
+    const notes = (cols[3] || '').trim();
+    const haystack = normalizeToken(`${urlCol} ${notes}`);
+
+    if (!haystack.includes(companyKey)) continue;
+
+    if (roleTokens.length > 0) {
+      const overlap = roleTokens.filter(t => haystack.includes(t)).length;
+      if (overlap === 0) continue;
+    }
+
+    const idx = notes.lastIndexOf('| ');
+    if (idx >= 0) {
+      const extracted = notes.slice(idx + 2).trim();
+      if (extracted.startsWith('http')) return extracted;
+    }
+
+    if (urlCol.startsWith('http')) return urlCol;
+  }
+
+  return '';
+}
+
+function extractUrlFromPipelineFiles(row) {
+  const companyKey = normalizeToken(row.company);
+  const roleKey = normalizeToken(row.role).slice(0, 30);
+
+  for (const p of PIPELINE_PATHS) {
+    if (!existsSync(p)) continue;
+    const lines = readFileSync(p, 'utf8').split(/\r?\n/);
+    for (const line of lines) {
+      const lower = normalizeToken(line);
+      if (!lower.includes(companyKey)) continue;
+      if (roleKey && !lower.includes(roleKey.slice(0, 15))) continue;
+      const m = line.match(/https?:\/\/\S+/i);
+      if (m) return m[0].trim();
+    }
+  }
+
+  // Looser fallback: company match only.
+  for (const p of PIPELINE_PATHS) {
+    if (!existsSync(p)) continue;
+    const lines = readFileSync(p, 'utf8').split(/\r?\n/);
+    for (const line of lines) {
+      const lower = normalizeToken(line);
+      if (!lower.includes(companyKey)) continue;
+      const m = line.match(/https?:\/\/\S+/i);
+      if (m) return m[0].trim();
+    }
+  }
+
+  return '';
+}
+
+function extractUrlFromScanHistory(row) {
+  if (!existsSync(SCAN_HISTORY_PATH)) return '';
+
+  const companyKey = normalizeToken(row.company);
+  const roleTokens = tokenizeRole(row.role);
+  const lines = readFileSync(SCAN_HISTORY_PATH, 'utf8').split(/\r?\n/).slice(1);
+
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const cols = line.split('\t');
+    if (cols.length < 5) continue;
+    const [url, , , title, company] = cols;
+    if (!url || !/^https?:\/\//i.test(url)) continue;
+
+    const companyText = normalizeToken(company);
+    if (!companyText.includes(companyKey)) continue;
+
+    if (roleTokens.length > 0) {
+      const titleText = normalizeToken(title);
+      const overlap = roleTokens.filter(t => titleText.includes(t)).length;
+      if (overlap === 0) continue;
+    }
+
+    return url.trim();
+  }
+
+  return '';
+}
+
 function main() {
   const { id, allowLowScore, dryRun } = parseArgs(process.argv);
 
@@ -167,8 +283,14 @@ function main() {
     jobUrl = extractUrlFromReport(reportAbsPath);
   }
 
+  // Fallbacks for tracker rows without report links.
+  if (!jobUrl) jobUrl = extractUrlFromNotes(row.notes);
+  if (!jobUrl) jobUrl = extractUrlFromBatchInputByCompanyRole(row);
+  if (!jobUrl) jobUrl = extractUrlFromPipelineFiles(row);
+  if (!jobUrl) jobUrl = extractUrlFromScanHistory(row);
+
   if (!jobUrl) {
-    console.error(`could not resolve JD URL for job #${id}. Ensure report has **URL:** or **Batch ID:**.`);
+    console.error(`could not resolve JD URL for job #${id}. Checked report, notes, batch-input.tsv, pipeline files, and scan-history.tsv.`);
     process.exit(1);
   }
 
