@@ -54,6 +54,8 @@ func TestNormalizeStatusUsesLatestHistoryToken(t *testing.T) {
 		{name: "single", raw: "Scored", want: "scored"},
 		{name: "history latest applied", raw: "Scored > PDF'd > Applied", want: "applied"},
 		{name: "history latest pdf", raw: "Scored > PDF'd", want: "pdf"},
+		{name: "pdf alias", raw: "pdfd", want: "pdf"},
+		{name: "inactive alias", raw: "expired", want: "inactive"},
 	}
 
 	for _, tc := range tests {

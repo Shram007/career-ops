@@ -1,13 +1,14 @@
 const CANONICAL_DISPLAY = {
   evaluated: 'Evaluated',
   scored: 'Scored',
-  pdfd: "PDF'd",
+  pdf: "PDF'd",
   applied: 'Applied',
   responded: 'Responded',
   interview: 'Interview',
   offer: 'Offer',
   rejected: 'Rejected',
   discarded: 'Discarded',
+  inactive: 'Inactive',
   skip: 'SKIP',
 };
 
@@ -23,10 +24,11 @@ const ALIASES = {
   score: 'scored',
   scored: 'scored',
   pipeline_score: 'scored',
-  "pdf'd": 'pdfd',
-  pdfd: 'pdfd',
-  pdfed: 'pdfd',
-  pdf: 'pdfd',
+  "pdf'd": 'pdf',
+  pdfd: 'pdf',
+  pdfed: 'pdf',
+  pdf: 'pdf',
+  'pdf generated': 'pdf',
 
   // Applied lifecycle
   aplicado: 'applied',
@@ -45,6 +47,10 @@ const ALIASES = {
   descartada: 'discarded',
   cerrada: 'discarded',
   cancelada: 'discarded',
+  inactive: 'inactive',
+  expired: 'inactive',
+  closed: 'inactive',
+  dead: 'inactive',
   'no aplicar': 'skip',
   no_aplicar: 'skip',
   monitor: 'skip',
@@ -136,7 +142,7 @@ export function normalizeStatusHistory(raw) {
 
 export function isBlockedStatus(raw) {
   const latest = latestStatusToken(raw);
-  return latest === 'skip' || latest === 'discarded' || latest === 'rejected';
+  return latest === 'skip' || latest === 'discarded' || latest === 'rejected' || latest === 'inactive' || latest === 'pdf';
 }
 
 export function appendStatusHistory(currentStatus, nextStatus) {

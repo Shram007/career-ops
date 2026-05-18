@@ -2,9 +2,13 @@
 # Source of truth for career-ops (writer) and dashboard (reader).
 # Both systems MUST use these exact states.
 #
-# Rule: The status field in applications.md must contain EXACTLY
-# one of these values (case-insensitive). No markdown bold (**),
-# no dates, no extra text. Dates go in the date column.
+# Rule: The status field in applications.md may contain either:
+# 1) a single canonical value, or
+# 2) a status history chain using " > " separators
+#    (example: Scored > PDF'd > Applied).
+#
+# Each token in the chain must be one of these canonical values
+# (case-insensitive), with no markdown bold (**), dates, or extra text.
 
 states:
   - id: evaluated
@@ -18,6 +22,12 @@ states:
     aliases: [score, pipeline_score]
     description: CV scored (no full report generated)
     dashboard_group: evaluated
+
+  - id: pdf
+    label: PDF'd
+    aliases: [pdfd, pdfed, pdf generated]
+    description: Tailored PDF generated for this role
+    dashboard_group: pdf
 
   - id: applied
     label: Applied

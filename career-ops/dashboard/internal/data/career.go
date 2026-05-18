@@ -644,7 +644,7 @@ func NormalizeStatus(raw string) string {
 	// Most restrictive first — accepts both English and Spanish
 	case strings.Contains(s, "no aplicar") || strings.Contains(s, "no_aplicar") || s == "skip" || strings.Contains(s, "geo blocker"):
 		return "skip"
-	case strings.Contains(s, "pdf generated") || s == "pdf" || s == "pdf'd":
+	case strings.Contains(s, "pdf generated") || s == "pdf" || s == "pdf'd" || s == "pdfd" || s == "pdfed":
 		return "pdf"
 	case s == "scored":
 		return "scored"
