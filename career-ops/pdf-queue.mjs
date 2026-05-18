@@ -17,6 +17,7 @@
 import { existsSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { isBlockedStatus } from './scripts/status-utils.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const APPS_PATH = existsSync(join(__dirname, 'data', 'applications.md'))
@@ -82,11 +83,6 @@ function parseRows(text) {
 
 function isPdfDone(pdfCell) {
   return String(pdfCell || '').includes('✅');
-}
-
-function isBlockedStatus(status) {
-  const s = String(status || '').toLowerCase();
-  return s === 'skip' || s === 'discarded' || s === 'rejected';
 }
 
 function main() {

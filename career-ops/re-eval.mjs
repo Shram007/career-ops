@@ -18,6 +18,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
 import { chromium } from 'playwright';
+import { appendStatusHistory } from './scripts/status-utils.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -205,9 +206,10 @@ function updateStatus(id, newStatus) {
     const parts = line.split('|').map(s => s.trim());
     if (Number(parts[1]) !== id) continue;
 
-    // Replace status column (index 6)
+    // Append status to preserve history and show latest state.
     const cols = line.split('|');
-    cols[6] = ` ${newStatus} `;
+    const currentStatus = (cols[6] || '').trim();
+    cols[6] = ` ${appendStatusHistory(currentStatus, newStatus)} `;
     lines[i] = cols.join('|');
     updated = true;
     break;
