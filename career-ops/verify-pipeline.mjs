@@ -17,6 +17,7 @@
 import { readFileSync, readdirSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { parseTrackerRow } from './scripts/markdown-table-utils.mjs';
 import { normalizeStatusHistory } from './scripts/status-utils.mjs';
 
 const CAREER_OPS = dirname(fileURLToPath(import.meta.url));
@@ -52,15 +53,18 @@ const lines = content.split('\n');
 
 const entries = [];
 for (const line of lines) {
-  if (!line.startsWith('|')) continue;
-  const parts = line.split('|').map(s => s.trim());
-  if (parts.length < 9) continue;
-  const num = parseInt(parts[1]);
-  if (isNaN(num)) continue;
+  const parsed = parseTrackerRow(line);
+  if (!parsed) continue;
   entries.push({
-    num, date: parts[2], company: parts[3], role: parts[4],
-    score: parts[5], status: parts[6], pdf: parts[7], report: parts[8],
-    notes: parts[9] || '',
+    num: parsed.id,
+    date: parsed.date,
+    company: parsed.company,
+    role: parsed.role,
+    score: parsed.score,
+    status: parsed.status,
+    pdf: parsed.pdf,
+    report: parsed.report,
+    notes: parsed.notes,
   });
 }
 
@@ -106,6 +110,20 @@ for (const [key, group] of companyRoleMap) {
   }
 }
 if (dupes === 0) ok('No exact duplicates found');
+
+// --- Check 2b: Duplicate tracker IDs (hard error) ---
+const idCounts = new Map();
+let duplicateIds = 0;
+for (const e of entries) {
+  idCounts.set(e.num, (idCounts.get(e.num) || 0) + 1);
+}
+for (const [id, count] of idCounts) {
+  if (count > 1) {
+    error(`Duplicate tracker ID #${id} appears ${count} times (run: node repair-tracker-ids.mjs)`);
+    duplicateIds++;
+  }
+}
+if (duplicateIds === 0) ok('Tracker IDs are unique');
 
 // --- Check 3: Report links ---
 let brokenReports = 0;

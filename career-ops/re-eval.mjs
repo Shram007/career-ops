@@ -18,6 +18,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
 import { chromium } from 'playwright';
+import { parseTrackerRow } from './scripts/markdown-table-utils.mjs';
 import { appendStatusHistory } from './scripts/status-utils.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -66,23 +67,18 @@ function parseArgs(argv) {
 function parseApplicationsTable(text) {
   const out = [];
   for (const line of text.split(/\r?\n/)) {
-    if (!line.startsWith('|')) continue;
-    if (line.includes('|---')) continue;
-    if (line.toLowerCase().includes('| # |')) continue;
-    const parts = line.split('|').map(s => s.trim());
-    if (parts.length < 10) continue;
-    const num = Number(parts[1]);
-    if (!Number.isFinite(num)) continue;
-    const reportMatch = (parts[8] || '').match(/\[[^\]]+\]\(([^)]+)\)/);
+    const parsed = parseTrackerRow(line);
+    if (!parsed) continue;
+    const reportMatch = (parsed.report || '').match(/\[[^\]]+\]\(([^)]+)\)/);
     out.push({
-      number: num,
-      date: parts[2],
-      company: parts[3],
-      role: parts[4],
-      scoreRaw: parts[5],
-      status: parts[6],
+      number: parsed.id,
+      date: parsed.date,
+      company: parsed.company,
+      role: parsed.role,
+      scoreRaw: parsed.score,
+      status: parsed.status,
       reportPath: reportMatch ? reportMatch[1] : '',
-      notes: parts[9] || '',
+      notes: parsed.notes || '',
     });
   }
   return out;

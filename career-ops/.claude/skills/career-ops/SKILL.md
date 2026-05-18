@@ -115,12 +115,12 @@ For `scan`, `scan-single-url`, `scan-referral`, `scan-discovery`, and `score-pip
 | `scan` | `node scan-with-instrumentation.mjs` |
 | `scan referral` | `node scan-with-instrumentation.mjs --referral` |
 | `scan discovery` | `node scan-with-instrumentation.mjs --skip-level1 --skip-level2` |
-| `score` | `bash batch/score-pipeline.sh --referral` (primary scorer, default referral) |
-| `score referral` | `bash batch/score-pipeline.sh --referral` |
-| `score discovery` | `bash batch/score-pipeline.sh --discovery` |
-| `score pipeline` | `bash batch/score-pipeline.sh --referral` |
-| `score pipeline referral` | `bash batch/score-pipeline.sh --referral` |
-| `score pipeline discovery` | `bash batch/score-pipeline.sh --discovery` |
+| `score` | `node score-pipeline-wrapper.mjs --referral` (primary scorer, default referral) |
+| `score referral` | `node score-pipeline-wrapper.mjs --referral` |
+| `score discovery` | `node score-pipeline-wrapper.mjs --discovery` |
+| `score pipeline` | `node score-pipeline-wrapper.mjs --referral` |
+| `score pipeline referral` | `node score-pipeline-wrapper.mjs --referral` |
+| `score pipeline discovery` | `node score-pipeline-wrapper.mjs --discovery` |
 | `score legacy` | `node score-pipeline.mjs --referral` |
 | `score legacy referral` | `node score-pipeline.mjs --referral` |
 | `score legacy discovery` | `node score-pipeline.mjs --discovery` |

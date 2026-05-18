@@ -17,6 +17,7 @@
 import { existsSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { parseTrackerRow } from './scripts/markdown-table-utils.mjs';
 import { isBlockedStatus } from './scripts/status-utils.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -54,27 +55,20 @@ function parseRows(text) {
   const lines = text.split(/\r?\n/);
 
   for (const line of lines) {
-    if (!line.startsWith('|')) continue;
-    if (line.includes('|---')) continue;
-    if (line.toLowerCase().includes('| # |')) continue;
-
-    const parts = line.split('|').map((s) => s.trim());
-    if (parts.length < 10) continue;
-
-    const number = Number(parts[1]);
-    if (!Number.isFinite(number)) continue;
+    const parsed = parseTrackerRow(line);
+    if (!parsed) continue;
 
     rows.push({
-      id: number,
-      date: parts[2],
-      company: parts[3],
-      role: parts[4],
-      scoreRaw: parts[5],
-      score: parseScore(parts[5]),
-      status: parts[6],
-      pdf: parts[7],
-      report: parts[8],
-      notes: parts[9] || '',
+      id: parsed.id,
+      date: parsed.date,
+      company: parsed.company,
+      role: parsed.role,
+      scoreRaw: parsed.score,
+      score: parseScore(parsed.score),
+      status: parsed.status,
+      pdf: parsed.pdf,
+      report: parsed.report,
+      notes: parsed.notes || '',
     });
   }
 
