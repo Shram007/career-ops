@@ -1,3 +1,75 @@
+// Generalized login handler: attempts to fill any visible login form with email/pwd
+function getCareersCreds() {
+  const email = process.env.CAREERS_EMAIL || 'kadiashram@gmail.com';
+  const password = process.env.CAREERS_PASSWORD || '1Loveshent@i';
+  if (!email || !password) return null;
+  return { email, password };
+}
+
+async function loginToCareersSite(page) {
+  const creds = getCareersCreds();
+  if (!creds) return false;
+  try {
+    // Try to find a visible email/username field
+    const emailSelectors = [
+      'input[type="email"]',
+      'input[name*="email"]',
+      'input[id*="email"]',
+      'input[type="text"]',
+      'input[name*="user"]',
+      'input[id*="user"]',
+      'input[name*="login"]',
+      'input[id*="login"]',
+    ];
+    let emailInput = null;
+    for (const sel of emailSelectors) {
+      emailInput = await page.$(sel);
+      if (emailInput) break;
+    }
+    if (emailInput) {
+      await emailInput.fill(creds.email);
+      // Try to find password field
+      const pwSelectors = [
+        'input[type="password"]',
+        'input[name*="pass"]',
+        'input[id*="pass"]',
+      ];
+      let pwInput = null;
+      for (const sel of pwSelectors) {
+        pwInput = await page.$(sel);
+        if (pwInput) break;
+      }
+      if (pwInput) {
+        await pwInput.fill(creds.password);
+        // Try to find a likely submit button
+        const btnSelectors = [
+          'button[type="submit"]',
+          'button:has-text("Sign in")',
+          'button:has-text("Login")',
+          'button:has-text("Next")',
+          'input[type="submit"]',
+        ];
+        let btn = null;
+        for (const sel of btnSelectors) {
+          btn = await page.$(sel);
+          if (btn) break;
+        }
+        if (btn) {
+          await btn.click();
+        } else {
+          // Try pressing Enter in password field
+          await pwInput.press('Enter');
+        }
+        // Wait for navigation or content change
+        await page.waitForTimeout(2000);
+        return true;
+      }
+    }
+  } catch (err) {
+    console.warn(`[login attempt failed: ${err.message}]`);
+  }
+  return false;
+}
 #!/usr/bin/env node
 
 /**
@@ -394,8 +466,18 @@ async function extractJobTitleFromDetail(page, detailUrl) {
 }
 
 async function extractJobLinks(page, careersUrl, maxLinks) {
+
   await page.goto(careersUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForTimeout(2500);
+
+  // If login wall detected, try to log in
+  const pageContent = await page.content();
+  if (/log\s*in|sign\s*in|authentication required|please log in|please sign in|not logged in|enter your (email|username|password)/i.test(pageContent)) {
+    const loginSuccess = await loginToCareersSite(page);
+    if (loginSuccess) {
+      await page.waitForTimeout(2000);
+    }
+  }
 
   // Trigger lazy rendering on SPAs.
   await page.mouse.wheel(0, 2000).catch(() => {});

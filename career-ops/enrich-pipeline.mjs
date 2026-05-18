@@ -95,13 +95,30 @@ async function fetchWithPlaywright(page, url) {
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
   await page.waitForTimeout(2500);
 
-  return page.evaluate(() => {
+  let text = page.evaluate(() => {
     // Remove noisy elements before extracting text
     ['nav', 'header', 'footer', 'script', 'style', '[aria-hidden="true"]'].forEach(sel => {
       document.querySelectorAll(sel).forEach(el => el.remove());
     });
     return (document.body?.innerText || '').replace(/[ \t]{2,}/g, ' ').trim();
   });
+
+  // Check if auth wall and attempt login
+  const content = await text;
+  if (isAuthWall(content)) {
+    const loginSuccess = await loginToCareersSite(page, url);
+    if (loginSuccess) {
+      await page.waitForTimeout(2000);
+      text = await page.evaluate(() => {
+        ['nav', 'header', 'footer', 'script', 'style', '[aria-hidden="true"]'].forEach(sel => {
+          document.querySelectorAll(sel).forEach(el => el.remove());
+        });
+        return (document.body?.innerText || '').replace(/[ \t]{2,}/g, ' ').trim();
+      });
+    }
+  }
+
+  return text;
 }
 
 async function fetchWithHttp(url) {
@@ -126,6 +143,83 @@ function isAuthWall(text) {
     /sign\s*in|login|log\s*in|authenticate|password|credentials/.test(lower) &&
     (lower.includes('please log in') || lower.includes('sign in required') || lower.includes('please sign in') || lower.includes('not logged in'))
   );
+}
+
+
+function getCareersCreds() {
+  // Prefer env vars, fallback to hardcoded for now (user provided)
+  const email = process.env.CAREERS_EMAIL || 'kadiashram@gmail.com';
+  const password = process.env.CAREERS_PASSWORD || '1Loveshent@i';
+  if (!email || !password) {
+    return null;
+  }
+  return { email, password };
+}
+
+// Generalized login handler: attempts to fill any visible login form with email/pwd
+async function loginToCareersSite(page, url) {
+  const creds = getCareersCreds();
+  if (!creds) return false;
+  try {
+    // Try to find a visible email/username field
+    const emailSelectors = [
+      'input[type="email"]',
+      'input[name*="email"]',
+      'input[id*="email"]',
+      'input[type="text"]',
+      'input[name*="user"]',
+      'input[id*="user"]',
+      'input[name*="login"]',
+      'input[id*="login"]',
+    ];
+    let emailInput = null;
+    for (const sel of emailSelectors) {
+      emailInput = await page.$(sel);
+      if (emailInput) break;
+    }
+    if (emailInput) {
+      await emailInput.fill(creds.email);
+      // Try to find password field
+      const pwSelectors = [
+        'input[type="password"]',
+        'input[name*="pass"]',
+        'input[id*="pass"]',
+      ];
+      let pwInput = null;
+      for (const sel of pwSelectors) {
+        pwInput = await page.$(sel);
+        if (pwInput) break;
+      }
+      if (pwInput) {
+        await pwInput.fill(creds.password);
+        // Try to find a likely submit button
+        const btnSelectors = [
+          'button[type="submit"]',
+          'button:has-text("Sign in")',
+          'button:has-text("Login")',
+          'button:has-text("Next")',
+          'input[type="submit"]',
+        ];
+        let btn = null;
+        for (const sel of btnSelectors) {
+          btn = await page.$(sel);
+          if (btn) break;
+        }
+        if (btn) {
+          await btn.click();
+        } else {
+          // Try pressing Enter in password field
+          await pwInput.press('Enter');
+        }
+        // Wait for navigation or content change
+        await page.waitForTimeout(2000);
+        return true;
+      }
+    }
+  } catch (err) {
+    console.warn(`    [login attempt failed: ${err.message}]`);
+  }
+  return false;
 }
 
 async function fetchWithWebSearch(company, role, url) {
