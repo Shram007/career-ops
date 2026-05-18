@@ -104,3 +104,67 @@ func TestUpdateApplicationStatusAppendsHistory(t *testing.T) {
 		t.Fatalf("expected status history %q in tracker, got:\n%s", want, content)
 	}
 }
+
+func TestParseApplicationsEnrichesURLFromDataScanHistory(t *testing.T) {
+	tempDir := t.TempDir()
+	dataDir := filepath.Join(tempDir, "data")
+	if err := os.MkdirAll(dataDir, 0o755); err != nil {
+		t.Fatalf("failed to create data dir: %v", err)
+	}
+
+	applications := `# Applications Tracker
+
+| # | Date | Company | Role | Score | Status | PDF | Report | Notes |
+|---|------|---------|------|-------|--------|-----|--------|-------|
+| 41 | 2026-05-11 | ElevenLabs | Full-Stack Engineer | 4.3/5 | Scored | ❌ | - | NEXT[pdf=pending] |
+`
+	if err := os.WriteFile(filepath.Join(dataDir, "applications.md"), []byte(applications), 0o644); err != nil {
+		t.Fatalf("failed to write applications tracker: %v", err)
+	}
+
+	scanHistory := "url\tsource\tfetched_at\ttitle\tcompany\n" +
+		"https://jobs.example.com/elevenlabs/full-stack\tplaywright\t2026-05-11\tFull-Stack Engineer\tElevenLabs\n"
+	if err := os.WriteFile(filepath.Join(dataDir, "scan-history.tsv"), []byte(scanHistory), 0o644); err != nil {
+		t.Fatalf("failed to write scan history: %v", err)
+	}
+
+	apps := ParseApplications(tempDir)
+	if len(apps) != 1 {
+		t.Fatalf("expected 1 app, got %d", len(apps))
+	}
+	if got, want := apps[0].JobURL, "https://jobs.example.com/elevenlabs/full-stack"; got != want {
+		t.Fatalf("expected JobURL %q, got %q", want, got)
+	}
+}
+
+func TestParseApplicationsEnrichesURLFromRootScanHistoryFallback(t *testing.T) {
+	tempDir := t.TempDir()
+	dataDir := filepath.Join(tempDir, "data")
+	if err := os.MkdirAll(dataDir, 0o755); err != nil {
+		t.Fatalf("failed to create data dir: %v", err)
+	}
+
+	applications := `# Applications Tracker
+
+| # | Date | Company | Role | Score | Status | PDF | Report | Notes |
+|---|------|---------|------|-------|--------|-----|--------|-------|
+| 42 | 2026-05-11 | Cohere | Backend Engineer | 4.2/5 | Scored | ❌ | - | NEXT[pdf=pending] |
+`
+	if err := os.WriteFile(filepath.Join(dataDir, "applications.md"), []byte(applications), 0o644); err != nil {
+		t.Fatalf("failed to write applications tracker: %v", err)
+	}
+
+	scanHistory := "url\tsource\tfetched_at\ttitle\tcompany\n" +
+		"https://jobs.example.com/cohere/backend\tplaywright\t2026-05-11\tBackend Engineer\tCohere\n"
+	if err := os.WriteFile(filepath.Join(tempDir, "scan-history.tsv"), []byte(scanHistory), 0o644); err != nil {
+		t.Fatalf("failed to write root scan history: %v", err)
+	}
+
+	apps := ParseApplications(tempDir)
+	if len(apps) != 1 {
+		t.Fatalf("expected 1 app, got %d", len(apps))
+	}
+	if got, want := apps[0].JobURL, "https://jobs.example.com/cohere/backend"; got != want {
+		t.Fatalf("expected JobURL %q, got %q", want, got)
+	}
+}

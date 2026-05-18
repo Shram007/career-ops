@@ -291,8 +291,17 @@ func loadJobURLs(careerOpsPath string) map[string]string {
 
 // enrichFromScanHistory fills JobURL from scan-history.tsv by matching company name.
 func enrichFromScanHistory(careerOpsPath string, apps []model.CareerApplication) {
-	scanPath := filepath.Join(careerOpsPath, "scan-history.tsv")
-	scanData, err := os.ReadFile(scanPath)
+	var scanData []byte
+	var err error
+	for _, scanPath := range []string{
+		filepath.Join(careerOpsPath, "data", "scan-history.tsv"),
+		filepath.Join(careerOpsPath, "scan-history.tsv"),
+	} {
+		scanData, err = os.ReadFile(scanPath)
+		if err == nil {
+			break
+		}
+	}
 	if err != nil {
 		return
 	}
