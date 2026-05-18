@@ -19,6 +19,7 @@ import { readFile } from 'fs/promises';
 import { mkdirSync } from 'fs';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
+import { writeRunReceipt } from './scripts/run-receipt.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -79,6 +80,7 @@ function normalizeTextForATS(html) {
 }
 
 async function generatePDF() {
+  const startTime = Date.now();
   const args = process.argv.slice(2);
 
   // Parse arguments
@@ -289,6 +291,16 @@ async function generatePDF() {
     console.log(`✅ PDF generated: ${outputPath}`);
     console.log(`📊 Pages: ${pageCount}`);
     console.log(`📦 Size: ${(pdfBuffer.length / 1024).toFixed(1)} KB`);
+
+    const receiptPath = writeRunReceipt(__dirname, 'pdf', {
+      inputPath,
+      outputPath,
+      format,
+      pageCount,
+      sizeBytes: pdfBuffer.length,
+      durationMs: Date.now() - startTime,
+    });
+    console.log(`🧾 Receipt: ${receiptPath}`);
 
     return { outputPath, pageCount, size: pdfBuffer.length };
   } finally {

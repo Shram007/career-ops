@@ -23,6 +23,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { createHash } from 'node:crypto';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { writeRunReceipt } from './scripts/run-receipt.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -270,6 +271,7 @@ function rebuildLine(parsed, extraTags) {
 // Main
 // ---------------------------------------------------------------------------
 async function main() {
+  const startTime = Date.now();
   const { referralMode, dryRun, singleUrl } = parseArgs(process.argv);
 
   // ---- Single URL test mode ------------------------------------------------
@@ -396,6 +398,18 @@ async function main() {
   if (!dryRun && (enriched > 0 || junkMarked > 0)) {
     console.log(`\nWrote: ${pipelinePath}`);
   }
+
+  const receiptPath = writeRunReceipt(__dirname, 'enrich', {
+    scope: referralMode ? 'referral' : 'discovery',
+    dryRun,
+    enriched,
+    junkMarked,
+    alreadyDone,
+    failed,
+    fromCache,
+    durationMs: Date.now() - startTime,
+  });
+  console.log(`Receipt:      ${receiptPath}`);
 }
 
 main().catch(err => { console.error(err); process.exit(1); });
