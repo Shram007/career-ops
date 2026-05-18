@@ -68,6 +68,15 @@ function isJunkUrl(url) {
   );
 }
 
+/** Detect if fetched content requires authentication (login walls). */
+function requiresAuthentication(text) {
+  const lower = text.toLowerCase();
+  return (
+    /please log in|please sign in|you must log in|not logged in|authentication required|sign in required/i.test(lower) ||
+    /sign in with your|log in with your|enter your (email|username|password)/i.test(lower)
+  );
+}
+
 // ---------------------------------------------------------------------------
 // JD cache helpers
 // ---------------------------------------------------------------------------
@@ -111,7 +120,35 @@ async function fetchWithHttp(url) {
   }
 }
 
-async function fetchJd(page, url) {
+function isAuthWall(text) {
+  const lower = text.toLowerCase();
+  return (
+    /sign\s*in|login|log\s*in|authenticate|password|credentials/.test(lower) &&
+    (lower.includes('please log in') || lower.includes('sign in required') || lower.includes('please sign in') || lower.includes('not logged in'))
+  );
+}
+
+async function fetchWithWebSearch(company, role, url) {
+  const query = `${company} ${role} job description site:${new URL(url).hostname}`;
+  try {
+    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+    const res = await fetch(searchUrl, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+      signal: controller.signal,
+    });
+    if (!res.ok) return '';
+    const html = await res.text();
+    clearTimeout(timer);
+    return html.replace(/<[^>]+>/g, ' ').replace(/\s{3,}/g, '\n').slice(0, 8000).trim();
+  } catch (err) {
+    console.warn(`  [websearch fallback failed: ${err.message}]`);
+    return '';
+  }
+}
+
+async function fetchJd(page, url, company = '', role = '') {
   const cp = cachePath(url);
   if (existsSync(cp)) {
     return { text: readFileSync(cp, 'utf8'), fromCache: true };
@@ -122,6 +159,15 @@ async function fetchJd(page, url) {
     text = await fetchWithPlaywright(page, url);
   } catch (_) {
     text = await fetchWithHttp(url);  // may throw — caller handles it
+  }
+
+  // Check if we got an auth wall instead of actual JD
+  if (isAuthWall(text)) {
+    console.warn(`    [auth wall detected; trying websearch fallback]`);
+    const searchText = await fetchWithWebSearch(company, role, url);
+    if (searchText.length > 500) {
+      text = searchText;  // Use search results if they're substantial
+    }
   }
 
   writeFileSync(cp, text, 'utf8');
@@ -368,8 +414,17 @@ async function main() {
     process.stdout.write(`  ${label.padEnd(55)} `);
 
     try {
-      const result = await fetchJd(page, parsed.url);
+      const result = await fetchJd(page, parsed.url, parsed.company, parsed.title);
       if (result.fromCache) fromCache++;
+
+      // Check if content is just a login wall
+      if (requiresAuthentication(result.text)) {
+        const newLine = `- [~] ${parsed.date} | ${parsed.url} | ${parsed.company} | ${parsed.title} — skip:auth-required`;
+        console.log(`✗  requires authentication`);
+        outLines.push(newLine);
+        junkMarked++;
+        continue;
+      }
 
       const tags = buildMetaTags(result.text);
       outLines.push(rebuildLine(parsed, tags));
