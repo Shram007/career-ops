@@ -87,6 +87,11 @@ keyword-analysis.txt
 run-level*.mjs
 validate-ingest.mjs
 dashboard/career-dashboard.exe
+output.txt
+
+# Local recovery/backups and scoring run receipts
+data/user-backups/
+reports/pipeline-runs/
 
 # OS
 .DS_Store
