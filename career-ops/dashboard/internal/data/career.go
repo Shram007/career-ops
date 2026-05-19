@@ -111,6 +111,11 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 		apps = append(apps, app)
 	}
 
+	// Keep dashboard current even when applications.md wasn't merged recently.
+	// This injects processed jobs from pipeline queues as synthetic tracker rows.
+	apps = appendProcessedPipelineEntries(careerOpsPath, apps)
+	apps = ensureUniqueApplicationNumbers(apps)
+
 	// Enrich with job URLs using 5-tier strategy:
 	// 1. **URL:** field in report header (newest reports)
 	// 2. **Batch ID:** in report -> batch-input.tsv URL lookup
@@ -167,6 +172,199 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 	// Strategy 6: pipeline files (pipeline.md, pipeline-referral.md)
 	// Most reliable for playwright-scanned entries that never went through the batch system.
 	enrichFromPipelineFiles(careerOpsPath, apps)
+
+	return apps
+}
+
+func ensureUniqueApplicationNumbers(apps []model.CareerApplication) []model.CareerApplication {
+	seen := make(map[int]bool)
+	maxID := 0
+	for _, app := range apps {
+		if app.Number > maxID {
+			maxID = app.Number
+		}
+	}
+	for i := range apps {
+		if apps[i].Number <= 0 || seen[apps[i].Number] {
+			maxID++
+			apps[i].Number = maxID
+		}
+		seen[apps[i].Number] = true
+	}
+	return apps
+}
+
+func appendProcessedPipelineEntries(careerOpsPath string, apps []model.CareerApplication) []model.CareerApplication {
+	type entry struct {
+		date     string
+		url      string
+		company  string
+		role     string
+		scoreRaw string
+		score    float64
+		decision string
+		tags     string
+		source   string
+	}
+
+	pipelineFiles := []struct {
+		path   string
+		source string
+	}{
+		{path: filepath.Join(careerOpsPath, "data", "pipeline.md"), source: "pipeline"},
+		{path: filepath.Join(careerOpsPath, "data", "pipeline-referral.md"), source: "pipeline-referral"},
+	}
+
+	key := func(company, role string) string {
+		return normalizeCompany(company) + "::" + strings.ToLower(strings.TrimSpace(role))
+	}
+
+	existing := make(map[string]bool)
+	maxID := 0
+	for _, app := range apps {
+		existing[key(app.Company, app.Role)] = true
+		if app.Number > maxID {
+			maxID = app.Number
+		}
+	}
+
+	parseScore := func(raw string) (float64, string) {
+		r := strings.TrimSpace(raw)
+		if r == "" || r == "—" || r == "-" || strings.EqualFold(r, "n/a") || r == "[!]" {
+			return 0, "N/A"
+		}
+		m := reScoreValue.FindStringSubmatch(r)
+		if m != nil {
+			v, _ := strconv.ParseFloat(m[1], 64)
+			return v, m[0]
+		}
+		if num, err := strconv.ParseFloat(r, 64); err == nil {
+			return num, fmt.Sprintf("%.1f/5", num)
+		}
+		return 0, "N/A"
+	}
+
+	statusFromDecision := func(decision string, score float64) string {
+		d := strings.ToLower(strings.TrimSpace(decision))
+		switch {
+		case strings.Contains(d, "skip"):
+			return "SKIP"
+		case strings.Contains(d, "hold"):
+			return "HOLD"
+		case strings.Contains(d, "advance"):
+			return "Scored"
+		case score > 0:
+			return "Scored"
+		default:
+			return "Evaluated"
+		}
+	}
+
+	parseLine := func(line string, source string) *entry {
+		parts := strings.Split(line, "|")
+		if len(parts) < 4 {
+			return nil
+		}
+		left := strings.TrimSpace(parts[0])
+		if !strings.HasPrefix(left, "-") {
+			return nil
+		}
+		lm := regexp.MustCompile(`^-\s*\[[x~! ]\]\s*(\d{4}-\d{2}-\d{2})$`).FindStringSubmatch(left)
+		if lm == nil {
+			return nil
+		}
+		date := strings.TrimSpace(lm[1])
+		url := strings.TrimSpace(parts[1])
+		company := strings.TrimSpace(parts[2])
+		role := strings.TrimSpace(parts[3])
+		if company == "" || role == "" || !strings.HasPrefix(url, "http") {
+			return nil
+		}
+		if strings.Contains(strings.ToLower(role), "(from playwright)") {
+			return nil
+		}
+		scoreRaw := "N/A"
+		decision := ""
+		tags := ""
+		if len(parts) >= 5 {
+			scoreRaw = strings.TrimSpace(parts[4])
+		}
+		if len(parts) >= 6 {
+			decision = strings.TrimSpace(parts[5])
+		}
+		if len(parts) >= 7 {
+			tags = strings.TrimSpace(strings.Join(parts[6:], "|"))
+		}
+		score, normalizedScore := parseScore(scoreRaw)
+		return &entry{
+			date:     date,
+			url:      url,
+			company:  company,
+			role:     role,
+			scoreRaw: normalizedScore,
+			score:    score,
+			decision: decision,
+			tags:     tags,
+			source:   source,
+		}
+	}
+
+	newEntries := make([]entry, 0)
+	for _, pf := range pipelineFiles {
+		data, err := os.ReadFile(pf.path)
+		if err != nil {
+			continue
+		}
+		inProcessed := false
+		for _, raw := range strings.Split(string(data), "\n") {
+			line := strings.TrimSpace(raw)
+			if strings.HasPrefix(strings.ToLower(line), "## processed") || strings.HasPrefix(strings.ToLower(line), "## procesadas") {
+				inProcessed = true
+				continue
+			}
+			if strings.HasPrefix(line, "## ") && inProcessed {
+				inProcessed = false
+			}
+			if !inProcessed {
+				continue
+			}
+			e := parseLine(line, pf.source)
+			if e == nil {
+				continue
+			}
+			k := key(e.company, e.role)
+			if existing[k] {
+				continue
+			}
+			existing[k] = true
+			newEntries = append(newEntries, *e)
+		}
+	}
+
+	for _, e := range newEntries {
+		maxID++
+		notes := []string{}
+		if strings.TrimSpace(e.decision) != "" {
+			notes = append(notes, strings.TrimSpace(e.decision))
+		}
+		if strings.TrimSpace(e.tags) != "" {
+			notes = append(notes, strings.TrimSpace(e.tags))
+		}
+		notes = append(notes, "source:"+e.source)
+		apps = append(apps, model.CareerApplication{
+			Number:   maxID,
+			Date:     e.date,
+			Company:  e.company,
+			Role:     e.role,
+			Status:   statusFromDecision(e.decision, e.score),
+			Score:    e.score,
+			ScoreRaw: e.scoreRaw,
+			HasPDF:   false,
+			ReportPath: "",
+			Notes:    strings.Join(notes, ", "),
+			JobURL:   e.url,
+		})
+	}
 
 	return apps
 }
