@@ -32,20 +32,36 @@ Fetch the JD from `{{URL}}` using web tools.
 - If the URL is a category/search page (not a specific job), set `"status": "failed"` with
   `"error": "not a job posting"`.
 
-### Step 2 — Score CV match
+### Step 2 — Score fit (proof-first)
 
-Compare the JD requirements against cv.md. Use only evidence from cv.md content.
+Compare JD requirements against cv.md and prioritize existing strong points from profile proof points and shipped work.
+Archetype preference should NOT determine fit quality.
+Primary target role alignment should prioritize software/backend/full-stack/frontend/platform roles.
+
+Location policy:
+- Any role that can be worked from within the US is acceptable.
+- Only penalize/hard-block when the JD explicitly requires being outside the US.
+
+Comp policy:
+- Treat compensation as acceptable when salary is at or above $70k.
 
 **Rating scale:**
 | Score | Meaning |
 |-------|---------|
 | 5.0   | Near-perfect alignment |
 | 4.0–4.9 | Strong match, minor gaps |
-| 3.5–3.9 | Acceptable — advance |
+| {{DECISION_THRESHOLD}}–3.9 | Acceptable — advance |
 | 3.0–3.4 | Moderate mismatch |
 | 1.0–2.9 | Poor fit — hold |
 
-**Decision rule:** `advance` if score ≥ 3.5, else `hold`.
+**Decision rule:** `advance` if score ≥ {{DECISION_THRESHOLD}}, else `hold`.
+
+Scoring priorities (high to low):
+- North Star role alignment
+- CV/proof-point match
+- Level fit
+- Compensation floor
+- Everything else is secondary
 
 ### Step 3 — Reason tags
 
@@ -69,7 +85,7 @@ Generate 1–3 `key:value` tags explaining the key decision driver.
 
 Output ONLY this JSON block. No markdown fences, no commentary.
 
-**score ≥ 3.5 (advance):**
+**score ≥ {{DECISION_THRESHOLD}} (advance):**
 ```json
 {
   "status": "qualified",
@@ -84,7 +100,7 @@ Output ONLY this JSON block. No markdown fences, no commentary.
 }
 ```
 
-**score < 3.5 (hold):**
+**score < {{DECISION_THRESHOLD}} (hold):**
 ```json
 {
   "status": "skipped",

@@ -45,6 +45,7 @@ function isLikelyJobDetailUrl(inputUrl) {
 
   const lowerHref = toLower(u.href);
   const lowerPath = toLower(u.pathname);
+  const host = toLower(u.hostname);
 
   if (/(gh_jid=|jobid=|job_details|\/jobs\/view\/|\/careers\/job\/|\/profile\/job_details\/|\/apply(?:\?|#|$))/i.test(lowerHref)) {
     return true;
@@ -54,6 +55,10 @@ function isLikelyJobDetailUrl(inputUrl) {
   if (/jobs\.ashbyhq\.com\/[a-z0-9_-]+\/[a-z0-9-]{8,}/i.test(lowerHref)) return true;
   if (/boards?\.greenhouse\.io\/[a-z0-9_-]+\/jobs\/\d+/i.test(lowerHref)) return true;
   if (/myworkdayjobs\.com\/.+\/job\//i.test(lowerHref)) return true;
+  // Salesforce/MySite detail pages commonly look like /jobs/{id}/{slug}.
+  // Check this before generic listing detection that matches /jobs/.
+  if (/\bsalesforce\.com$/i.test(host) && /^\/[a-z]{2}(?:-[a-z]{2})?\/jobs\/[^/]+\/.+/i.test(lowerPath)) return true;
+  if (/\bmy\.site\.com$/i.test(host) && /\/jobs\/[^/]+\/.+/i.test(lowerPath)) return true;
   if (/\/jobs\/results\/\d+-[a-z0-9-]+/i.test(lowerPath)) return true;
 
   return false;

@@ -39,10 +39,28 @@ PIPELINE_FILE="$PROJECT_DIR/data/pipeline-referral.md"
 PARALLEL=3
 BATCH_SIZE=5
 DRY_RUN=false
+DECISION_THRESHOLD=3.5
 MIN_SCORE=3.0
 MAX_EXP=0
 NO_PRESCREEN=false
 FOLLOWUP_THRESHOLD=3.0
+
+load_scoring_defaults() {
+  local helper="$PROJECT_DIR/scripts/scoring-config.mjs"
+  [[ -f "$helper" ]] || return
+
+  local exports
+  exports=$(node "$helper" --format shell 2>/dev/null || true)
+  [[ -n "$exports" ]] || return
+
+  eval "$exports"
+
+  DECISION_THRESHOLD="${SCORING_BATCH_DECISION_THRESHOLD:-$DECISION_THRESHOLD}"
+  MIN_SCORE="${SCORING_BATCH_TRACKER_MIN_SCORE:-$MIN_SCORE}"
+  FOLLOWUP_THRESHOLD="${SCORING_BATCH_FOLLOWUP_THRESHOLD:-$FOLLOWUP_THRESHOLD}"
+}
+
+load_scoring_defaults
 
 usage() {
   cat <<'USAGE'
@@ -249,6 +267,7 @@ run_worker() {
     -e "s|{{COMPANY}}|${esc_company}|g" \
     -e "s|{{ROLE}}|${esc_role}|g" \
     -e "s|{{DATE}}|${today}|g" \
+    -e "s|{{DECISION_THRESHOLD}}|${DECISION_THRESHOLD}|g" \
     -e "s|{{ENRICH_TAGS}}|${esc_tags}|g" \
     "$PROMPT_TEMPLATE" > "$resolved"
 
@@ -579,7 +598,7 @@ main() {
 
   echo "=== career-ops score-pipeline ==="
   echo "File:       $PIPELINE_FILE"
-  printf 'Parallel: %d | Batch: %d | Min score: %s\n' "$PARALLEL" "$BATCH_SIZE" "$MIN_SCORE"
+  printf 'Parallel: %d | Batch: %d | Decision threshold: %s | Min score: %s\n' "$PARALLEL" "$BATCH_SIZE" "$DECISION_THRESHOLD" "$MIN_SCORE"
   [[ "$MAX_EXP" -gt 0 ]] && echo "Pre-screen: exp > $MAX_EXP"
   echo ""
 

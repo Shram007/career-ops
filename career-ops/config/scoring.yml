@@ -1,0 +1,21 @@
+# Canonical scoring configuration shared by pipeline scorers.
+
+legacy:
+  advance_threshold: 3.0
+  comp_floor_usd: 70000
+  dimensions:
+    north_star_alignment: 0.25
+    cv_match: 0.15
+    level: 0.15
+    estimated_comp: 0.10
+    growth_trajectory: 0.10
+    remote_quality: 0.05
+    company_reputation: 0.05
+    tech_stack_modernity: 0.05
+    speed_to_offer: 0.05
+    cultural_signals: 0.05
+
+batch:
+  decision_threshold: 3.0
+  tracker_min_score: 3.0
+  followup_threshold: 3.0

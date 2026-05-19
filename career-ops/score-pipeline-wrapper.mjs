@@ -8,21 +8,8 @@ import { writeRunReceipt } from './scripts/run-receipt.mjs';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 
-const wantsLegacy = args.includes('--legacy');
 const isDiscovery = args.includes('--discovery');
 const scope = isDiscovery ? 'discovery' : 'referral';
-
-function hasBash() {
-  const whichCmd = process.platform === 'win32' ? 'where' : 'which';
-  const out = spawnSync(whichCmd, ['bash'], { encoding: 'utf8' });
-  return out.status === 0;
-}
-
-function hasClaude() {
-  const whichCmd = process.platform === 'win32' ? 'where' : 'which';
-  const out = spawnSync(whichCmd, ['claude'], { encoding: 'utf8' });
-  return out.status === 0;
-}
 
 function run(command, commandArgs) {
   return spawnSync(command, commandArgs, {
@@ -34,28 +21,12 @@ function run(command, commandArgs) {
 }
 
 const start = Date.now();
-let engine = wantsLegacy ? 'legacy-deterministic' : 'primary-batch';
-let result;
-
-if (engine === 'primary-batch') {
-  if (!hasBash()) {
-    console.warn('[scorer] bash unavailable; falling back to legacy deterministic scorer');
-    engine = 'legacy-deterministic';
-  } else if (!hasClaude()) {
-    console.warn('[scorer] claude CLI unavailable; falling back to legacy deterministic scorer');
-    engine = 'legacy-deterministic';
-  } else {
-    const batchArgs = ['batch/score-pipeline.sh', scope === 'discovery' ? '--discovery' : '--referral'];
-    if (args.includes('--dry-run')) batchArgs.push('--dry-run');
-    if (args.includes('--no-prescreen')) batchArgs.push('--no-prescreen');
-    result = run('bash', batchArgs);
-  }
+const engine = 'universal-deterministic';
+const scorerArgs = ['score-pipeline.mjs', scope === 'discovery' ? '--legacy-discovery' : '--legacy-referral'];
+if (args.includes('--dry-run')) {
+  scorerArgs.push('--dry-run');
 }
-
-if (engine === 'legacy-deterministic') {
-  const legacyArgs = ['score-pipeline.mjs', scope === 'discovery' ? '--legacy-discovery' : '--legacy-referral'];
-  result = run(process.execPath, legacyArgs);
-}
+const result = run(process.execPath, scorerArgs);
 
 const durationMs = Date.now() - start;
 const receiptPath = writeRunReceipt(__dirname, 'score', {
