@@ -160,16 +160,15 @@ npm run gemini:eval -- "JD text here"
 
 ## Usage
 
-Career-ops is a single slash command with multiple modes:
+Career-ops is a single slash command with a streamlined surface:
 
 ```
 /career-ops                → Show all available commands
 /career-ops {paste a JD}   → Full auto-pipeline (evaluate + PDF + tracker)
-/career-ops scan           → Scan portals for new jobs
-/career-ops scan referral  → Scan referral companies into referral queue
-/career-ops scan discovery → Scan WebSearch discovery into discovery queue
-/career-ops score discovery → Score queued discovery jobs (no report/PDF)
-/career-ops score referral  → Score queued referral jobs (no report/PDF)
+/career-ops run [referral|all] → End-to-end queue flow: scan -> enrich -> score
+/career-ops scan [discovery|referral|all] → Ingest jobs from sources
+/career-ops enrich [discovery|referral]   → Enrich queue entries
+/career-ops score [discovery|referral]    → Score queue entries
 /career-ops pipeline       → Legacy alias of score discovery
 /career-ops pdf            → Generate ATS-optimized CV
 /career-ops pdf queue      → List tracker IDs ready for PDF generation
@@ -177,7 +176,7 @@ Career-ops is a single slash command with multiple modes:
 /career-ops batch          → Batch evaluate multiple jobs
 /career-ops tracker        → View application status
 /career-ops apply          → Fill application forms with AI
-/career-ops interview-prep → Build company+JD interview intelligence report
+/career-ops prep           → Build company+JD interview intelligence report
 /career-ops contacto       → LinkedIn outreach message
 /career-ops deep           → Deep company research
 /career-ops training       → Evaluate a course/cert

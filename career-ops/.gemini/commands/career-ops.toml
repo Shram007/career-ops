@@ -27,6 +27,8 @@ Available commands:
   /career-ops-tracker      → Application status overview
   /career-ops-apply        → Live application assistant
   /career-ops-scan         → Scan portals and discover new jobs
+  /career-ops enrich       → Enrich discovery queue with loc/exp/remote tags + JD cache
+  /career-ops enrich referral → Enrich referral queue with the same flow
   /career-ops-batch        → Batch processing with parallel workers
   /career-ops-patterns     → Analyze rejection patterns
   /career-ops-followup     → Follow-up cadence tracker

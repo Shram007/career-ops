@@ -183,6 +183,18 @@ function inferSimpleSignalScore(jdLower, signals, strong = 4.3, neutral = 3.5, w
   return weak;
 }
 
+function inferTrackerLocation(jdLower) {
+  const isRemote = /\b(remote|work from anywhere|distributed)\b/i.test(jdLower);
+  const hasUS = /\b(united states|u\.?s\.?|usa|us-only|us only|within the us|san francisco|bay area|california|new york|seattle|washington)\b/i.test(jdLower);
+  const hasOutsideUS = outsideUSRegions.some(region => jdLower.includes(region));
+
+  if (isRemote && hasUS) return 'Remote (US)';
+  if (isRemote && !hasOutsideUS) return 'Remote';
+  if (hasUS) return 'US';
+  if (hasOutsideUS) return 'Outside US';
+  return 'Unknown';
+}
+
 // ============================================================================
 // Parse pipeline
 // ============================================================================
@@ -247,7 +259,7 @@ function scoreJob(job, jdText) {
   const roleLower = job.role.toLowerCase();
 
   if (isOutsideUSRequired(jdLower)) {
-    return { score: null, decision: 'hold', tags: 'location:outside-us-required', strength: 'location-block' };
+    return { score: null, decision: 'hold', tags: 'location:outside-us-required', strength: 'location-block', trackerLocation: 'Outside US' };
   }
 
   const cvKeywordHits = countMatches(jdLower, cvKeywords);
@@ -291,6 +303,7 @@ function scoreJob(job, jdText) {
     score: Math.round(scaledScore * 10) / 10,
     decision,
     tags: tags.join(','),
+    trackerLocation: inferTrackerLocation(jdLower),
     proofFit: Math.round(proofRatio * 100),
     cvFit: Math.round(cvRatio * 100),
     northStar: Math.round(dimensionScores.north_star_alignment * 10) / 10,
@@ -378,7 +391,7 @@ const advances = processed.filter(p => p.score && p.score >= legacyScoring.advan
 if (advances.length > 0) {
   const newEntries = advances.map(job => {
     const id = nextId++;
-    return `| ${id} | ${job.date} | ${job.company} | ${job.role} | ${job.score}/5 | Scored | ❌ | - | ${job.tags} |`;
+    return `| ${id} | ${job.date} | ${job.company} | ${job.role} | ${job.score}/5 | Scored | ❌ | - | ${job.tags} | ${job.trackerLocation || 'Unknown'} |`;
   }).join('\n');
 
   const trackerLines = tracker.split('\n');

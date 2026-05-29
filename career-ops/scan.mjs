@@ -166,6 +166,25 @@ function buildTitleFilter(titleFilter) {
   };
 }
 
+function buildLocationFilter(locationFilter) {
+  if (!locationFilter) return () => ({ pass: true, reason: null });
+  const positive = (locationFilter?.positive || []).map(k => String(k).toLowerCase());
+  const negative = (locationFilter?.negative || []).map(k => String(k).toLowerCase());
+  const strictUSOrRemote = Boolean(locationFilter?.strict_us_or_remote);
+
+  return (title, location = '') => {
+    const corpus = `${String(title || '')} ${String(location || '')}`.toLowerCase();
+    const negativeHit = negative.find(k => corpus.includes(k));
+    if (negativeHit) return { pass: false, reason: `loc:${negativeHit}` };
+
+    if (!strictUSOrRemote) return { pass: true, reason: null };
+
+    const positiveHit = positive.find(k => corpus.includes(k));
+    if (!positiveHit) return { pass: false, reason: 'loc:unknown-or-non-us' };
+    return { pass: true, reason: null };
+  };
+}
+
 // ── Date filter (7 days old) ────────────────────────────────────────
 
 function isRecentPosting(postedAtStr, daysCutoff = 7) {
@@ -353,6 +372,7 @@ async function main() {
     ? (config.referral_companies || [])
     : (config.tracked_companies || []);
   const titleFilter = buildTitleFilter(config.title_filter);
+  const locationFilter = buildLocationFilter(config.location_filter);
   const maxYears = config.experience_filter?.max_years || 3;
 
   // 2. Filter to enabled companies with detectable APIs
@@ -392,6 +412,11 @@ async function main() {
 
       for (const job of jobs) {
         if (!titleFilter(job.title)) {
+          totalFiltered++;
+          continue;
+        }
+        const locResult = locationFilter(job.title, job.location);
+        if (!locResult.pass) {
           totalFiltered++;
           continue;
         }
@@ -456,7 +481,7 @@ async function main() {
   console.log(`${'━'.repeat(45)}`);
   console.log(`Companies scanned:     ${targets.length}`);
   console.log(`Total jobs found:      ${totalFound}`);
-  console.log(`Filtered (title+age):  ${totalFiltered} removed`);
+  console.log(`Filtered (title+location+age+xp): ${totalFiltered} removed`);
   console.log(`Title validation:      ${totalValidationRejected} rejected`);
   console.log(`Duplicates:            ${totalDupes} skipped`);
   console.log(`New jobs added:        ${newJobs.length}`);

@@ -288,7 +288,7 @@ if (decision === 'advance') {
   const today = new Date().toISOString().split('T')[0];
 
   // Format tracker row
-  const trackerRow = `| ${nextId} | ${today} | ${company || 'Unknown'} | ${role || pageTitle} | ${score}/5 | Scored | ❌ | - | ${reasonTags} |`;
+  const trackerRow = `| ${nextId} | ${today} | ${company || 'Unknown'} | ${role || pageTitle} | ${score}/5 | Scored | ❌ | - | ${reasonTags} | Unknown |`;
 
   // Append to applications.md
   let newApps = apps;

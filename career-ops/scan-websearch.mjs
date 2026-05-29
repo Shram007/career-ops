@@ -30,6 +30,7 @@ function parseArgs(argv) {
     referralMode: false,
     maxResultsPerQuery: 12,
     pauseMs: 600,
+    engine: String(process.env.WEBSEARCH_ENGINE || 'ddg').toLowerCase(),
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -66,14 +67,209 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === '--engine') {
+      const v = String(args[++i] || '').trim().toLowerCase();
+      if (!['ddg', 'google', 'exa', 'chain'].includes(v)) {
+        throw new Error('Invalid --engine value (use ddg|google|exa|chain)');
+      }
+      out.engine = v;
+      continue;
+    }
+
     if (arg === '-h' || arg === '--help') {
       console.log('Usage:');
-      console.log('  node scan-websearch.mjs [--dry-run] [--referral] [--company <name>] [--max-results <n>] [--pause-ms <ms>]');
+      console.log('  node scan-websearch.mjs [--dry-run] [--referral] [--company <name>] [--max-results <n>] [--pause-ms <ms>] [--engine ddg|google|exa|chain]');
       process.exit(0);
     }
   }
 
   return out;
+}
+
+function getEngineOrder(engine) {
+  if (engine === 'chain') return ['exa', 'google', 'ddg'];
+  if (engine === 'exa') return ['exa', 'google', 'ddg'];
+  if (engine === 'google') return ['google', 'ddg'];
+  return ['ddg'];
+}
+
+function getIntEnv(name) {
+  const raw = String(process.env[name] || '').trim();
+  if (!raw) return undefined;
+  const value = Number(raw);
+  if (!Number.isFinite(value)) return undefined;
+  return Math.floor(value);
+}
+
+function normalizeKeywordList(values, maxItems = 12) {
+  const out = [];
+  const seen = new Set();
+  for (const v of values || []) {
+    const clean = String(v || '').replace(/\s+/g, ' ').trim();
+    if (!clean) continue;
+    const key = clean.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(clean);
+    if (out.length >= maxItems) break;
+  }
+  return out;
+}
+
+function buildSearchProfile(config) {
+  const clampLimit = (value, fallback, min, max) => {
+    if (!Number.isFinite(value)) return fallback;
+    return Math.min(Math.max(value, min), max);
+  };
+
+  const roleTermsLimit = clampLimit(getIntEnv('EXA_ROLE_TERMS_LIMIT'), 12, 1, 24);
+  const entryTermsLimit = clampLimit(getIntEnv('EXA_ENTRY_TERMS_LIMIT'), 8, 1, 16);
+  const roleBooleanLimit = clampLimit(getIntEnv('EXA_ROLE_BOOLEAN_LIMIT'), 6, 1, 12);
+  const entryBooleanLimit = clampLimit(getIntEnv('EXA_ENTRY_BOOLEAN_LIMIT'), 5, 1, 12);
+
+  const titlePositive = normalizeKeywordList(config?.title_filter?.positive || [], 24);
+  const seniorityBoost = normalizeKeywordList(config?.title_filter?.seniority_boost || [], 12);
+
+  const entryTerms = normalizeKeywordList(
+    [
+      ...seniorityBoost,
+      ...titlePositive.filter((k) => /new\s*grad|new\s*graduate|entry\s*level|early\s*career|university/i.test(k)),
+    ],
+    entryTermsLimit,
+  );
+
+  const roleTerms = normalizeKeywordList(
+    titlePositive.filter((k) => !entryTerms.some((e) => e.toLowerCase() === k.toLowerCase())),
+    roleTermsLimit,
+  );
+
+  const boolify = (terms, limit = 6) => terms.slice(0, limit).map((t) => `"${t}"`).join(' OR ');
+  const roleTermsBoolean = boolify(roleTerms, roleBooleanLimit);
+  const entryTermsBoolean = boolify(entryTerms, entryBooleanLimit);
+  const highlightQuery = [roleTermsBoolean, entryTermsBoolean].filter(Boolean).join(' OR ') || 'Software Engineer OR AI Engineer OR New Grad';
+
+  return {
+    roleTerms,
+    entryTerms,
+    roleTermsBoolean,
+    entryTermsBoolean,
+    highlightQuery,
+  };
+}
+
+function mergeQueryWithProfile(query, profile) {
+  const normalized = String(query || '').replace(/\s+/g, ' ').trim();
+  if (!normalized) return normalized;
+
+  const knownTerms = [...(profile?.roleTerms || []), ...(profile?.entryTerms || [])].map((t) => t.toLowerCase());
+  const hasKnownTerm = knownTerms.some((term) => term && normalized.toLowerCase().includes(term));
+  if (hasKnownTerm) return normalized;
+
+  const extra = [profile?.roleTermsBoolean, profile?.entryTermsBoolean].filter(Boolean).join(' ');
+  return extra ? `${normalized} ${extra}` : normalized;
+}
+
+function buildExaRequestFromQuery(rawQuery, profile) {
+  const q = String(rawQuery || '').replace(/\s+/g, ' ').trim();
+
+  const includeDomains = Array.from(new Set(
+    [...q.matchAll(/site:([^\s"']+)/gi)]
+      .map((m) => String(m[1] || '').trim().toLowerCase())
+      .filter(Boolean),
+  ));
+
+  const afterMatch = q.match(/after:(\d{4}-\d{2}-\d{2})/i);
+  const startPublishedDate = afterMatch ? `${afterMatch[1]}T00:00:00.000Z` : undefined;
+
+  const cleanedQuery = q
+    .replace(/site:[^\s"']+/gi, ' ')
+    .replace(/after:\d{4}-\d{2}-\d{2}/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const mergedQuery = mergeQueryWithProfile(cleanedQuery || q, profile);
+
+  return {
+    query: mergedQuery,
+    includeDomains,
+    startPublishedDate,
+  };
+}
+
+async function fetchSearchResultsFromExa(query, maxResults, profile) {
+  const apiKey = String(process.env.EXA_API_KEY || '').trim();
+  if (!apiKey) {
+    throw new Error('EXA_API_KEY is not set');
+  }
+
+  const req = buildExaRequestFromQuery(query, profile);
+  const exaType = String(process.env.EXA_SEARCH_TYPE || 'auto').trim().toLowerCase();
+  const allowedTypes = new Set(['auto', 'fast', 'instant', 'deep-lite', 'deep', 'deep-reasoning']);
+  const searchType = allowedTypes.has(exaType) ? exaType : 'auto';
+
+  const maxAgeHours = getIntEnv('EXA_MAX_AGE_HOURS');
+  const highlightsMaxCharacters = getIntEnv('EXA_HIGHLIGHTS_MAX_CHARACTERS');
+  const userLocation = String(process.env.EXA_USER_LOCATION || '').trim().toUpperCase();
+
+  const highlights = {
+    query: profile?.highlightQuery || 'Software Engineer OR AI Engineer OR New Grad',
+  };
+  if (highlightsMaxCharacters && highlightsMaxCharacters > 0) {
+    highlights.maxCharacters = highlightsMaxCharacters;
+  }
+
+  const body = {
+    query: req.query,
+    type: searchType,
+    numResults: Math.min(Math.max(maxResults, 1), 100),
+    contents: {
+      highlights,
+      filterEmptyResults: true,
+    },
+  };
+
+  if (Number.isFinite(maxAgeHours)) {
+    body.contents.maxAgeHours = maxAgeHours;
+  }
+
+  if (req.includeDomains.length > 0) {
+    body.includeDomains = req.includeDomains;
+  }
+  if (req.startPublishedDate) {
+    body.startPublishedDate = req.startPublishedDate;
+  }
+  if (/^[A-Z]{2}$/.test(userLocation)) {
+    body.userLocation = userLocation;
+  }
+
+  const exaCategory = String(process.env.EXA_CATEGORY || '').trim();
+  if (exaCategory) {
+    body.category = exaCategory;
+  }
+
+  const res = await fetch('https://api.exa.ai/search', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': apiKey,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Exa API HTTP ${res.status}${text ? `: ${text.slice(0, 180)}` : ''}`);
+  }
+
+  const payload = await res.json();
+  const rows = Array.isArray(payload?.results) ? payload.results : [];
+
+  return rows
+    .map((r) => ({
+      url: String(r?.url || '').trim(),
+      title: String(r?.title || 'Web result').trim(),
+    }))
+    .filter((r) => /^https?:\/\//i.test(r.url));
 }
 
 function sleep(ms) {
@@ -93,6 +289,25 @@ function buildTitleFilter(titleFilter) {
     const hasPositive = positive.length === 0 || positive.some(k => lower.includes(k));
     const hasNegative = negative.some(k => lower.includes(k));
     return hasPositive && !hasNegative;
+  };
+}
+
+function buildLocationFilter(locationFilter) {
+  if (!locationFilter) return () => ({ pass: true, reason: null });
+  const positive = (locationFilter?.positive || []).map(k => String(k).toLowerCase());
+  const negative = (locationFilter?.negative || []).map(k => String(k).toLowerCase());
+  const strictUSOrRemote = Boolean(locationFilter?.strict_us_or_remote);
+
+  return (title, location = '') => {
+    const corpus = `${String(title || '')} ${String(location || '')}`.toLowerCase();
+    const negativeHit = negative.find(k => corpus.includes(k));
+    if (negativeHit) return { pass: false, reason: `loc:${negativeHit}` };
+
+    if (!strictUSOrRemote) return { pass: true, reason: null };
+
+    const positiveHit = positive.find(k => corpus.includes(k));
+    if (!positiveHit) return { pass: false, reason: 'loc:unknown-or-non-us' };
+    return { pass: true, reason: null };
   };
 }
 
@@ -225,8 +440,53 @@ function extractResultsFromHtml(html, maxResults) {
   return out;
 }
 
-async function fetchSearchResults(query, maxResults) {
-  const url = `https://duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+function extractResultsFromGoogleHtml(html, maxResults) {
+  const out = [];
+  const seen = new Set();
+
+  // Google SERP links are usually in /url?q=<target>&...
+  const anchorRegex = /<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+  let match;
+
+  while ((match = anchorRegex.exec(html)) !== null) {
+    const href = String(match[1] || '');
+    if (!href.startsWith('/url?') && !href.includes('/url?q=')) continue;
+
+    let candidate = null;
+    try {
+      const u = new URL(`https://www.google.com${href}`);
+      candidate = u.searchParams.get('q');
+    } catch {
+      candidate = null;
+    }
+
+    if (!candidate || !/^https?:\/\//i.test(candidate)) continue;
+    if (/google\./i.test(candidate)) continue;
+    if (seen.has(candidate)) continue;
+
+    const title = String(match[2] || '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    seen.add(candidate);
+    out.push({ url: candidate, title: title || 'Web result' });
+    if (out.length >= maxResults) break;
+  }
+
+  return out;
+}
+
+async function fetchSearchResults(query, maxResults, engine, profile) {
+  if (engine === 'exa') {
+    return fetchSearchResultsFromExa(query, maxResults, profile);
+  }
+
+  const url = engine === 'google'
+    ? `https://www.google.com/search?q=${encodeURIComponent(query)}&hl=en&num=${Math.min(Math.max(maxResults, 1), 20)}`
+    : `https://duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+
   const res = await fetch(url, {
     headers: {
       'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -239,7 +499,83 @@ async function fetchSearchResults(query, maxResults) {
   }
 
   const html = await res.text();
+
+  if (engine === 'google') {
+    if (/unusual traffic|detected unusual traffic|consent\.google\.com/i.test(html)) {
+      throw new Error('Google blocked automated access (consent/anti-bot page)');
+    }
+    return extractResultsFromGoogleHtml(html, maxResults);
+  }
+
   return extractResultsFromHtml(html, maxResults);
+}
+
+function buildFallbackQueries(query, company, profile) {
+  const normalized = String(query || '').replace(/\s+/g, ' ').trim();
+  if (!normalized) return [];
+
+  const withoutAfter = normalized.replace(/\s*after:\d{4}-\d{2}-\d{2}/gi, '').trim();
+  const siteMatches = Array.from(new Set((withoutAfter.match(/site:[^\s"']+/gi) || []).map(s => s.toLowerCase())));
+  const primarySite = siteMatches[0] || '';
+
+  const fallbackRoleTerms = profile?.roleTermsBoolean || '"Software Engineer" OR "Backend Engineer" OR "AI Engineer"';
+  const fallbackEntryTerms = profile?.entryTermsBoolean || '"New Grad" OR "Early Career"';
+  const companyTerm = String(company || '').trim();
+
+  const candidates = [
+    normalized,
+    withoutAfter,
+    [primarySite, companyTerm, fallbackRoleTerms, fallbackEntryTerms].filter(Boolean).join(' '),
+    [companyTerm, fallbackRoleTerms, fallbackEntryTerms].filter(Boolean).join(' '),
+  ];
+
+  const unique = [];
+  const seen = new Set();
+  for (const candidate of candidates) {
+    const c = String(candidate || '').replace(/\s+/g, ' ').trim();
+    if (!c || seen.has(c)) continue;
+    seen.add(c);
+    unique.push(c);
+  }
+
+  return unique;
+}
+
+async function fetchSearchResultsWithFallback(target, maxResults, engine, profile) {
+  const attempts = [];
+  const queries = buildFallbackQueries(target.query, target.company, profile);
+  const engines = getEngineOrder(engine);
+
+  for (const q of queries) {
+    for (const e of engines) {
+      try {
+        const results = await fetchSearchResults(q, maxResults, e, profile);
+        attempts.push({ engine: e, query: q, ok: true, resultCount: results.length });
+        if (results.length > 0) {
+          return { results, attempts, usedQuery: q, usedEngine: e, exhausted: false };
+        }
+      } catch (err) {
+        attempts.push({
+          engine: e,
+          query: q,
+          ok: false,
+          resultCount: 0,
+          error: String(err?.message || err).split('\n')[0],
+        });
+      }
+    }
+  }
+
+  const errorAttempts = attempts.filter((a) => !a.ok && a.error);
+  return {
+    results: [],
+    attempts,
+    usedQuery: queries[0] || target.query,
+    usedEngine: engines[0] || engine,
+    exhausted: true,
+    hadProviderError: errorAttempts.length > 0,
+    lastProviderError: errorAttempts.length > 0 ? errorAttempts[errorAttempts.length - 1].error : null,
+  };
 }
 
 function buildQueryTargets(config, companyFilter, referralMode) {
@@ -308,14 +644,16 @@ function buildQueryTargets(config, companyFilter, referralMode) {
 }
 
 async function main() {
-  const { dryRun, companyFilter, referralMode, maxResultsPerQuery, pauseMs } = parseArgs(process.argv);
+  const { dryRun, companyFilter, referralMode, maxResultsPerQuery, pauseMs, engine } = parseArgs(process.argv);
 
   if (!existsSync(PORTALS_PATH)) {
     throw new Error('portals.yml not found.');
   }
 
   const config = parseYaml(readFileSync(PORTALS_PATH, 'utf8'));
+  const searchProfile = buildSearchProfile(config);
   const titleFilter = buildTitleFilter(config?.title_filter);
+  const locationFilter = buildLocationFilter(config?.location_filter);
   const targets = buildQueryTargets(config, companyFilter, referralMode);
   const outputQueuePath = referralMode ? REFERRAL_PIPELINE_PATH : PIPELINE_PATH;
   const sourceTag = referralMode ? 'websearch-referral' : 'websearch';
@@ -334,19 +672,43 @@ async function main() {
   let filteredOut = 0;
   let duplicates = 0;
   let failures = 0;
+  const providerStats = {
+    exa: { attempts: 0, errors: 0, rawResults: 0, selected: 0 },
+    google: { attempts: 0, errors: 0, rawResults: 0, selected: 0 },
+    ddg: { attempts: 0, errors: 0, rawResults: 0, selected: 0 },
+  };
+  const fallbackPaths = [];
 
   console.log(`WebSearch scan: running ${targets.length} queries`);
+  console.log(`Engine: ${engine}`);
   if (referralMode) console.log('(referral mode: only referral_companies with scan_method=websearch)');
   if (dryRun) console.log('(dry run — no files will be written)');
 
   for (const t of targets) {
     try {
-      const results = await fetchSearchResults(t.query, maxResultsPerQuery);
+      const search = await fetchSearchResultsWithFallback(t, maxResultsPerQuery, engine, searchProfile);
+      const results = search.results;
       rawResults += results.length;
+
+      for (const a of search.attempts) {
+        if (!providerStats[a.engine]) continue;
+        providerStats[a.engine].attempts += 1;
+        if (!a.ok) providerStats[a.engine].errors += 1;
+        providerStats[a.engine].rawResults += Number(a.resultCount || 0);
+      }
+      if (providerStats[search.usedEngine]) {
+        providerStats[search.usedEngine].selected += 1;
+      }
 
       let acceptedForTarget = 0;
       for (const r of results) {
         if (!titleFilter(r.title)) {
+          filteredOut += 1;
+          continue;
+        }
+
+        const locResult = locationFilter(r.title);
+        if (!locResult.pass) {
           filteredOut += 1;
           continue;
         }
@@ -374,7 +736,21 @@ async function main() {
         acceptedForTarget += 1;
       }
 
-      console.log(`  ${t.label}: ${results.length} results (${acceptedForTarget} accepted)`);
+      const attemptsNote = search.attempts.length > 1
+        ? `, attempts=${search.attempts.length}`
+        : '';
+
+      const path = search.attempts
+        .map((a) => `${a.engine}:${a.ok ? a.resultCount : 'ERR'}`)
+        .join(' -> ');
+      fallbackPaths.push(`${t.label} | ${path}${search.usedEngine ? ` | selected=${search.usedEngine}` : ''}`);
+
+      if (search.hadProviderError && results.length === 0) {
+        failures += 1;
+        console.log(`  ${t.label}: failed (${search.lastProviderError})`);
+      } else {
+        console.log(`  ${t.label}: ${results.length} results (${acceptedForTarget} accepted, engine=${search.usedEngine}${attemptsNote})`);
+      }
       if (pauseMs > 0) await sleep(pauseMs);
     } catch (err) {
       failures += 1;
@@ -396,6 +772,24 @@ async function main() {
   console.log(`Duplicates:           ${duplicates}`);
   console.log(`Failures:             ${failures}`);
   console.log(`New jobs:             ${newJobs.length}`);
+  console.log('');
+  console.log('Provider stats');
+  console.log('--------------');
+  for (const [name, stats] of Object.entries(providerStats)) {
+    console.log(`  ${name.padEnd(6)} attempts=${String(stats.attempts).padEnd(3)} selected=${String(stats.selected).padEnd(3)} raw=${String(stats.rawResults).padEnd(4)} errors=${stats.errors}`);
+  }
+
+  if (fallbackPaths.length > 0) {
+    console.log('');
+    console.log('Fallback path per query');
+    console.log('-----------------------');
+    for (const row of fallbackPaths.slice(0, 50)) {
+      console.log(`  - ${row}`);
+    }
+    if (fallbackPaths.length > 50) {
+      console.log(`  ... and ${fallbackPaths.length - 50} more`);
+    }
+  }
 
   if (newJobs.length > 0) {
     console.log('');

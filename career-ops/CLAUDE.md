@@ -86,9 +86,12 @@ When using [OpenCode](https://opencode.ai), the following slash commands are ava
 
 | Command | Claude Code Equivalent | Description |
 |---------|------------------------|-------------|
-| `/career-ops` | `/career-ops` | Show menu or evaluate JD with args |
+| `/career-ops` | `/career-ops` | Show menu or evaluate JD |
+| `/career-ops-run` | `/career-ops run [referral\|all]` | End-to-end queue flow: scan -> enrich -> score |
+| `/career-ops-scan` | `/career-ops scan [discovery\|referral\|all]` | Ingest jobs from sources |
+| `/career-ops-enrich` | `/career-ops enrich [discovery\|referral]` | Enrich queue entries |
+| `/career-ops-score` | `/career-ops score [discovery\|referral]` | Score queue entries |
 | `/career-ops-pipeline` | `/career-ops pipeline` | Legacy alias of score discovery |
-| `/career-ops-score` | `/career-ops score discovery` | Score discovery queue URLs (no report/PDF) |
 | `/career-ops-score-referral` | `/career-ops score referral` | Score referral queue URLs (no report/PDF) |
 | `/career-ops-evaluate` | `/career-ops oferta` | Evaluate job offer (A-F scoring) |
 | `/career-ops-compare` | `/career-ops ofertas` | Compare and rank multiple jobs |
@@ -102,7 +105,6 @@ When using [OpenCode](https://opencode.ai), the following slash commands are ava
 | `/career-ops-project` | `/career-ops project` | Evaluate portfolio project idea |
 | `/career-ops-tracker` | `/career-ops tracker` | Application status overview |
 | `/career-ops-apply` | `/career-ops apply` | Live application assistant |
-| `/career-ops-scan` | `/career-ops scan` | Scan all sources (Playwright + APIs + WebSearch) |
 | `/career-ops-scan <url>` | `/career-ops scan <url>` | Scan single URL (auto-detects API/SPA/listing) |
 | `/career-ops-scan-referral` | `/career-ops scan referral` | Scan referral companies (Playwright + APIs + conditional WebSearch) |
 | `/career-ops-scan-referral <url>` | `/career-ops scan referral <url>` | Scan single referral URL (auto-detect + referral context) |
@@ -110,6 +112,7 @@ When using [OpenCode](https://opencode.ai), the following slash commands are ava
 | `/career-ops-batch` | `/career-ops batch` | Batch processing with parallel workers |
 | `/career-ops-patterns` | `/career-ops patterns` | Analyze rejection patterns and improve targeting |
 | `/career-ops-followup` | `/career-ops followup` | Follow-up cadence tracker |
+| `/career-ops-prep` | `/career-ops prep` | Interview prep report (alias of interview-prep) |
 
 **Note:** OpenCode commands invoke the same `.claude/skills/career-ops/SKILL.md` skill used by Claude Code. The `modes/*` files are shared between both platforms.
 
@@ -121,9 +124,12 @@ When using the [Gemini CLI](https://github.com/google-gemini/gemini-cli), the fo
 
 | Command | Claude Code Equivalent | Description |
 |---------|------------------------|-------------|
-| `/career-ops` | `/career-ops` | Show menu or evaluate JD with args |
+| `/career-ops` | `/career-ops` | Show menu or evaluate JD |
+| `/career-ops-run` | `/career-ops run [referral\|all]` | End-to-end queue flow: scan -> enrich -> score |
+| `/career-ops-scan` | `/career-ops scan [discovery\|referral\|all]` | Ingest jobs from sources |
+| `/career-ops-enrich` | `/career-ops enrich [discovery\|referral]` | Enrich queue entries |
+| `/career-ops-score` | `/career-ops score [discovery\|referral]` | Score queue entries |
 | `/career-ops-pipeline` | `/career-ops pipeline` | Legacy alias of score discovery |
-| `/career-ops-score` | `/career-ops score discovery` | Score discovery queue URLs (no report/PDF) |
 | `/career-ops-score-referral` | `/career-ops score referral` | Score referral queue URLs (no report/PDF) |
 | `/career-ops-evaluate` | `/career-ops oferta` | Evaluate job offer (A-G scoring) |
 | `/career-ops-compare` | `/career-ops ofertas` | Compare and rank multiple jobs |
@@ -136,7 +142,6 @@ When using the [Gemini CLI](https://github.com/google-gemini/gemini-cli), the fo
 | `/career-ops-project` | `/career-ops project` | Evaluate portfolio project idea |
 | `/career-ops-tracker` | `/career-ops tracker` | Application status overview |
 | `/career-ops-apply` | `/career-ops apply` | Live application assistant |
-| `/career-ops-scan` | `/career-ops scan` | Scan all sources (Playwright + APIs + WebSearch) |
 | `/career-ops-scan <url>` | `/career-ops scan <url>` | Scan single URL (auto-detects API/SPA/listing) |
 | `/career-ops-scan-referral` | `/career-ops scan referral` | Scan referral companies (Playwright + APIs + conditional WebSearch) |
 | `/career-ops-scan-referral <url>` | `/career-ops scan referral <url>` | Scan single referral URL (auto-detect + referral context) |
@@ -144,6 +149,7 @@ When using the [Gemini CLI](https://github.com/google-gemini/gemini-cli), the fo
 | `/career-ops-batch` | `/career-ops batch` | Batch processing with parallel workers |
 | `/career-ops-patterns` | `/career-ops patterns` | Analyze rejection patterns and improve targeting |
 | `/career-ops-followup` | `/career-ops followup` | Follow-up cadence tracker |
+| `/career-ops-prep` | `/career-ops prep` | Interview prep report (alias of interview-prep) |
 
 **Note:** Gemini CLI commands are defined in `.gemini/commands/*.toml`. The project context is auto-loaded from `GEMINI.md`. All `modes/*` files are shared across Claude Code, OpenCode, and Gemini CLI.
 

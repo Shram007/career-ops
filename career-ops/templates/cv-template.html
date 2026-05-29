@@ -315,31 +315,6 @@
     line-height: 1.5;
   }
 
-  /* === CERTIFICATIONS === */
-  .cert-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 6px;
-  }
-
-  .cert-title {
-    font-size: 10.5px;
-    font-weight: 500;
-    color: #333;
-  }
-
-  .cert-org {
-    color: hsl(270, 70%, 45%);
-  }
-
-  .cert-year {
-    font-size: 10px;
-    color: #777;
-    white-space: nowrap;
-  }
-
   /* === SKILLS === */
   .skills-grid {
     display: flex;
@@ -380,8 +355,7 @@
   .avoid-break,
   .job,
   .project,
-  .edu-item,
-  .cert-item {
+  .edu-item {
     break-inside: avoid;
     page-break-inside: avoid;
   }
@@ -431,12 +405,6 @@
   <div class="section avoid-break">
     <div class="section-title">{{SECTION_EDUCATION}}</div>
     {{EDUCATION}}
-  </div>
-
-  <!-- CERTIFICATIONS -->
-  <div class="section avoid-break">
-    <div class="section-title">{{SECTION_CERTIFICATIONS}}</div>
-    {{CERTIFICATIONS}}
   </div>
 
   <!-- SKILLS -->

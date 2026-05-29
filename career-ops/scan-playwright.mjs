@@ -70,7 +70,6 @@ async function loginToCareersSite(page) {
   }
   return false;
 }
-#!/usr/bin/env node
 
 /**
  * scan-playwright.mjs
@@ -191,12 +190,19 @@ function buildTitleFilter(titleFilter) {
  */
 function buildLocationFilter(locationFilter) {
   if (!locationFilter) return () => ({ pass: true, reason: null });
+  const positive = (locationFilter?.positive || []).map(k => String(k).toLowerCase());
   const negative = (locationFilter?.negative || []).map(k => String(k).toLowerCase());
+  const strictUSOrRemote = Boolean(locationFilter?.strict_us_or_remote);
 
-  return (title) => {
-    const lower = String(title || '').toLowerCase();
-    const hit = negative.find(k => lower.includes(k));
+  return (title, location = '') => {
+    const corpus = `${String(title || '')} ${String(location || '')}`.toLowerCase();
+    const hit = negative.find(k => corpus.includes(k));
     if (hit) return { pass: false, reason: `loc:${hit}` };
+
+    if (!strictUSOrRemote) return { pass: true, reason: null };
+
+    const positiveHit = positive.find(k => corpus.includes(k));
+    if (!positiveHit) return { pass: false, reason: 'loc:unknown-or-non-us' };
     return { pass: true, reason: null };
   };
 }
@@ -780,7 +786,7 @@ async function main() {
           continue;
         }
 
-        const locResult = locationFilter(link.title);
+        const locResult = locationFilter(link.title, link.location);
         if (!locResult.pass) {
           filteredOut += 1;
           filteredByLocation += 1;

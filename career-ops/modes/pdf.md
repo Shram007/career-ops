@@ -45,6 +45,24 @@ If the user provides an applications tracker number (for example: "generate PDF 
     - Do not proceed to PDF generation until validation passes.
 15. Executes: `node generate-pdf.mjs tmp/Shram_Kadia_{Company}_{Role}.html output/Shram_Kadia_{Company}_{Role}.pdf --format={letter|a4}`
 
+### Interactive Scale Tuning (Autoscale-first)
+
+If autoscale + compact fallback is still not ideal, tune scale interactively instead of trimming content:
+
+1. Generate tuner file:
+   `node generate-pdf.mjs tmp/Shram_Kadia_{Company}_{Role}.html output/Shram_Kadia_{Company}_{Role}.pdf --format={letter|a4} --tune-scale`
+   Or auto-open it immediately:
+   `node generate-pdf.mjs tmp/Shram_Kadia_{Company}_{Role}.html output/Shram_Kadia_{Company}_{Role}.pdf --format={letter|a4} --tune-scale --open-tuner`
+2. Open generated file:
+   `output/Shram_Kadia_{Company}_{Role}.scale-tuner.html`
+3. Move slider until preview looks right.
+4. Copy CLI command shown in the panel and run it to finalize, for example:
+   `node generate-pdf.mjs tmp/...html output/...pdf --format={letter|a4} --scale=0.93 --no-trim-fallback`
+
+Notes:
+- `--scale=<n>` forces a manual scale for final PDF render.
+- `--save-final-html` writes the exact rendered HTML snapshot beside the PDF for audit/debug.
+
 **⚠ Steps 16-18 are REQUIRED. The pipeline is NOT complete until the user says "done" in step 18. Do not stop after generating the PDF.**
 
 16. **[REQUIRED] Auto-open the PDF now.** Run this command immediately after PDF generation succeeds:
@@ -74,7 +92,7 @@ If the user provides an applications tracker number (for example: "generate PDF 
 ## ATS Rules (Clean Parsing)
 
 - Single-column layout (no sidebars, no parallel columns)
-- Standard headers: "Professional Summary", "Work Experience", "Education", "Skills", "Certifications", "Projects"
+- Standard headers: "Professional Summary", "Work Experience", "Projects", "Education", "Skills"
 - No text in images/SVGs
 - No critical info in PDF headers/footers (ATS ignores them)
 - UTF-8, selectable text (not rasterized)
@@ -98,7 +116,7 @@ If the user provides an applications tracker number (for example: "generate PDF 
 2. Professional Summary (3-4 lines, keyword-dense)
 3. **Work Experience (reverse chronological—most recent first, always)**
 5. Projects (top 3-4 most relevant)
-6. Education & Certifications
+6. Education
 7. Skills (3-4 groups, each fitting EXACTLY 1 LINE)
 
 **Work Experience order is NEVER influenced by JD relevance.** Sort by date descending (newest at top). This is ATS standard and matches recruiter expectations.
@@ -129,7 +147,7 @@ Examples of legitimate rewording:
 - **Each group must fit EXACTLY 1 LINE** — no wrapping to second line
 - Format: "Category: skill1, skill2, skill3"
 - If a group exceeds 1 line, split into 2 groups or remove lower-priority skills
-- **Why:** Keeps resume height tight; combined with compact competencies, body content has room to breathe at 100% scale
+- **Why:** Keeps resume height tight and improves single-page reliability
 
 ## HTML Template
 
@@ -157,8 +175,6 @@ Use the template in `cv-template.html`. Replace `{{...}}` placeholders with pers
 | `{{PROJECTS}}` | HTML of top 3-4 projects. Link titles to GitHub URLs from `config/profile.yml` proof_points. Required structure per project: `<div class="project"><div class="project-header"><div class="project-title"><a href="github-url">Project Name</a></div><div class="project-tech">Tech, More</div></div><ul><li>impact bullet</li><li>impact bullet</li></ul></div>`. The `·` separator between title and tech is injected by CSS — do NOT add it in the text. **Never use `| Stack:` inline.** (each project MUST have `<ul>` with 2-3 `<li>` bullets, each 1 line max) |
 | `{{SECTION_EDUCATION}}` | Education / Formación |
 | `{{EDUCATION}}` | HTML of education |
-| `{{SECTION_CERTIFICATIONS}}` | Certifications / Certificaciones |
-| `{{CERTIFICATIONS}}` | HTML of certifications |
 | `{{SECTION_SKILLS}}` | Skills / Competencias |
 | `{{SKILLS}}` | Inner skills grid only — **no section wrapper** (the template already wraps it): `<div class="skills-grid"><div class="skill-item"><span class="skill-category">Category:</span> skill1, skill2, skill3</div>...</div>`. Max 3-4 groups total, each group ≤ 85 chars. **NO wrapping to 2 lines per group.** |
 
@@ -194,7 +210,6 @@ c. If mapping fails, show the user what was found and ask for guidance
 Same content generation as the HTML flow (Steps 1-11 above):
 - Rewrite Professional Summary with JD keywords + exit narrative
 - Reorder experience bullets by JD relevance
-- Select top competencies from JD requirements
 - Inject keywords naturally (NEVER invent)
 
 **IMPORTANT — Character budget rule:** Each replacement text MUST be approximately the same length as the original text it replaces (within ±15% character count). If tailored content is longer, condense it. The Canva design has fixed-size text boxes — longer text causes overlapping with adjacent elements. Count the characters in each original element from Step 2 and enforce this budget when generating replacements.
@@ -244,18 +259,9 @@ d. Report: PDF path, file size, Canva design URL (for manual tweaking)
 - If `find_and_replace_text` finds no matches → try broader substring matching
 - Always provide the Canva design URL so the user can edit manually if auto-edit fails
 
-## Conditional Removal: Core Competencies if PDF > 1 Page
+## Conditional Removal: Legacy Optional Sections if PDF > 1 Page
 
-If after generating the initial PDF the page count is **> 1 page**, remove the entire "Core Competencies" section from the HTML and regenerate the PDF. This decision is **per resume only** — doesn't affect the global template.
-
-**Steps:**
-1. Generate initial PDF from personalized HTML
-2. Count pages in generated PDF
-3. If pageCount > 1: remove the `<div class="section">` containing `<div class="section-title">{{SECTION_COMPETENCIES}}</div>`
-4. Regenerate PDF from modified HTML
-5. Use final version (with or without competencies per result)
-
-**Why:** Competencies (6-8 keyword tags) take ~120-150px height. Removing them automatically optimizes height when resume touches or exceeds 2 pages, allowing minimal zoom adjustment (95-98%) without cutting content.
+If after generating the initial PDF the page count is **> 1 page**, remove legacy optional sections found in old templates and regenerate. This decision is **per resume only**.
 
 ## Post-generation
 

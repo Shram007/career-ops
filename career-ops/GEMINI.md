@@ -50,8 +50,11 @@ When using [Gemini CLI](https://github.com/google-gemini/gemini-cli), the follow
 | Command | Claude Code Equivalent | Description |
 |---------|------------------------|-------------|
 | `/career-ops` | `/career-ops` | Show menu or evaluate JD |
+| `/career-ops-run` | `/career-ops run [referral\|all]` | End-to-end queue flow: scan -> enrich -> score |
+| `/career-ops-scan` | `/career-ops scan [discovery\|referral\|all]` | Ingest jobs from sources |
+| `/career-ops-enrich` | `/career-ops enrich [discovery\|referral]` | Enrich queue entries |
+| `/career-ops-score` | `/career-ops score [discovery\|referral]` | Score queue entries |
 | `/career-ops-pipeline` | `/career-ops pipeline` | Legacy alias of score discovery |
-| `/career-ops-score` | `/career-ops score discovery` | Score discovery queue URLs (no report/PDF) |
 | `/career-ops-score-referral` | `/career-ops score referral` | Score referral queue URLs (no report/PDF) |
 | `/career-ops-evaluate` | `/career-ops oferta` | Evaluate job offer (A-G scoring) |
 | `/career-ops-compare` | `/career-ops ofertas` | Compare and rank multiple jobs |
@@ -62,10 +65,10 @@ When using [Gemini CLI](https://github.com/google-gemini/gemini-cli), the follow
 | `/career-ops-project` | `/career-ops project` | Evaluate portfolio project |
 | `/career-ops-tracker` | `/career-ops tracker` | Application status overview |
 | `/career-ops-apply` | `/career-ops apply` | Live application assistant |
-| `/career-ops-scan` | `/career-ops scan` | Scan portals for new jobs |
 | `/career-ops-batch` | `/career-ops batch` | Batch processing |
 | `/career-ops-patterns` | `/career-ops patterns` | Analyze rejection patterns |
 | `/career-ops-followup` | `/career-ops followup` | Follow-up cadence tracker |
+| `/career-ops-prep` | `/career-ops prep` | Interview prep report (alias of interview-prep) |
 
 **All commands share the same evaluation logic** in `modes/*.md`. The `modes/` files are shared between Claude Code, OpenCode, and Gemini CLI.
 
@@ -98,6 +101,8 @@ If `modes/_profile.md` is missing, copy from `modes/_profile.template.md` silent
 | Asks about application status | read `modes/tracker.md` |
 | Fills out application form | read `modes/_shared.md` + `modes/apply.md` |
 | Searches for new jobs | read `modes/_shared.md` + `modes/scan.md` |
+| Runs `enrich` | run `node enrich-pipeline.mjs` |
+| Runs `enrich referral` | run `node enrich-pipeline.mjs --referral` |
 | Runs `score discovery` | read `modes/_shared.md` + `modes/score.md` (queue: `data/pipeline.md`) |
 | Runs `score referral` | read `modes/_shared.md` + `modes/score.md` (queue: `data/pipeline-referral.md`) |
 | Runs `pipeline` | legacy alias of `score discovery` |

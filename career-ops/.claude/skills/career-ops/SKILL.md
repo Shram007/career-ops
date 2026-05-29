@@ -3,7 +3,7 @@ name: career-ops
 description: AI job search command center -- evaluate jobs, generate CVs, scan portals, track applications
 user_invocable: true
 args: mode
-argument-hint: "[scan | scan referral | scan discovery | score | score referral | score discovery | score legacy referral | score legacy discovery | deep | pdf | pdf queue | pdf id <num> | oferta | ofertas | apply | batch | tracker | contacto | training | project | interview-prep | update]"
+argument-hint: "[run | scan [discovery|referral|all] | enrich [discovery|referral] | score [discovery|referral] | pdf [queue|id <num>] | tracker | apply | prep | oferta | ofertas | contacto | deep | training | project | batch | patterns | followup | interview-prep | update]"
 ---
 
 # career-ops -- Router
@@ -16,6 +16,9 @@ Determine the mode from `{{mode}}`:
 |-------|------|
 | (empty / no args) | `discovery` -- Show command menu |
 | JD text or URL (no sub-command) | **`auto-pipeline`** |
+| `run` | `run` (scan -> enrich -> score; default `discovery`) |
+| `run referral` | `run` (scan -> enrich -> score; referral queue) |
+| `run all` | `run` (scan all sources -> enrich discovery -> score discovery) |
 | `oferta` | `oferta` |
 | `ofertas` | `ofertas` |
 | `contacto` | `contacto` |
@@ -40,12 +43,18 @@ Determine the mode from `{{mode}}`:
 | `scan <url>` | `scan-single-url` (auto-detect: API → cost 0, SPA/listing → Playwright) |
 | `scan referral <url>` | `scan-single-url` (with referral context) |
 | `scan` | `scan` (all sources: Playwright + APIs + WebSearch) |
+| `scan all` | `scan` (all sources: Playwright + APIs + WebSearch) |
 | `scan referral` | `scan-referral` (Playwright + APIs + conditional WebSearch for referral companies) |
 | `scan discovery` | `scan-discovery` (WebSearch discovery queries only) |
+| `enrich` | `enrich` (tag extraction + JD cache enrichment for `data/pipeline.md`) |
+| `enrich referral` | `enrich` (same mode with referral scope for `data/pipeline-referral.md`) |
+| `enrich discovery` | `enrich` (alias of enrich discovery queue) |
+| `score all` | `score-pipeline` (`--discovery` alias for streamlined UX) |
 | `batch` | `batch` |
 | `patterns` | `patterns` |
 | `followup` | `followup` |
 | `interview-prep` | `interview-prep` |
+| `prep` | `interview-prep` (short alias) |
 
 **URL detection for scan:** If `{{mode}}` starts with `scan` and contains a URL (`https://...`):
 - Extract URL and detect type (API, SPA domain, listing, single job)
@@ -66,33 +75,18 @@ Show this menu:
 career-ops -- Command Center
 
 Available commands:
-  /career-ops {JD}      → AUTO-PIPELINE: evaluate + report + PDF + tracker (paste text or URL)
-  /career-ops score discovery  → Score CV vs JD for discovery queue (data/pipeline.md)
-  /career-ops score referral   → Score CV vs JD for referral queue (data/pipeline-referral.md)
-  /career-ops score legacy discovery  → Deterministic fallback scorer for discovery queue
-  /career-ops score legacy referral   → Deterministic fallback scorer for referral queue
-  /career-ops pipeline         → Legacy alias of score discovery
-  /career-ops oferta    → Evaluation only A-F (no auto PDF)
-  /career-ops ofertas   → Compare and rank multiple jobs
-  /career-ops contacto  → LinkedIn power move: find contacts + draft message
-  /career-ops deep      → Deep research prompt about company
-  /career-ops pdf       → PDF only, ATS-optimized CV
-  /career-ops pdf queue → List tracker IDs ready for PDF generation
-  /career-ops pdf id N  → PDF from tracker job number (no JD/URL re-paste)
-  /career-ops training  → Evaluate course/cert against North Star
-  /career-ops project   → Evaluate portfolio project idea
-  /career-ops tracker   → Application status overview
-  /career-ops apply     → Live application assistant (reads form + generates answers)
-  /career-ops scan            → Scan all sources: Playwright + APIs + WebSearch
-  /career-ops scan referral   → Scan referral companies (Playwright + APIs + conditional WebSearch)
-  /career-ops scan discovery  → Scan WebSearch discovery queries only
-  /career-ops score pipeline           → Parallel claude -p workers: score referral pipeline
-  /career-ops score pipeline referral  → Parallel workers: score data/pipeline-referral.md
-  /career-ops score pipeline discovery → Parallel workers: score data/pipeline.md
-  /career-ops batch     → Batch processing with parallel workers
-  /career-ops patterns  → Analyze rejection patterns and improve targeting
-  /career-ops followup  → Follow-up cadence tracker: flag overdue, generate drafts
-  /career-ops interview-prep → Company + role interview preparation report
+  /career-ops {JD}                → AUTO-PIPELINE: evaluate + report + PDF + tracker
+  /career-ops run [referral|all] → End-to-end pipeline: scan -> enrich -> score
+  /career-ops scan [discovery|referral|all]   → Source ingestion
+  /career-ops enrich [discovery|referral]     → Queue enrichment
+  /career-ops score [discovery|referral]      → Queue scoring
+  /career-ops pdf [queue|id N]    → PDF generation workflows
+  /career-ops tracker              → Application status overview
+  /career-ops apply                → Live application assistant
+  /career-ops prep                 → Interview prep report (alias: interview-prep)
+  /career-ops oferta | ofertas | contacto | deep | training | project | batch | patterns | followup
+
+  Compatibility aliases kept: pipeline, score pipeline*, score legacy*, scan discovery/referral, enrich referral, interview-prep
 
 Inbox: scan discovery/all writes to data/pipeline.md → run /career-ops score discovery
 Inbox: scan referral writes to data/pipeline-referral.md → run /career-ops score referral
@@ -107,7 +101,7 @@ After determining the mode, load the necessary files before executing:
 
 ### Scan modes — run directly, no subagent:
 
-For `scan`, `scan-single-url`, `scan-referral`, `scan-discovery`, and `score-pipeline`, **do not launch a subagent**. Run the pre-built script directly and report the terminal output to the user.
+For `run`, `scan`, `scan-single-url`, `scan-referral`, `scan-discovery`, `enrich`, and `score-pipeline`, **do not launch a subagent**. Run the pre-built script directly and report the terminal output to the user.
 
 | Mode | Command |
 |------|---------|
@@ -115,9 +109,14 @@ For `scan`, `scan-single-url`, `scan-referral`, `scan-discovery`, and `score-pip
 | `scan` | `node scan-with-instrumentation.mjs` |
 | `scan referral` | `node scan-with-instrumentation.mjs --referral` |
 | `scan discovery` | `node scan-with-instrumentation.mjs --skip-level1 --skip-level2` |
+| `enrich` | `node enrich-pipeline.mjs` |
+| `enrich referral` | `node enrich-pipeline.mjs --referral` |
 | `score` | `node score-pipeline-wrapper.mjs --referral` (primary scorer, default referral) |
 | `score referral` | `node score-pipeline-wrapper.mjs --referral` |
 | `score discovery` | `node score-pipeline-wrapper.mjs --discovery` |
+| `run` | `node scan-with-instrumentation.mjs --skip-level1 --skip-level2 ; node enrich-pipeline.mjs ; node score-pipeline-wrapper.mjs --discovery` |
+| `run referral` | `node scan-with-instrumentation.mjs --referral ; node enrich-pipeline.mjs --referral ; node score-pipeline-wrapper.mjs --referral` |
+| `run all` | `node scan-with-instrumentation.mjs ; node enrich-pipeline.mjs ; node score-pipeline-wrapper.mjs --discovery` |
 | `score pipeline` | `node score-pipeline-wrapper.mjs --referral` |
 | `score pipeline referral` | `node score-pipeline-wrapper.mjs --referral` |
 | `score pipeline discovery` | `node score-pipeline-wrapper.mjs --discovery` |

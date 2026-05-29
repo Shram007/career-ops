@@ -4,10 +4,9 @@
  * validate-resume-html.mjs — Resume HTML Validator
  *
  * Enforces formatting constraints from modes/pdf.md and batch/batch-prompt.md:
- * - Core Competencies: exactly 4-5 tags, fits 1 line
  * - Skills: max 3-4 groups, each fits 1 line
  * - Projects: no work exp titles, has tech stack div, 2-3 bullets per project, each 1 line
- * - Overall: PDF must be 1 page (signals if competencies need removal)
+ * - Overall structure: valid single-column resume markup
  *
  * Usage:
  *   node validate-resume-html.mjs <input.html> [--strict]
@@ -221,10 +220,6 @@ if (violations.length > 0) {
   console.log('📝 FIXES:\n');
 
   violations.forEach(v => {
-    if (v.includes('Core Competencies') && v.includes('exceeds 1-line')) {
-      console.log('   • Remove 1-2 least relevant competency tags');
-      console.log('   • Or increase competency tag font size (currently ~10px)\n');
-    }
     if (v.includes('Skills') && v.includes('groups')) {
       console.log('   • Reduce skill groups from', v.match(/\d+/)?.[0], 'to max 4');
       console.log('   • Merge related skills into fewer groups\n');
